@@ -1,0 +1,15 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+    <edmx:DataServices>
+        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Awesome.Possum">
+            <EntityType Name="Foo">
+                <Key>
+                    <PropertyRef Name="Id" />
+                </Key>
+                <Property Name="StrProp" Type="Edm.String" />
+                <Property Name="DateStrProp" Type="Edm.DateTimeOffset" Nullable="false" />
+                <Property Name="ByteProp" Type="Edm.Byte" Nullable="false" />
+                <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+            </EntityType>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

@@ -1,1 +1,1 @@
-# odata-client-generator
+# @netatwork/odata-edm-generator
