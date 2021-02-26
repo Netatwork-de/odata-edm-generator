@@ -4,8 +4,7 @@ import * as path from 'path';
 import pluralize from 'pluralize';
 import { Endpoint } from './EndpointGenerator';
 
-// TODO make it configurable
-const codeFileTemplate = fs.readFileSync(path.join(process.cwd(), 'templates', 'codefile.ejs'), 'utf8');
+const codeFileTemplate = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'codefile.ejs'), 'utf8');
 
 interface Attribute { [key: string]: string | boolean; Namespace: string; Name: string; Nullable: boolean | string; Type: string; BaseType: string; }
 interface Property { _attributes: Attribute; }
@@ -96,8 +95,8 @@ class CodeFileInfo {
       .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
       .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
     directives.push(
-      new ImportDirectiveInfo('../../../decorators', ['Class', 'odataEndpoint']),
-      new ImportDirectiveInfo('../../Endpoints', ['Endpoints']),
+      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
+      new ImportDirectiveInfo('../../Endpoints', ['Endpoints']), // TODO: fix the import path
     );
   }
 }

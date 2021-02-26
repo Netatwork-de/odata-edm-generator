@@ -5,7 +5,7 @@ import mock from 'mock-fs';
 import * as path from 'path';
 import * as xmlJs from 'xml-js';
 import { DOMParser } from 'xmldom';
-import { generateEdm, Metadata } from '../../src/EdmGenerator';
+import { generateEdm, Metadata } from '../../src/cli/EdmGenerator';
 
 describe('CodeGenerator', function () {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

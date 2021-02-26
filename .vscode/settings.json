@@ -4,6 +4,7 @@
         "Tabzard",
         "basepath",
         "edmx",
+        "odata",
         "reauthenticate"
     ]
 }

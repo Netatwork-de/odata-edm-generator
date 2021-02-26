@@ -1,12 +1,17 @@
 {
   "name": "@netatwork/odata-edm-generator",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "OData EDM generator",
-  "main": "dist/index.js",
+  "typings": "dist/types/decorators",
+  "main": "dist/cjs/api/decorators.js",
+  "module": "dist/esm/decorators.js",
+  "bin": {
+    "gen-edm": "dist/cjs/cli/index.js"
+  },
   "scripts": {
     "lint": "eslint . --ext .ts --cache",
     "prebuild": "rimraf dist && npm run lint",
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig.esm.json",
     "dev": "tsc -w --preserveWatchOutput",
     "test": "nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js",
     "test:dev": "cross-env DEV=true nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js"
