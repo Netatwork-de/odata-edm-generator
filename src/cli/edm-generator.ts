@@ -1,10 +1,17 @@
-import * as ejs from 'ejs';
 import * as fs from 'fs';
 import * as path from 'path';
 import pluralize from 'pluralize';
-import { Endpoint } from './EndpointGenerator';
-
-const codeFileTemplate = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'codefile.ejs'), 'utf8');
+import {
+  ClassInfo,
+  EdmInfo,
+  Endpoint,
+  EnumInfo,
+  InterfaceInfo,
+  nsToPath,
+  propertyComparator,
+  PropertyInfo,
+} from './shared';
+import { EdmTemplate } from './templates';
 
 interface Attribute { [key: string]: string | boolean; Namespace: string; Name: string; Nullable: boolean | string; Type: string; BaseType: string; }
 interface Property { _attributes: Attribute; }
@@ -20,84 +27,6 @@ export interface Metadata {
     ['edmx:DataServices']: {
       Schema: Schema[]
     }
-  }
-}
-
-class PropertyInfo {
-  public constructor(
-    public name: string,
-    public type: string,
-    public isNullable: boolean,
-    public isKey: boolean,
-  ) { }
-}
-class ClassInfo {
-  public constructor(
-    public className: string,
-    public propertyInfos: PropertyInfo[],
-    public endpoint?: string,
-    public baseType?: ClassInfo,
-  ) {
-    if (baseType) {
-      this.propertyInfos.push(...baseType.propertyInfos);
-      this.propertyInfos.sort(propertyComparator);
-    }
-  }
-}
-class InterfaceInfo {
-  public constructor(
-    public name: string,
-    public propertyInfos: PropertyInfo[],
-    public baseType?: string,
-  ) { }
-}
-class EnumInfo {
-  public constructor(
-    public name: string,
-    public members: string[],
-  ) { }
-}
-class ImportDirectiveInfo {
-  public constructor(
-    public nsPath: string,
-    public items: string[],
-  ) { }
-}
-class CodeFileInfo {
-  public importDirectives!: ImportDirectiveInfo[];
-  public constructor(
-    public namespace: string,
-    public imports: ImportInfo[],
-    public classInfos: ClassInfo[],
-    public interfaceInfos: InterfaceInfo[],
-    public enumInfos: EnumInfo[],
-  ) { }
-
-  public createImportDirectives(filePath: string, baseOutputPath: string) {
-    const importMap = this.imports.reduce((acc, i) => {
-      let prevImports = acc.get(i.ns);
-      if (!prevImports) {
-        prevImports = new Set<string>();
-      }
-      prevImports.add(i.type);
-      acc.set(i.ns, prevImports);
-      return acc;
-    }, new Map<string, Set<string>>());
-
-    const directives = this.importDirectives = Array.from(importMap)
-      // tslint:disable-next-line:whitespace
-      .filter(([ns,]) => ns !== this.namespace)
-      .map(([ns, imports]) => ([
-        path.relative(path.dirname(filePath), nsToPath(ns, baseOutputPath)).replace(/\\/g, '/'),
-        Array.from(imports).sort()
-      ] as [string, string[]]))
-      // tslint:disable-next-line:whitespace
-      .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
-      .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
-    directives.push(
-      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
-      new ImportDirectiveInfo('../../Endpoints', ['Endpoints']), // TODO: fix the import path
-    );
   }
 }
 
@@ -132,7 +61,6 @@ function getType(originalType: string, imports: ImportInfo[]) {
   if (isPrimitive) {
     type = typeMap.get(originalType) ?? 'any';
   } else {
-    // TODO handle types properly
     const nsParts = originalType.split('.');
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     type = nsParts.pop()!;
@@ -158,16 +86,6 @@ function getMembers(properties: Property[], imports: ImportInfo[], keys: string[
       return new PropertyInfo(name, getType(attributes.Type, imports), attributes.Nullable !== 'false', keys.includes(name));
     })
     .sort(propertyComparator);
-}
-
-function propertyComparator(p1: PropertyInfo, p2: PropertyInfo): number {
-  const isP1Key = p1.isKey;
-  if (isP1Key !== p2.isKey) { return isP1Key ? -1 : 1; }
-
-  const p1Nullable = p1.isNullable;
-  if (p1Nullable !== p2.isNullable) { return !p1Nullable ? -1 : 1; }
-
-  return enCollator.compare(p1.name.toLowerCase(), p2.name.toLowerCase());
 }
 
 function generateEntityInfo(entityType: EntityType, imports: ImportInfo[], endpoints: Endpoint[], endpointImports: string[], entities: ClassInfo[]) {
@@ -219,8 +137,8 @@ function generateStringEnum(enumType: EnumType) {
   return new EnumInfo(enumType._attributes.Name, members);
 }
 
-function generateCodeContent(schemas: Schema[], endpoints: Endpoint[]): CodeFileInfo[] {
-  const items: CodeFileInfo[] = [];
+function generateCodeContent(schemas: Schema[], endpoints: Endpoint[]): EdmInfo[] {
+  const items: EdmInfo[] = [];
   for (const schema of schemas) {
     if (!schema.EntityType && !schema.EnumType && !schema.ComplexType) { continue; }
     const imports: ImportInfo[] = [];
@@ -240,28 +158,24 @@ function generateCodeContent(schemas: Schema[], endpoints: Endpoint[]): CodeFile
       .sort(compareTypes)
       .map((et) => generateStringEnum(et));
 
-    items.push(new CodeFileInfo(schema._attributes.Namespace, imports, entities, interfaces, enums));
+    items.push(new EdmInfo(schema._attributes.Namespace, imports, entities, interfaces, enums));
   }
   return items;
 }
 
-function generateCodeFile(items: CodeFileInfo[], baseOutputPath: string) {
+function generateCodeFile(items: EdmInfo[]) {
   for (const item of items) {
-    const filePath = `${nsToPath(item.namespace, baseOutputPath)}.ts`;
+    const filePath = `${nsToPath(item.namespace)}.ts`;
 
     const dirName = path.dirname(filePath);
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName, { recursive: true });
     }
 
-    item.createImportDirectives(filePath, baseOutputPath);
-    const content = ejs.render(codeFileTemplate, item, { cache: true, filename: 'codefile.ejs' });
+    item.createImportDirectives(filePath);
+    const content = new EdmTemplate().render(item);
     fs.writeFileSync(filePath, content);
   }
-}
-
-function nsToPath(ns: string, baseOutputPath: string) {
-  return path.join(baseOutputPath, 'entities', ns.replace(/\./g, '/'));
 }
 
 function ensureArray<T = unknown>(thing: T | T[]): T[] {
@@ -270,8 +184,8 @@ function ensureArray<T = unknown>(thing: T | T[]): T[] {
   return things;
 }
 
-export function generateEdm(metadata: Metadata, endpoints: Endpoint[], baseOutputPath: string): void {
+export function generateEdm(metadata: Metadata, endpoints: Endpoint[]): void {
   const schemas: Schema[] = metadata['edmx:Edmx']['edmx:DataServices'].Schema;
-  const items: CodeFileInfo[] = generateCodeContent(ensureArray(schemas), endpoints);
-  generateCodeFile(items, baseOutputPath);
+  const items: EdmInfo[] = generateCodeContent(ensureArray(schemas), endpoints);
+  generateCodeFile(items);
 }

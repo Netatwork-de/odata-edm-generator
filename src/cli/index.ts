@@ -5,8 +5,10 @@ import * as https from 'https';
 import * as path from 'path';
 import * as xmlJs from 'xml-js';
 import { argv } from 'yargs';
-import { generateEdm, Metadata } from './EdmGenerator';
-import { Endpoint, generateEndpoints } from './EndpointGenerator';
+import { Configuration } from './configuration';
+import { generateEdm, Metadata } from './edm-generator';
+import { generateEndpoints } from './endpoint-generator';
+import { Endpoint } from './shared';
 
 function getData(url: string) {
   return new Promise<string>((resolve, reject) => {
@@ -31,6 +33,7 @@ const baseOutputPath: string = path.resolve(process.cwd(), argv.outputPath as st
 if (!fs.existsSync(baseOutputPath)) {
   throw new Error(`The output path "${baseOutputPath}" does not exist`);
 }
+Configuration.create(baseEndpoint, baseOutputPath);
 async function main() {
   const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
   const metadata = JSON.parse(
@@ -38,8 +41,8 @@ async function main() {
       await getData(`${baseEndpoint}/$metadata`),
       { compact: true })) as Metadata;
 
-  generateEndpoints(endpoints, baseOutputPath);
-  generateEdm(metadata, endpoints, baseOutputPath);
+  generateEndpoints(endpoints);
+  generateEdm(metadata, endpoints);
 }
 
 void main();
