@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
 import { ClassInfo, EdmInfo, EnumInfo, InterfaceInfo, PropertyInfo } from '../src/cli/shared';
