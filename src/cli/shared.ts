@@ -1,4 +1,4 @@
-import { join, dirname, relative } from 'path';
+import { dirname, join, relative } from 'path';
 import { Configuration } from './configuration';
 
 export interface Endpoint {
@@ -59,15 +59,19 @@ export class ImportDirectiveInfo {
 
 export class EdmInfo {
   public importDirectives!: ImportDirectiveInfo[];
+  public readonly filePath: string;
   public constructor(
     public namespace: string,
     public imports: ImportInfo[],
     public classInfos: ClassInfo[],
     public interfaceInfos: InterfaceInfo[],
     public enumInfos: EnumInfo[],
-  ) { }
+  ) {
+    this.filePath = `${nsToPath(namespace)}.ts`;
+    this.createImportDirectives();
+  }
 
-  public createImportDirectives(filePath: string): void {
+  private createImportDirectives(): void {
     const importMap = this.imports.reduce((acc, i) => {
       let prevImports = acc.get(i.ns);
       if (!prevImports) {
@@ -78,6 +82,7 @@ export class EdmInfo {
       return acc;
     }, new Map<string, Set<string>>());
 
+    const filePath = this.filePath;
     const directives = this.importDirectives = Array.from(importMap)
       .filter(([ns,]) => ns !== this.namespace)
       .map(([ns, imports]) => ([
@@ -88,12 +93,17 @@ export class EdmInfo {
       .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
     directives.push(
       new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
-      new ImportDirectiveInfo('../../Endpoints', ['Endpoints']), // TODO: fix the import path
+      new ImportDirectiveInfo(
+        relative(dirname(filePath), getEndpointsPath())
+          .replace(/\\/g, '/')
+          .replace('.ts', ''),
+        ['Endpoints']
+      ),
     );
   }
 }
 
-export function nsToPath(ns: string): string {
+function nsToPath(ns: string): string {
   return join(Configuration.instance.baseOutputPath, 'entities', ns.replace(/\./g, '/'));
 }
 
@@ -106,4 +116,9 @@ export function propertyComparator(p1: PropertyInfo, p2: PropertyInfo): number {
   if (p1Nullable !== p2.isNullable) { return !p1Nullable ? -1 : 1; }
 
   return enCollator.compare(p1.name.toLowerCase(), p2.name.toLowerCase());
+}
+
+
+export function getEndpointsPath(): string {
+  return join(Configuration.instance.baseOutputPath, 'Endpoints.ts');
 }

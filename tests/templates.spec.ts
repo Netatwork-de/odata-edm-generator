@@ -114,7 +114,6 @@ export const enum Endpoints {
           ),
         ],
       );
-      info.createImportDirectives('irrelevant');
 
       const actual = new EdmTemplate().render(info);
 

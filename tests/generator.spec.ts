@@ -4,7 +4,7 @@ import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { generateEdm, generateEndpoints } from '../src/cli/generator';
+import { generateEdm, generateEndpointsFile } from '../src/cli/generator';
 
 describe('generator', function () {
 
@@ -55,7 +55,7 @@ describe('generator', function () {
         mockFs({ [baseOutputPath]: {} });
 
         // act
-        generateEndpoints(endpoints);
+        generateEndpointsFile(endpoints);
         generateEdm(edmxXml, endpoints);
 
         // assert

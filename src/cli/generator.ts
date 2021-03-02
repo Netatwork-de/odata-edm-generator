@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as fs from 'fs';
-import * as path from 'path';
 import { EOL } from 'os';
+import * as path from 'path';
 import { DOMParser } from 'xmldom';
 import {
   ClassInfo,
   EdmInfo,
   Endpoint,
   EnumInfo,
+  getEndpointsPath,
   InterfaceInfo,
-  nsToPath,
   propertyComparator,
   PropertyInfo,
 } from './shared';
 import { EdmTemplate, EndpointTemplate } from './templates';
-import { Configuration } from './configuration';
 
 interface ImportInfo { ns: string; type: string; }
 
@@ -192,16 +191,15 @@ function generateCodeContent(edmxNode: HTMLElement, endpoints: Endpoint[]): EdmI
   return items;
 }
 
-function generateCodeFile(items: EdmInfo[]) {
+function generateEdmFile(items: EdmInfo[]) {
   for (const item of items) {
-    const filePath = `${nsToPath(item.namespace)}.ts`;
+    const filePath = item.filePath;
 
     const dirName = path.dirname(filePath);
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName, { recursive: true });
     }
 
-    item.createImportDirectives(filePath);
     const content = new EdmTemplate().render(item);
     fs.writeFileSync(filePath, content);
   }
@@ -216,18 +214,11 @@ export function generateEdm(metadata: string, endpoints: Endpoint[]): void {
     throw new Error(`Error parsing the edmx xml.${EOL}Parsing error: ${error.map((e) => e.outerHTML).join(EOL)}`);
   }
   const items: EdmInfo[] = generateCodeContent(parsed, endpoints);
-  generateCodeFile(items);
+  generateEdmFile(items);
 }
 
-export function generateEndpoints(endpoints: Endpoint[]): void {
-  fs.writeFileSync(
-    getEndpointsPath(),
-    new EndpointTemplate().render(endpoints),
-  );
-}
-
-function getEndpointsPath(): fs.PathLike {
-  return path.join(Configuration.instance.baseOutputPath, 'Endpoints.ts');
+export function generateEndpointsFile(endpoints: Endpoint[]): void {
+  fs.writeFileSync(getEndpointsPath(), new EndpointTemplate().render(endpoints));
 }
 
 class EntitySet {

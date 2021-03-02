@@ -5,7 +5,7 @@ import * as https from 'https';
 import * as path from 'path';
 import { argv } from 'yargs';
 import { Configuration } from './configuration';
-import { generateEdm, generateEndpoints } from './generator';
+import { generateEdm, generateEndpointsFile } from './generator';
 import { Endpoint } from './shared';
 
 function getData(url: string) {
@@ -36,7 +36,7 @@ async function main() {
     Configuration.create(baseEndpoint, baseOutputPath);
     const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
-    generateEndpoints(endpoints);
+    generateEndpointsFile(endpoints);
     generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints);
 
   } finally {
