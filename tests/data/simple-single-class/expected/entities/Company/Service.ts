@@ -28,4 +28,3 @@ export class Foo {
         public StrProp?: string,
     ) { }
 }
-

@@ -1,0 +1,40 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+    <edmx:DataServices>
+        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Company.Service">
+            <EntityType Name="Foo">
+                <Key>
+                    <PropertyRef Name="Id" />
+                </Key>
+                <Property Name="StrProp" Type="Edm.String" />
+                <Property Name="DateStrProp" Type="Edm.DateTimeOffset" Nullable="false" />
+                <Property Name="ByteProp" Type="Edm.Byte" Nullable="false" />
+                <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+            </EntityType>
+            <EntityType Name="Bar">
+                <Key>
+                    <PropertyRef Name="Id" />
+                </Key>
+                <Property Name="Prop11" Type="Edm.String" />
+                <Property Name="Prop12" Type="Edm.DateTime" Nullable="false" />
+                <Property Name="Prop13" Type="Edm.Decimal" Nullable="false" />
+                <Property Name="Prop14" Type="Edm.Double" />
+                <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+            </EntityType>
+            <EntityType Name="Base">
+                <Property Name="BaseProp11" Type="Edm.Duration" />
+                <Property Name="BaseProp12" Type="Edm.Float" Nullable="false" />
+                <Property Name="BaseProp13" Type="Edm.Guid" Nullable="false" />
+                <Property Name="BaseProp14" Type="Edm.Int16" />
+            </EntityType>
+            <EntityType Name="Child" BaseType="Company.Service.Base">
+                <Key>
+                    <PropertyRef Name="ChildId" />
+                </Key>
+                <Property Name="ChildProp11" Type="Edm.Int64" />
+                <Property Name="ChildProp12" Type="Edm.SByte" Nullable="false" />
+                <Property Name="ChildProp13" Type="Edm.TimeOfDay" Nullable="false" />
+                <Property Name="ChildId" Type="Edm.Int32" Nullable="false" />
+            </EntityType>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

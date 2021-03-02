@@ -13,8 +13,8 @@ describe('templates', function () {
       const actual = new EndpointTemplate().render(standardEndpoints);
       assert.strictEqual(actual,
         `/**
-* This is a generated file. Please don't change this manually.
-*/
+ * This is a generated file. Please don't change this manually.
+ */
 export const enum Endpoints {
     People = 'People',
     Foos = 'Foos',
@@ -122,8 +122,8 @@ export const enum Endpoints {
       assert.strictEqual(
         actual,
         `/**
-* This is a generated file. Please don't change this manually.
-*/
+ * This is a generated file. Please don't change this manually.
+ */
 
 import {
     Class,

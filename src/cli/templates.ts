@@ -5,8 +5,8 @@ import { EdmInfo, Endpoint } from './shared';
 eta.configure({ autoTrim: false });
 
 const defaultEndpointsTemplate = `/**
-* This is a generated file. Please don't change this manually.
-*/
+ * This is a generated file. Please don't change this manually.
+ */
 export const enum Endpoints {
 <% for(const endpoint of it.endpoints) { -%>
     <%= endpoint.name %> = '<%= endpoint.url %>',
@@ -77,8 +77,8 @@ const defaultEnumTemplate = `export enum <%= it.name %> {
 <% } -%>
 }`;
 const defaultEdmTemplate = `/**
-* This is a generated file. Please don't change this manually.
-*/
+ * This is a generated file. Please don't change this manually.
+ */
 
 <% for(const i of it.importDirectives) { -%>
 import {

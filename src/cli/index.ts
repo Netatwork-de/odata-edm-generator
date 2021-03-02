@@ -28,21 +28,25 @@ function getData(url: string) {
   });
 }
 
-const baseEndpoint: string = argv.endpoint as string;
-const baseOutputPath: string = path.resolve(process.cwd(), argv.outputPath as string);
-if (!fs.existsSync(baseOutputPath)) {
-  throw new Error(`The output path "${baseOutputPath}" does not exist`);
-}
-Configuration.create(baseEndpoint, baseOutputPath);
 async function main() {
-  const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
-  const metadata = JSON.parse(
-    xmlJs.xml2json(
-      await getData(`${baseEndpoint}/$metadata`),
-      { compact: true })) as Metadata;
+  try {
+    const baseEndpoint: string = argv.endpoint as string;
+    const baseOutputPath: string = path.resolve(process.cwd(), argv.outputPath as string);
+    if (!fs.existsSync(baseOutputPath)) {
+      throw new Error(`The output path "${baseOutputPath}" does not exist`);
+    }
+    Configuration.create(baseEndpoint, baseOutputPath);
+    const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
+    const metadata = JSON.parse(
+      xmlJs.xml2json(
+        await getData(`${baseEndpoint}/$metadata`),
+        { compact: true })) as Metadata;
 
-  generateEndpoints(endpoints);
-  generateEdm(metadata, endpoints);
+    generateEndpoints(endpoints);
+    generateEdm(metadata, endpoints);
+  } finally {
+    Configuration.dispose();
+  }
 }
 
 void main();

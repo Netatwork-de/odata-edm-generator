@@ -23,7 +23,8 @@ module.exports = {
 	rules: {
 		'@typescript-eslint/no-inferrable-types': 'off',
 		'@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
-		'no-shadow': 'error',
+		'no-shadow': 'off',
+		'@typescript-eslint/no-shadow': 'error',
 		'quotes': ['warn', 'single'],
 	}
 };

@@ -1,0 +1,15 @@
+{
+  "@odata.context": "https://example.com/odata/v4/$metadata",
+  "value": [
+    {
+      "name": "Foos",
+      "kind": "EntitySet",
+      "url": "Foos"
+    },
+    {
+      "name": "Children",
+      "kind": "EntitySet",
+      "url": "Children"
+    }
+  ]
+}
