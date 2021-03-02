@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { ClassInfo, EdmInfo, InterfaceInfo, PropertyInfo } from '../src/cli/shared';
+import { ClassInfo, EdmInfo, EnumInfo, InterfaceInfo, PropertyInfo } from '../src/cli/shared';
 import { EdmTemplate, EndpointTemplate } from '../src/cli/templates';
 import { standardEndpoints } from './data';
 describe('templates', function () {
@@ -104,7 +104,16 @@ export const enum Endpoints {
             interface1.name,
           ),
         ],
-        [],
+        [
+          new EnumInfo(
+            'EnumOne',
+            ['member11', 'member12']
+          ),
+          new EnumInfo(
+            'EnumTwo',
+            ['member21', 'member22']
+          ),
+        ],
       );
       info.createImportDirectives('irrelevant');
 
@@ -201,7 +210,32 @@ export class Child extends BaseOne {
     }
 }
 
-interface ComplexType1
+export interface ComplexType1 {
+    prop11: number;
+    prop12: string;
+}
+
+export interface ComplexType2 {
+    prop21: number;
+    prop22: string;
+    prop23: boolean;
+}
+
+export interface ChildComplexType extends ComplexType1 {
+    prop31: number;
+    prop32: string;
+    prop33: boolean;
+}
+
+export enum EnumOne {
+    member11 = 'member11',
+    member12 = 'member12',
+}
+
+export enum EnumTwo {
+    member21 = 'member21',
+    member22 = 'member22',
+}
 `        );
 
       Configuration.dispose();

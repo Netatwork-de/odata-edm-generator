@@ -1,5 +1,0 @@
-export interface <%- name %><%_ if (baseType) { %> extends <%- baseType %><% } %> {
-    <%_ for(const p of propertyInfos) { _%>
-    <%- p.name %><%_if(p.isNullable){%>?<%_}_%>: <%- p.type %>;
-    <%_ } _%>
-}

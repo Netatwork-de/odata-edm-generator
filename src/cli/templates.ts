@@ -64,17 +64,17 @@ export class <%= it.className %><% if (it.baseType) { %> extends <%= it.baseType
 }`;
 
 const defaultInterfaceTemplateName = '$$interface';
-const defaultInterfaceTemplate = `export interface <%= name %><% if (baseType) { %> extends <%= baseType %><% } %> {
-    <% for(const p of propertyInfos) { %>
+const defaultInterfaceTemplate = `export interface <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType %><% } %> {
+<% for(const p of it.propertyInfos) { -%>
     <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
-    <% } %>
+<% } -%>
 }`;
 
 const defaultEnumTemplateName = '$$enum';
 const defaultEnumTemplate = `export enum <%= it.name %> {
-    <% for(const member of members) { %>
-    <%= member %> = "<%= member %>",
-    <% } %>
+<% for(const member of it.members) { -%>
+    <%= member %> = '<%= member %>',
+<% } -%>
 }`;
 const defaultEdmTemplate = `/**
 * This is a generated file. Please don't change this manually.
