@@ -3,12 +3,11 @@ import { readdirSync, readFileSync } from 'fs';
 import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import * as xmlJs from 'xml-js';
 import { Configuration } from '../src/cli/configuration';
-import { generateEdm, Metadata } from '../src/cli/edm-generator';
+import { generateEdm } from '../src/cli/edm-generator';
 import { generateEndpoints } from '../src/cli/endpoint-generator';
 
-describe('CodeGenerator', function () {
+describe('generator', function () {
 
   function readAllContent(path: string): Map<string, string> {
     const result = new Map<string, string>();
@@ -44,26 +43,30 @@ describe('CodeGenerator', function () {
   ) {
     const dirName = dirent.name;
     it(`works for ${dirName}`, function () {
-      // arrange
-      const baseOutputPath = uuid();
-      Configuration.create('irrelevant', baseOutputPath);
-      const caseDir = join(dataPath, dirName);
-      const inputDir = join(caseDir, 'input');
-      const edmxXml = readFileSync(join(inputDir, 'metadata.xml'), 'utf8');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
-      const expected = readAllContent(join(caseDir, 'expected'));
-      mockFs({ [baseOutputPath]: {} });
+      try {
+        // arrange
+        const baseOutputPath = uuid();
+        Configuration.create('irrelevant', baseOutputPath);
+        const caseDir = join(dataPath, dirName);
+        const inputDir = join(caseDir, 'input');
+        const edmxXml = readFileSync(join(inputDir, 'metadata.xml'), 'utf8');
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
+        const expected = readAllContent(join(caseDir, 'expected'));
+        mockFs({ [baseOutputPath]: {} });
 
-      // act
-      generateEndpoints(endpoints);
-      generateEdm(JSON.parse(xmlJs.xml2json(edmxXml, { compact: true })) as Metadata, endpoints);
+        // act
+        generateEndpoints(endpoints);
+        generateEdm(edmxXml, endpoints);
 
-      // assert
-      const actual = readAllContent(baseOutputPath);
-      assertContent(actual, expected);
-
-      mockFs.restore();
+        // assert
+        const actual = readAllContent(baseOutputPath);
+        assertContent(actual, expected);
+      } finally {
+        // cleanup
+        mockFs.restore();
+        Configuration.dispose();
+      }
     });
   }
 });

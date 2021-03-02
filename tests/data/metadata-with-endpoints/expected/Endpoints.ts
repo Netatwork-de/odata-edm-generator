@@ -4,4 +4,5 @@
 export const enum Endpoints {
     Foos = 'Foos',
     Children = 'Children',
+    Fizz = 'FizzBazz',
 }

@@ -3,6 +3,7 @@ import { Configuration } from './configuration';
 
 export interface Endpoint {
   name: string;
+  kind: 'EntitySet' | 'Singleton';
   url: string;
 }
 

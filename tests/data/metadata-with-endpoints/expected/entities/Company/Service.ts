@@ -50,6 +50,24 @@ export class Base {
     ) { }
 }
 
+@odataEndpoint(Endpoints.Fizz)
+export class Bazz {
+
+    public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, model: Partial<TBazz>): TBazz {
+        return new this(
+            model.Id,
+            model.BazzProp2,
+            model.BazzProp1,
+        );
+    }
+
+    public constructor(
+        public Id: number,
+        public BazzProp2: number,
+        public BazzProp1?: string,
+    ) { }
+}
+
 @odataEndpoint(Endpoints.Foos)
 export class Foo {
 

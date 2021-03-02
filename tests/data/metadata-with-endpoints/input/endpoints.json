@@ -8,8 +8,13 @@
     },
     {
       "name": "Children",
-      "kind": "EntitySet",
+      "kind": "Singleton",
       "url": "Children"
+    },
+    {
+      "name": "Fizz",
+      "kind": "EntitySet",
+      "url": "FizzBazz"
     }
   ]
 }

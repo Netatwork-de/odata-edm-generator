@@ -9,6 +9,9 @@ export class Configuration {
   }
 
   public static create(endpoint: string, baseOutputPath: string): Configuration {
+    if (this._instance !== null) {
+      throw new Error('Configuration is already initialized.');
+    }
     return this._instance = new Configuration(endpoint, baseOutputPath);
   }
 
