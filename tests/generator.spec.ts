@@ -4,8 +4,7 @@ import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { generateEdm } from '../src/cli/edm-generator';
-import { generateEndpoints } from '../src/cli/endpoint-generator';
+import { generateEdm, generateEndpoints } from '../src/cli/generator';
 
 describe('generator', function () {
 

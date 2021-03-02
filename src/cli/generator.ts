@@ -13,24 +13,10 @@ import {
   propertyComparator,
   PropertyInfo,
 } from './shared';
-import { EdmTemplate } from './templates';
+import { EdmTemplate, EndpointTemplate } from './templates';
+import { Configuration } from './configuration';
 
-interface Attribute { [key: string]: string | boolean; Namespace: string; Name: string; Nullable: boolean | string; Type: string; BaseType: string; }
-interface Property { _attributes: Attribute; }
-interface Key { PropertyRef: Array<{ _attributes: Attribute }>; }
-interface EntityType { _attributes: Attribute; Key: Key; Property: Property[]; NavigationProperty: Property[]; }
-interface ComplexType { _attributes: Attribute; Property: Property[]; }
-interface EnumMember { _attributes: Attribute; }
-interface EnumType { _attributes: Attribute; Member: EnumMember[]; }
 interface ImportInfo { ns: string; type: string; }
-interface Schema { _attributes: Attribute; EntityType: EntityType[]; EnumType: EnumType[]; ComplexType: ComplexType[]; }
-export interface Metadata {
-  ['edmx:Edmx']: {
-    ['edmx:DataServices']: {
-      Schema: Schema[]
-    }
-  }
-}
 
 // this map is not exhaustive (http://docs.oasis-open.org/odata/odata-csdl-json/v4.01/cs01/odata-csdl-json-v4.01-cs01.html#sec_PrimitiveTypes)
 const typeMap = new Map([
@@ -231,6 +217,17 @@ export function generateEdm(metadata: string, endpoints: Endpoint[]): void {
   }
   const items: EdmInfo[] = generateCodeContent(parsed, endpoints);
   generateCodeFile(items);
+}
+
+export function generateEndpoints(endpoints: Endpoint[]): void {
+  fs.writeFileSync(
+    getEndpointsPath(),
+    new EndpointTemplate().render(endpoints),
+  );
+}
+
+function getEndpointsPath(): fs.PathLike {
+  return path.join(Configuration.instance.baseOutputPath, 'Endpoints.ts');
 }
 
 class EntitySet {

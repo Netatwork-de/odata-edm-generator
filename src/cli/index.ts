@@ -5,8 +5,7 @@ import * as https from 'https';
 import * as path from 'path';
 import { argv } from 'yargs';
 import { Configuration } from './configuration';
-import { generateEdm } from './edm-generator';
-import { generateEndpoints } from './endpoint-generator';
+import { generateEdm, generateEndpoints } from './generator';
 import { Endpoint } from './shared';
 
 function getData(url: string) {
@@ -36,13 +35,10 @@ async function main() {
     }
     Configuration.create(baseEndpoint, baseOutputPath);
     const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
-    // const metadata = JSON.parse(
-    //   xmlJs.xml2json(
-    //     await getData(`${baseEndpoint}/$metadata`),
-    //     { compact: true })) as Metadata;
 
     generateEndpoints(endpoints);
     generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints);
+
   } finally {
     Configuration.dispose();
   }
