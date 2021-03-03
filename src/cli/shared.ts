@@ -60,6 +60,8 @@ export class ImportDirectiveInfo {
 export class EdmInfo {
   public importDirectives!: ImportDirectiveInfo[];
   public readonly filePath: string;
+  public readonly quote: string;
+  public readonly indent: string;
   public constructor(
     public namespace: string,
     public imports: ImportInfo[],
@@ -67,6 +69,9 @@ export class EdmInfo {
     public interfaceInfos: InterfaceInfo[],
     public enumInfos: EnumInfo[],
   ) {
+    const config = Configuration.instance;
+    this.quote = config.quote;
+    this.indent = config.indent;
     this.filePath = `${nsToPath(namespace)}.ts`;
     this.createImportDirectives();
   }
@@ -104,7 +109,7 @@ export class EdmInfo {
 }
 
 function nsToPath(ns: string): string {
-  return join(Configuration.instance.baseOutputPath, 'entities', ns.replace(/\./g, '/'));
+  return join(Configuration.instance.outputDir, 'entities', ns.replace(/\./g, '/'));
 }
 
 const enCollator = new Intl.Collator('en');
@@ -120,5 +125,5 @@ export function propertyComparator(p1: PropertyInfo, p2: PropertyInfo): number {
 
 
 export function getEndpointsPath(): string {
-  return join(Configuration.instance.baseOutputPath, 'Endpoints.ts');
+  return join(Configuration.instance.outputDir, 'Endpoints.ts');
 }

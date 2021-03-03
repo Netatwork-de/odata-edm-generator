@@ -1,4 +1,5 @@
-import { existsSync, statSync } from 'fs';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { existsSync, statSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
 export class Configuration {
@@ -12,7 +13,7 @@ export class Configuration {
     throw new Error('Configuration is not yet initialized.');
   }
 
-  public static createFromCLIArgs(args: string[]): Configuration {
+  public static createFromCLIArgs(args: string[]): Readonly<Configuration> {
     if (this._instance !== null) {
       throw new Error('Configuration is already initialized.');
     }
@@ -21,21 +22,43 @@ export class Configuration {
       throw new Error('Incorrect number of arguments. Forgot to provide any value?');
     }
 
+    const unconsumedArgs: string[] = [];
     const instance = new Configuration();
     for (let i = 0; i < numArgs; i += 2) {
-      switch (args[i].replace(/^-*/g, '')) {
+      const option = args[i];
+      switch (option.replace(/^-*/g, '')) {
+        case 'config': {
+          if (i !== 0) {
+            throw new Error('When providing a configuration file, the --config needs to be the first CLI argument.');
+          }
+          const configPath = resolve(process.cwd(), args[i + 1]);
+          if (!existsSync(configPath) || !statSync(configPath).isFile()) {
+            throw new Error(`The config file "${configPath}" does not exist.`);
+          }
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          instance.applyConfiguration(require(configPath));
+          break;
+        }
         case 'endpoint':
           instance.endpoint = args[i + 1];
           break;
         case 'outputDir': {
-          const dir: string = resolve(process.cwd(), args[i + 1]);
-          if (!existsSync(dir) || !statSync(dir).isDirectory()) {
-            throw new Error(`The output dir "${dir}" does not exist or it is not a directory.`);
-          }
-          instance.baseOutputPath = dir;
+          instance.setOutputDir(args[i + 1], true);
           break;
         }
+        case 'quoteStyle':
+          instance.setQuote(args[i + 1] as QuoteStyle);
+          break;
+        case 'indentSize':
+          instance.setIndentation(args[i + 1]);
+          break;
+        default:
+          unconsumedArgs.push(option);
+          break;
       }
+    }
+    if (unconsumedArgs.length > 0) {
+      console.warn(`Unconsumed args: ${unconsumedArgs.join(', ')}`);
     }
     return this._instance = Object.freeze(instance);
   }
@@ -44,7 +67,62 @@ export class Configuration {
     this._instance = null;
   }
 
-  public endpoint!: string;
-  public baseOutputPath!: string;
+  public endpoint: string = null!;
+  public outputDir: string = null!;
+  public quote: '\'' | '"' = '\'';
+  public indent: string = ' '.repeat(4);
+
   private constructor() { /* noop */ }
+
+  private applyConfiguration(config: ConfigFileSchema) {
+    this.endpoint = config.endpoint ?? null!;
+    this.setOutputDir(config.outputDir, false);
+    this.setQuote(config.quoteStyle);
+    this.setIndentation(config.indentSize);
+  }
+
+  private setOutputDir(outputDir: string | undefined, throwError: boolean) {
+    if (!outputDir) { return; }
+    const absolutePath: string = resolve(process.cwd(), outputDir);
+    if (!existsSync(absolutePath)) {
+      mkdirSync(absolutePath, { recursive: true });
+    } else if (throwError && !statSync(absolutePath).isDirectory()) {
+      throw new Error(`The output path "${absolutePath}" is not a directory.`);
+    }
+    this.outputDir = absolutePath;
+  }
+
+  private setQuote(quoteStyle: QuoteStyle | undefined) {
+    if (!quoteStyle) { return; }
+    switch (quoteStyle) {
+      case 'single':
+        this.quote = '\'';
+        break;
+      case 'double':
+        this.quote = '"';
+        break;
+      default:
+        console.warn(`Unsupported quoteStyle: '${String(quoteStyle)}'; default value will be used.`);
+        break;
+    }
+  }
+
+  private setIndentation(indentSize: number | string | undefined) {
+    if (!indentSize) { return; }
+    const numIdent = Number(indentSize);
+    if (!Number.isNaN(numIdent)) {
+      this.indent = ' '.repeat(numIdent);
+    } else {
+      console.warn(`Unsupported indent: '${String(indentSize)}'; default value will be used.`);
+    }
+  }
 }
+
+type QuoteStyle = 'single' | 'double';
+type ConfigFileSchema = Partial<
+  Omit<Configuration, 'quote' | 'indent'>
+  & {
+    quoteStyle: QuoteStyle,
+    indentSize: string | number,
+  }
+>;

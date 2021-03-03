@@ -126,15 +126,13 @@ function generateEntityInfo(
     ));
     return entities;
   } catch (e) {
-    console.error(`entity generate failed for ${JSON.stringify(entityType, undefined, 2)}`);
+    console.error(`Entity generation failed for ${JSON.stringify(entityType, undefined, 2)}`);
     throw e;
   }
 }
 
 function generateInterfaceInfo(entityType: Element, imports: ImportInfo[]) {
   const members = getMembers(Array.from(entityType.getElementsByTagName('Property')), imports);
-
-  // TODO handle namespaces correctly
   return new InterfaceInfo(entityType.getAttribute('Name')!, members, getBaseTypeName(entityType));
 }
 
@@ -200,8 +198,10 @@ function generateEdmFile(items: EdmInfo[]) {
       fs.mkdirSync(dirName, { recursive: true });
     }
 
-    const content = new EdmTemplate().render(item);
+    const template = new EdmTemplate();
+    const content = template.render(item);
     fs.writeFileSync(filePath, content);
+    template.dispose();
   }
 }
 

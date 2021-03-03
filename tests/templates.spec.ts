@@ -11,9 +11,11 @@ describe('templates', function () {
   describe('EndpointTemplate', function () {
 
     it('Renders correctly', function () {
-      const actual = new EndpointTemplate().render(standardEndpoints);
-      assert.strictEqual(actual,
-        `/**
+      try {
+        Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
+        const actual = new EndpointTemplate().render(standardEndpoints);
+        assert.strictEqual(actual,
+          `/**
  * This is a generated file. Please don't change this manually.
  */
 export const enum Endpoints {
@@ -21,13 +23,21 @@ export const enum Endpoints {
     Foos = 'Foos',
     Bar = 'fizzbazz',
 }`
-      );
+        );
+      } finally {
+        Configuration.dispose();
+      }
     });
 
     it('Respects the given template', function () {
-      const template = 'export const enum Endpoints {<% for(const endpoint of it.endpoints) { %> <%= endpoint.name %> = "<%= endpoint.url %>",<% } %>}'
-      const actual = new EndpointTemplate(template).render(standardEndpoints);
-      assert.strictEqual(actual, 'export const enum Endpoints { People = "People", Foos = "Foos", Bar = "fizzbazz",}');
+      try {
+        Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
+        const template = 'export const enum Endpoints {<% for(const endpoint of it.endpoints) { %> <%= endpoint.name %> = "<%= endpoint.url %>",<% } %>}'
+        const actual = new EndpointTemplate(template).render(standardEndpoints);
+        assert.strictEqual(actual, 'export const enum Endpoints { People = "People", Foos = "Foos", Bar = "fizzbazz",}');
+      } finally {
+        Configuration.dispose();
+      }
     });
 
   });
@@ -130,10 +140,10 @@ export const enum Endpoints {
 import {
     Class,
     odataEndpoint,
-} from "@netatwork/odata-edm-generator";
+} from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
-} from "../../Endpoints";
+} from '../../Endpoints';
 
 @odataEndpoint(Endpoints.foos)
 export class Foo {

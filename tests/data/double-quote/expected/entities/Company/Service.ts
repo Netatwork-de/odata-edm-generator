@@ -5,10 +5,10 @@
 import {
     Class,
     odataEndpoint,
-} from '@netatwork/odata-edm-generator';
+} from "@netatwork/odata-edm-generator";
 import {
     Endpoints,
-} from '../../Endpoints';
+} from "../../Endpoints";
 
 export class Bar {
 
@@ -135,7 +135,7 @@ export interface Interface2 {
 }
 
 export enum Enum1 {
-    Member1 = 'Member1',
-    Member2 = 'Member2',
-    Member3 = 'Member3',
+    Member1 = "Member1",
+    Member2 = "Member2",
+    Member3 = "Member3",
 }

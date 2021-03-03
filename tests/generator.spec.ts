@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
@@ -51,8 +51,17 @@ describe('generator', function () {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
         const expected = readAllContent(join(caseDir, 'expected'));
-        mockFs({ [baseOutputPath]: {} }, { createCwd: true });
-        Configuration.createFromCLIArgs(['--outputDir', baseOutputPath]);
+        const args = ['--outputDir', baseOutputPath];
+        const configFilePath = join(inputDir, 'config.js');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mockFsConfig: any = { [baseOutputPath]: {} };
+        if (existsSync(configFilePath)) {
+          args.unshift('--config', configFilePath);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          mockFsConfig[configFilePath] = mockFs.load(configFilePath);
+        }
+        mockFs(mockFsConfig, { createCwd: true });
+        Configuration.createFromCLIArgs(args);
 
         // act
         generateEndpointsFile(endpoints);

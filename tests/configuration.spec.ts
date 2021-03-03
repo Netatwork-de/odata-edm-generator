@@ -16,16 +16,31 @@ describe('configuration', function () {
   }
 
   function* getTestData() {
-    yield new TestData(
-      ['--endpoint', 'https://api.example.com', '--outputDir', 'out'],
-      { endpoint: 'https://api.example.com', baseOutputPath: join(process.cwd(), 'out') },
-    );
+    const defaultOptions: Partial<Configuration> = { quote: '\'', indent: ' '.repeat(4) };
+    for (const prefix of ['', '-', '--']) {
+      yield new TestData(
+        [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out'],
+        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out') },
+      );
+      yield new TestData(
+        [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}quoteStyle`, 'single'],
+        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), quote: '\'' },
+      );
+      yield new TestData(
+        [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}quoteStyle`, 'double'],
+        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), quote: '"' },
+      );
+      yield new TestData(
+        [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}indentSize`, '2'],
+        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), indent: '  ' },
+      );
+    }
   }
 
   for (const data of getTestData()) {
     it(`createFromCLIArgs works correctly - ${data.toString()}`, function () {
       try {
-        const expectedOutputPath = data.expected.baseOutputPath;
+        const expectedOutputPath = data.expected.outputDir;
         mockFs({
           ...(expectedOutputPath ? { [expectedOutputPath]: {} } : {})
         }, { createCwd: true });

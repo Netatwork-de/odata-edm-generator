@@ -5,10 +5,10 @@
 import {
     Class,
     odataEndpoint,
-} from "@netatwork/odata-edm-generator";
+} from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
-} from "../../../../Endpoints";
+} from '../../../../Endpoints';
 
 export class Bar {
 

@@ -1,15 +1,20 @@
 import * as eta from 'eta';
 import type { TemplateFunction } from 'eta/dist/types/compile';
+import { Configuration } from './configuration';
 import { EdmInfo, Endpoint } from './shared';
 
-eta.configure({ autoTrim: false });
+eta.configure({ autoTrim: false, autoEscape: false });
 
 const defaultEndpointsTemplate = `/**
  * This is a generated file. Please don't change this manually.
  */
+<%-
+  const quote = it.quote;
+  const indent = it.indent;
+%>
 export const enum Endpoints {
 <% for(const endpoint of it.endpoints) { -%>
-    <%= endpoint.name %> = '<%= endpoint.url %>',
+<%= indent %><%= endpoint.name %> = <%= quote %><%= endpoint.url %><%= quote %>,
 <% } -%>
 }`;
 
@@ -22,15 +27,20 @@ export class EndpointTemplate {
   }
 
   public render(endpoints: Endpoint[]): string {
-    return this.compiled({ endpoints }, eta.config);
+    const config = Configuration.instance;
+    return this.compiled(
+      {
+        endpoints,
+        quote: config.quote,
+        indent: config.indent,
+      },
+      eta.config);
   }
 }
 
 const defaultClassTemplateName = '$$class';
 const defaultClassTemplate = `<%-
-  const tabSize = 4;
-  const tabs2 = ' '.repeat(tabSize*2);
-  const tabs3 = ' '.repeat(tabSize*3);
+  const indent = it.indent;
 -%>
 <%- if (it.endpoint) { -%>
 @odataEndpoint(Endpoints.<%= it.endpoint %>)
@@ -40,63 +50,74 @@ const defaultClassTemplate = `<%-
 <% } -%>
 export class <%= it.className %><% if (it.baseType) { %> extends <%= it.baseType.className %><% } %> {
 
-    public static create<T<%= it.className %> extends <%= it.className %> = <%= it.className %>>(this: Class<T<%= it.className %>>, model: Partial<T<%= it.className %>>): T<%= it.className %> {
-        return new this(
+<%= indent %>public static create<T<%= it.className %> extends <%= it.className %> = <%= it.className %>>(this: Class<T<%= it.className %>>, model: Partial<T<%= it.className %>>): T<%= it.className %> {
+<%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-            model.<%= p.name %>,
+<%= indent.repeat(3) %>model.<%= p.name %>,
 <% } -%>
-        );
-    }
+<%= indent.repeat(2) %>);
+<%= indent %>}
 
-    public constructor(
+<%= indent %>public constructor(
 <% for(const p of it.propertyInfos) { -%>
-        public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>,
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>,
 <% } -%>
-    ) <%_ if (it.baseType) { %> {
-        super(
+<%= indent %>) <%_ if (it.baseType) { %> {
+<%= indent.repeat(2) %>super(
 <% for(const p of it.baseType.propertyInfos) { -%>
-            <%= p.name %>,
+<%= indent.repeat(3) %><%= p.name %>,
 <% } -%>
-        );
-    }
-    <%_ } else { %> { } <%_ } -%>
+<%= indent.repeat(2) %>);
+<%= indent %>}
+<%- } else { %> { } <%_ } -%>
 
 }`;
 
 const defaultInterfaceTemplateName = '$$interface';
-const defaultInterfaceTemplate = `export interface <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType %><% } %> {
+const defaultInterfaceTemplate = `<%-
+const indent = it.indent;
+-%>
+export interface <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType %><% } %> {
 <% for(const p of it.propertyInfos) { -%>
-    <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<%= indent %><%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
 <% } -%>
 }`;
 
 const defaultEnumTemplateName = '$$enum';
-const defaultEnumTemplate = `export enum <%= it.name %> {
+const defaultEnumTemplate = `<%-
+  const quote = it.quote;
+  const indent = it.indent;
+-%>
+export enum <%= it.name %> {
 <% for(const member of it.members) { -%>
-    <%= member %> = '<%= member %>',
+<%= indent %><%= member %> = <%= quote %><%= member %><%= quote %>,
 <% } -%>
 }`;
 const defaultEdmTemplate = `/**
  * This is a generated file. Please don't change this manually.
  */
+<%-
+  const quote = it.quote;
+  const indent = it.indent;
+%>
 
 <% for(const i of it.importDirectives) { -%>
 import {
 <% for(const item of i.items) { -%>
-    <%= item %>,
+<%= indent %><%= item %>,
 <% } -%>
-} from "<%= i.nsPath %>";
+} from <%= quote %><%= i.nsPath %><%= quote %>;
 <% } -%>
 <%- for(const info of it.classInfos) { %>
-<%~ include('${defaultClassTemplateName}', {...info, namespace: it.namespace}) %>
+<%~ include('${defaultClassTemplateName}', {...info, namespace: it.namespace, quote, indent}) %>
 <% } -%>
 
 <%- for(const info of it.interfaceInfos) { %>
-<%~ include('${defaultInterfaceTemplateName}', info) %>
+<%~ include('${defaultInterfaceTemplateName}', {...info, quote, indent}) %>
 <% } -%>
 
 <%- for(const info of it.enumInfos) { %>
-<%~ include('${defaultEnumTemplateName}', info) %>
+<%~ include('${defaultEnumTemplateName}', {...info, quote, indent}) %>
 <% } -%>`;
 export class EdmTemplate {
   private compiled!: TemplateFunction;
@@ -120,5 +141,11 @@ export class EdmTemplate {
 
   public render(info: EdmInfo): string {
     return this.compiled(info, eta.config);
+  }
+
+  public dispose(): void {
+    eta.templates.remove(defaultClassTemplateName);
+    eta.templates.remove(defaultInterfaceTemplateName);
+    eta.templates.remove(defaultEnumTemplateName);
   }
 }
