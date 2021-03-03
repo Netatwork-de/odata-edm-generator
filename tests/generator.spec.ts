@@ -44,15 +44,15 @@ describe('generator', function () {
     it(`works for ${dirName}`, function () {
       try {
         // arrange
-        const baseOutputPath = uuid();
-        Configuration.create('irrelevant', baseOutputPath);
+        const baseOutputPath = join(process.cwd(), uuid());
         const caseDir = join(dataPath, dirName);
         const inputDir = join(caseDir, 'input');
         const edmxXml = readFileSync(join(inputDir, 'metadata.xml'), 'utf8');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
         const expected = readAllContent(join(caseDir, 'expected'));
-        mockFs({ [baseOutputPath]: {} });
+        mockFs({ [baseOutputPath]: {} }, { createCwd: true });
+        Configuration.createFromCLIArgs(['--outputDir', baseOutputPath]);
 
         // act
         generateEndpointsFile(endpoints);

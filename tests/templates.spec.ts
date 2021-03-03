@@ -1,4 +1,6 @@
 import { assert } from 'chai';
+import mockFs from 'mock-fs';
+import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
 import { ClassInfo, EdmInfo, EnumInfo, InterfaceInfo, PropertyInfo } from '../src/cli/shared';
@@ -32,94 +34,96 @@ export const enum Endpoints {
 
   describe('EdmTemplate', function () {
     it('Renders correctly', function () {
-      const basePath = uuid();
-      Configuration.create('irrelevant', basePath);
+      try {
+        const basePath = join(process.cwd(), uuid());
+        mockFs({ [basePath]: {} }, { createCwd: true });
+        Configuration.createFromCLIArgs(['--outputDir', basePath]);
 
-      const base1 = new ClassInfo(
-        'BaseOne',
-        [
-          new PropertyInfo('name', 'string', false, false),
-        ],
-      );
-      const interface1 = new InterfaceInfo(
-        'ComplexType1',
-        [
-          new PropertyInfo('prop11', 'number', false, false),
-          new PropertyInfo('prop12', 'string', false, false),
-        ]
-      );
-      const info = new EdmInfo(
-        'Awesome.Possum',
-        [],
-        [
-          new ClassInfo(
-            'Foo',
-            [
-              new PropertyInfo('id', 'number', false, true),
-              new PropertyInfo('name', 'string', false, false),
-              new PropertyInfo('isActive', 'boolean', false, false),
-              new PropertyInfo('optional', 'string', true, false),
-            ],
-            'foos'
-          ),
-          new ClassInfo(
-            'Bar',
-            [
-              new PropertyInfo('id', 'number', false, true),
-              new PropertyInfo('boolProp', 'boolean', false, false),
-              new PropertyInfo('strProp', 'string', false, false),
-              new PropertyInfo('optionalProp', 'number', true, false),
-            ],
-          ),
-          base1,
-          new ClassInfo(
-            'Child',
-            [
-              new PropertyInfo('id', 'number', false, true),
-              new PropertyInfo('strProp', 'string', false, false),
-              new PropertyInfo('optionalProp', 'number', true, false),
-            ],
-            'Children',
+        const base1 = new ClassInfo(
+          'BaseOne',
+          [
+            new PropertyInfo('name', 'string', false, false),
+          ],
+        );
+        const interface1 = new InterfaceInfo(
+          'ComplexType1',
+          [
+            new PropertyInfo('prop11', 'number', false, false),
+            new PropertyInfo('prop12', 'string', false, false),
+          ]
+        );
+        const info = new EdmInfo(
+          'Awesome.Possum',
+          [],
+          [
+            new ClassInfo(
+              'Foo',
+              [
+                new PropertyInfo('id', 'number', false, true),
+                new PropertyInfo('name', 'string', false, false),
+                new PropertyInfo('isActive', 'boolean', false, false),
+                new PropertyInfo('optional', 'string', true, false),
+              ],
+              'foos'
+            ),
+            new ClassInfo(
+              'Bar',
+              [
+                new PropertyInfo('id', 'number', false, true),
+                new PropertyInfo('boolProp', 'boolean', false, false),
+                new PropertyInfo('strProp', 'string', false, false),
+                new PropertyInfo('optionalProp', 'number', true, false),
+              ],
+            ),
             base1,
-          ),
-        ],
-        [
-          interface1,
-          new InterfaceInfo(
-            'ComplexType2',
-            [
-              new PropertyInfo('prop21', 'number', false, false),
-              new PropertyInfo('prop22', 'string', false, false),
-              new PropertyInfo('prop23', 'boolean', false, false),
-            ]
-          ),
-          new InterfaceInfo(
-            'ChildComplexType',
-            [
-              new PropertyInfo('prop31', 'number', false, false),
-              new PropertyInfo('prop32', 'string', false, false),
-              new PropertyInfo('prop33', 'boolean', false, false),
-            ],
-            interface1.name,
-          ),
-        ],
-        [
-          new EnumInfo(
-            'EnumOne',
-            ['member11', 'member12']
-          ),
-          new EnumInfo(
-            'EnumTwo',
-            ['member21', 'member22']
-          ),
-        ],
-      );
+            new ClassInfo(
+              'Child',
+              [
+                new PropertyInfo('id', 'number', false, true),
+                new PropertyInfo('strProp', 'string', false, false),
+                new PropertyInfo('optionalProp', 'number', true, false),
+              ],
+              'Children',
+              base1,
+            ),
+          ],
+          [
+            interface1,
+            new InterfaceInfo(
+              'ComplexType2',
+              [
+                new PropertyInfo('prop21', 'number', false, false),
+                new PropertyInfo('prop22', 'string', false, false),
+                new PropertyInfo('prop23', 'boolean', false, false),
+              ]
+            ),
+            new InterfaceInfo(
+              'ChildComplexType',
+              [
+                new PropertyInfo('prop31', 'number', false, false),
+                new PropertyInfo('prop32', 'string', false, false),
+                new PropertyInfo('prop33', 'boolean', false, false),
+              ],
+              interface1.name,
+            ),
+          ],
+          [
+            new EnumInfo(
+              'EnumOne',
+              ['member11', 'member12']
+            ),
+            new EnumInfo(
+              'EnumTwo',
+              ['member21', 'member22']
+            ),
+          ],
+        );
 
-      const actual = new EdmTemplate().render(info);
+        const actual = new EdmTemplate().render(info);
 
-      assert.strictEqual(
-        actual,
-        `/**
+        assert.strictEqual(
+          actual,
+          `/**
  * This is a generated file. Please don't change this manually.
  */
 
@@ -235,8 +239,10 @@ export enum EnumTwo {
     member22 = 'member22',
 }
 `        );
-
-      Configuration.dispose();
+      } finally {
+        Configuration.dispose();
+        mockFs.restore();
+      }
     });
   });
 

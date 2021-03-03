@@ -165,7 +165,7 @@ function generateCodeContent(edmxNode: HTMLElement, endpoints: Endpoint[]): EdmI
     const entitySets = Array.from(edmxNode.getElementsByTagName('EntitySet'))
       .map((e) => new EntitySet(e.getAttribute('Name')!, e.getAttribute('EntityType')!.split('.').pop()!));
     const singletons = Array.from(edmxNode.getElementsByTagName('Singleton'))
-      .map((e) => new EntitySet(e.getAttribute('Name')!, e.getAttribute('Type')!.split('.').pop()!));
+      .map((e) => new Singleton(e.getAttribute('Name')!, e.getAttribute('Type')!.split('.').pop()!));
     const entities = entityTypes
       .sort(compareTypes)
       .reduce(

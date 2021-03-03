@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs';
 import * as https from 'https';
-import * as path from 'path';
-import { argv } from 'yargs';
 import { Configuration } from './configuration';
 import { generateEdm, generateEndpointsFile } from './generator';
 import { Endpoint } from './shared';
@@ -28,12 +25,24 @@ function getData(url: string) {
 
 async function main() {
   try {
-    const baseEndpoint: string = argv.endpoint as string;
-    const baseOutputPath: string = path.resolve(process.cwd(), argv.outputPath as string);
-    if (!fs.existsSync(baseOutputPath)) {
-      throw new Error(`The output path "${baseOutputPath}" does not exist`);
+    const args = process.argv.slice(2);
+    if (args.length === 0 || args[0].replace(/^-*/g, '') === 'help') {
+      console.log(
+`
+Usage: gen-edm options
+
+A CLI tool to generate EDM from OData service.
+
+Options:
+  --endpoint    The OData endpoint. '{endpoint}' is used to get the list of endpoints, and '{endpoint}/$metadata' is used to get the EDM.
+  --outputDir  The base output directory to write the generated files.
+`
+      );
+      return;
     }
-    Configuration.create(baseEndpoint, baseOutputPath);
+
+    const configuration = Configuration.createFromCLIArgs(args);
+    const baseEndpoint = configuration.endpoint;
     const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
     generateEndpointsFile(endpoints);
