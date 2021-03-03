@@ -28,8 +28,7 @@ async function main() {
     const args = process.argv.slice(2);
     if (args.length === 0 || args[0].replace(/^-*/g, '') === 'help') {
       console.log(
-`
-Usage: gen-edm options
+        `Usage: gen-edm options
 
 A CLI tool to generate EDM from OData service.
 
@@ -42,12 +41,16 @@ Options:
     }
 
     const configuration = Configuration.createFromCLIArgs(args);
-    const baseEndpoint = configuration.endpoint;
-    const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
+    for (const ep of configuration.endpoints) {
+      const baseEndpoint = ep.outputDir;
+      const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
-    generateEndpointsFile(endpoints);
-    generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints);
+      generateEndpointsFile(endpoints, ep);
+      console.info(`[gen-edm]: generated endpoints for ${baseEndpoint}.`);
 
+      generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
+      console.info(`[gen-edm]: generated EDM for ${baseEndpoint}.`);
+    }
   } finally {
     Configuration.dispose();
   }

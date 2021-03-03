@@ -47,7 +47,7 @@ export const enum Endpoints {
       try {
         const basePath = join(process.cwd(), uuid());
         mockFs({ [basePath]: {} }, { createCwd: true });
-        Configuration.createFromCLIArgs(['--outputDir', basePath]);
+        const config = Configuration.createFromCLIArgs(['--outputDir', basePath, '--endpoint', 'https://api.example.com']);
 
         const base1 = new ClassInfo(
           'BaseOne',
@@ -127,6 +127,7 @@ export const enum Endpoints {
               ['member21', 'member22']
             ),
           ],
+          config.endpoints[0],
         );
 
         const actual = new EdmTemplate().render(info);

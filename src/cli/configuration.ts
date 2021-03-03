@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { existsSync, statSync, mkdirSync } from 'fs';
-import { resolve } from 'path';
+import { existsSync, mkdirSync, statSync } from 'fs';
+import { isAbsolute, resolve } from 'path';
+import { EndpointConfiguration } from './shared';
 
 export class Configuration {
 
@@ -40,7 +41,10 @@ export class Configuration {
           break;
         }
         case 'endpoint':
-          instance.endpoint = args[i + 1];
+          instance.setEndpoints(args[i + 1]);
+          break;
+        case 'endpoints':
+          instance.setEndpoints(JSON.parse(args[i + 1]));
           break;
         case 'outputDir': {
           instance.setOutputDir(args[i + 1], true);
@@ -67,18 +71,43 @@ export class Configuration {
     this._instance = null;
   }
 
-  public endpoint: string = null!;
+  public endpoints: EndpointConfiguration[] = [];
   public outputDir: string = null!;
   public quote: '\'' | '"' = '\'';
   public indent: string = ' '.repeat(4);
 
   private constructor() { /* noop */ }
 
-  private applyConfiguration(config: ConfigFileSchema) {
-    this.endpoint = config.endpoint ?? null!;
+  private applyConfiguration(config: ConfigSchema) {
     this.setOutputDir(config.outputDir, false);
+    this.setEndpointsFromConfig(config);
     this.setQuote(config.quoteStyle);
     this.setIndentation(config.indentSize);
+  }
+
+  private setEndpointsFromConfig(config: ConfigSchema) {
+    const endpoint = config.endpoint;
+    const endpoints = config.endpoints;
+    if (endpoint && endpoints) {
+      throw new Error('Both `endpoint`, and `endpoints` properties cannot be specified.');
+    }
+    this.setEndpoints((endpoints ?? endpoint)!);
+  }
+
+  private setEndpoints(endpoints: string | EndpointConfiguration[]) {
+    const $endpoints = this.endpoints;
+    if ($endpoints.length !== 0) {
+      throw new Error('Endpoint(s) is/are already set. Are you specifying both `endpoint`, and `endpoints`?');
+    }
+    if (typeof endpoints === 'string') {
+      $endpoints.push(new EndpointConfiguration(endpoints, ''));
+    } else if (Array.isArray(endpoints)) {
+      for (const ep of endpoints) {
+        const dir = ep.outputDir;
+        $endpoints.push(new EndpointConfiguration(ep.url, dir));
+      }
+    }
+    this.adjustOutputPaths();
   }
 
   private setOutputDir(outputDir: string | undefined, throwError: boolean) {
@@ -90,6 +119,7 @@ export class Configuration {
       throw new Error(`The output path "${absolutePath}" is not a directory.`);
     }
     this.outputDir = absolutePath;
+    this.adjustOutputPaths();
   }
 
   private setQuote(quoteStyle: QuoteStyle | undefined) {
@@ -116,13 +146,25 @@ export class Configuration {
       console.warn(`Unsupported indent: '${String(indentSize)}'; default value will be used.`);
     }
   }
+
+  private adjustOutputPaths() {
+    const baseOutputDir = this.outputDir;
+    const endpoints = this.endpoints;
+    if (!baseOutputDir || endpoints.length === 0) { return; }
+    for (const ep of endpoints) {
+      const epDir = ep.outputDir;
+      ep.outputDir = isAbsolute(epDir) ? epDir : resolve(baseOutputDir, epDir);
+    }
+  }
 }
 
 type QuoteStyle = 'single' | 'double';
-type ConfigFileSchema = Partial<
+type ConfigSchema = Partial<
   Omit<Configuration, 'quote' | 'indent'>
   & {
     quoteStyle: QuoteStyle,
     indentSize: string | number,
+    endpoint: string,
+    endpoints: EndpointConfiguration[],
   }
 >;

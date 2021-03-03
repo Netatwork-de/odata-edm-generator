@@ -51,7 +51,8 @@ describe('generator', function () {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
         const expected = readAllContent(join(caseDir, 'expected'));
-        const args = ['--outputDir', baseOutputPath];
+
+        const args = ['--outputDir', baseOutputPath, '--endpoint', 'https://api.example.com'];
         const configFilePath = join(inputDir, 'config.js');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mockFsConfig: any = { [baseOutputPath]: {} };
@@ -61,11 +62,13 @@ describe('generator', function () {
           mockFsConfig[configFilePath] = mockFs.load(configFilePath);
         }
         mockFs(mockFsConfig, { createCwd: true });
-        Configuration.createFromCLIArgs(args);
+        const configuration = Configuration.createFromCLIArgs(args);
 
         // act
-        generateEndpointsFile(endpoints);
-        generateEdm(edmxXml, endpoints);
+        for (const ep of configuration.endpoints) {
+          generateEndpointsFile(endpoints, ep);
+          generateEdm(edmxXml, endpoints, ep);
+        }
 
         // assert
         const actual = readAllContent(baseOutputPath);

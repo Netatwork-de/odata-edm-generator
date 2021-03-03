@@ -7,6 +7,7 @@ import {
   ClassInfo,
   EdmInfo,
   Endpoint,
+  EndpointConfiguration,
   EnumInfo,
   getEndpointsPath,
   InterfaceInfo,
@@ -147,7 +148,11 @@ function generateStringEnum(enumType: Element) {
   return new EnumInfo(enumType.getAttribute('Name')!, members);
 }
 
-function generateCodeContent(edmxNode: HTMLElement, endpoints: Endpoint[]): EdmInfo[] {
+function generateCodeContent(
+  edmxNode: HTMLElement,
+  endpoints: Endpoint[],
+  configuration: EndpointConfiguration,
+): EdmInfo[] {
   const items: EdmInfo[] = [];
   for (const schema of Array.from(edmxNode.getElementsByTagName('Schema'))) {
 
@@ -184,7 +189,7 @@ function generateCodeContent(edmxNode: HTMLElement, endpoints: Endpoint[]): EdmI
       .sort(compareTypes)
       .map((et) => generateStringEnum(et));
 
-    items.push(new EdmInfo(schema.getAttribute('Namespace')!, imports, entities, interfaces, enums));
+    items.push(new EdmInfo(schema.getAttribute('Namespace')!, imports, entities, interfaces, enums, configuration));
   }
   return items;
 }
@@ -205,7 +210,7 @@ function generateEdmFile(items: EdmInfo[]) {
   }
 }
 
-export function generateEdm(metadata: string, endpoints: Endpoint[]): void {
+export function generateEdm(metadata: string, endpoints: Endpoint[], configuration: EndpointConfiguration): void {
   const parsed = new DOMParser()
     .parseFromString(metadata, 'application/xml')
     .documentElement;
@@ -213,12 +218,12 @@ export function generateEdm(metadata: string, endpoints: Endpoint[]): void {
   if (error.length !== 0) {
     throw new Error(`Error parsing the edmx xml.${EOL}Parsing error: ${error.map((e) => e.outerHTML).join(EOL)}`);
   }
-  const items: EdmInfo[] = generateCodeContent(parsed, endpoints);
+  const items: EdmInfo[] = generateCodeContent(parsed, endpoints, configuration);
   generateEdmFile(items);
 }
 
-export function generateEndpointsFile(endpoints: Endpoint[]): void {
-  fs.writeFileSync(getEndpointsPath(), new EndpointTemplate().render(endpoints));
+export function generateEndpointsFile(endpoints: Endpoint[], configuration: EndpointConfiguration): void {
+  fs.writeFileSync(getEndpointsPath(configuration), new EndpointTemplate().render(endpoints));
 }
 
 class EntitySet {

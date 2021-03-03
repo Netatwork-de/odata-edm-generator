@@ -2,6 +2,7 @@ import mockFs from 'mock-fs';
 import { join } from 'path';
 import { assert } from 'chai';
 import { Configuration } from '../src/cli/configuration';
+import { EndpointConfiguration } from '../src/cli/shared';
 
 describe('configuration', function () {
   class TestData {
@@ -18,21 +19,23 @@ describe('configuration', function () {
   function* getTestData() {
     const defaultOptions: Partial<Configuration> = { quote: '\'', indent: ' '.repeat(4) };
     for (const prefix of ['', '-', '--']) {
+      const outputDir = join(process.cwd(), 'out');
+      const endpoints = [new EndpointConfiguration('https://api.example.com', outputDir)];
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out'],
-        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out') },
+        { ...defaultOptions, endpoints, outputDir },
       );
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}quoteStyle`, 'single'],
-        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), quote: '\'' },
+        { ...defaultOptions, endpoints, outputDir, quote: '\'' },
       );
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}quoteStyle`, 'double'],
-        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), quote: '"' },
+        { ...defaultOptions, endpoints, outputDir, quote: '"' },
       );
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}indentSize`, '2'],
-        { ...defaultOptions, endpoint: 'https://api.example.com', outputDir: join(process.cwd(), 'out'), indent: '  ' },
+        { ...defaultOptions, endpoints, outputDir, indent: '  ' },
       );
     }
   }

@@ -68,15 +68,16 @@ export class EdmInfo {
     public classInfos: ClassInfo[],
     public interfaceInfos: InterfaceInfo[],
     public enumInfos: EnumInfo[],
+    configuration: EndpointConfiguration,
   ) {
     const config = Configuration.instance;
     this.quote = config.quote;
     this.indent = config.indent;
-    this.filePath = `${nsToPath(namespace)}.ts`;
-    this.createImportDirectives();
+    this.filePath = `${nsToPath(namespace, configuration)}.ts`;
+    this.createImportDirectives(configuration);
   }
 
-  private createImportDirectives(): void {
+  private createImportDirectives(configuration: EndpointConfiguration): void {
     const importMap = this.imports.reduce((acc, i) => {
       let prevImports = acc.get(i.ns);
       if (!prevImports) {
@@ -91,7 +92,7 @@ export class EdmInfo {
     const directives = this.importDirectives = Array.from(importMap)
       .filter(([ns,]) => ns !== this.namespace)
       .map(([ns, imports]) => ([
-        relative(dirname(filePath), nsToPath(ns)).replace(/\\/g, '/'),
+        relative(dirname(filePath), nsToPath(ns, configuration)).replace(/\\/g, '/'),
         Array.from(imports).sort()
       ] as [string, string[]]))
       .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
@@ -99,7 +100,7 @@ export class EdmInfo {
     directives.push(
       new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
       new ImportDirectiveInfo(
-        relative(dirname(filePath), getEndpointsPath())
+        relative(dirname(filePath), getEndpointsPath(configuration))
           .replace(/\\/g, '/')
           .replace('.ts', ''),
         ['Endpoints']
@@ -108,8 +109,8 @@ export class EdmInfo {
   }
 }
 
-function nsToPath(ns: string): string {
-  return join(Configuration.instance.outputDir, 'entities', ns.replace(/\./g, '/'));
+function nsToPath(ns: string, configuration: EndpointConfiguration): string {
+  return join(configuration.outputDir, 'entities', ns.replace(/\./g, '/'));
 }
 
 const enCollator = new Intl.Collator('en');
@@ -124,6 +125,13 @@ export function propertyComparator(p1: PropertyInfo, p2: PropertyInfo): number {
 }
 
 
-export function getEndpointsPath(): string {
-  return join(Configuration.instance.outputDir, 'Endpoints.ts');
+export function getEndpointsPath(configuration: EndpointConfiguration): string {
+  return join(configuration.outputDir, 'Endpoints.ts');
+}
+
+export class EndpointConfiguration {
+  public constructor(
+    public readonly url: string,
+    public outputDir: string,
+  ) { }
 }
