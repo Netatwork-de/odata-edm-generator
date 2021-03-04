@@ -10,10 +10,11 @@ import {
   EndpointConfiguration,
   EnumInfo,
   getEndpointsPath,
-  InterfaceInfo,
+  ComplexTypeInfo,
   Logger,
   propertyComparator,
   PropertyInfo,
+  ComplexTypeInfoSet,
 } from './shared';
 import { EdmTemplate, EndpointTemplate } from './templates';
 
@@ -134,13 +135,28 @@ function generateEntityInfo(
   }
 }
 
-function generateInterfaceInfo(entityType: Element/* , imports: ImportInfo[] */) {
-  const members = getMembers(Array.from(entityType.getElementsByTagName('Property'))/* , imports */);
-  return new InterfaceInfo(entityType.getAttribute('Name')!, members, getBaseTypeName(entityType));
+function generateComplexTypeInfo(acc: ComplexTypeInfoSet, entityType: Element/* , imports: ImportInfo[] */): ComplexTypeInfoSet {
+  const name = entityType.getAttribute('Name')!;
+  const baseTypeName = getBaseTypeName(entityType);
+  let baseType: ComplexTypeInfo | null = null;
+  if (baseTypeName !== undefined
+    && (baseType = acc.find((x) => x.name === baseTypeName) ?? null) === null) {
+    // As the types are already sorted, the base type info is expected to be generated, before the derived types.
+    throw new Error(`Base type '${baseTypeName}' was not found for '${name}'.`);
+  }
+  const members = getMembers(Array.from(entityType.getElementsByTagName('Property')) /* , imports */);
+  const complexType = new ComplexTypeInfo(
+    name,
+    members,
+    entityType.getAttribute('Abstract') === 'true',
+    baseType
+  );
+  acc.push(complexType);
+  return acc;
 }
 
 function getBaseTypeName(type: Element) {
-  return type.getAttribute('BaseType')
+  return (type.getAttribute('BaseType') || null)
     ?.split('.')
     ?.pop();
 }
@@ -190,14 +206,14 @@ function generateCodeContent(
         singletons,
       ),
       [] as ClassInfo[]);
-  const interfaces = complexTypes
+  const $complexTypes = complexTypes
     .sort(compareTypes)
-    .map((ct) => generateInterfaceInfo(ct/* , imports */));
+    .reduce(generateComplexTypeInfo, new ComplexTypeInfoSet());
   const enums = enumTypes
     .sort(compareTypes)
     .map((et) => generateStringEnum(et));
 
-  return new EdmInfo(schema.getAttribute('Namespace')!, /* imports, */ entities, interfaces, enums, configuration);
+  return new EdmInfo(schema.getAttribute('Namespace')!, /* imports, */ entities, $complexTypes, enums, configuration);
 }
 
 function generateEdmFile(edmInfo: EdmInfo) {

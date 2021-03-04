@@ -35,12 +35,26 @@ export class ClassInfo {
   }
 }
 
-export class InterfaceInfo {
+export class ComplexTypeInfo {
+  public derivedTypes: ComplexTypeInfoSet = new ComplexTypeInfoSet();
+
   public constructor(
-    public name: string,
-    public propertyInfos: PropertyInfo[],
-    public baseType?: string,
-  ) { }
+    public readonly name: string,
+    public readonly propertyInfos: PropertyInfo[],
+    public readonly isAbstract: boolean,
+    public readonly baseType: ComplexTypeInfo | null,
+  ) {
+    if (baseType !== null) {
+      baseType.derivedTypes.push(this);
+    }
+  }
+}
+
+export class ComplexTypeInfoSet extends Array<ComplexTypeInfo> {
+  public push(item: ComplexTypeInfo): number {
+    if (this.find((x) => x.name === item.name)) { return this.length; }
+    return super.push(item);
+  }
 }
 
 export class EnumInfo {
@@ -66,7 +80,7 @@ export class EdmInfo {
     public namespace: string,
     // public imports: ImportInfo[],
     public classInfos: ClassInfo[],
-    public interfaceInfos: InterfaceInfo[],
+    public complexTypeInfos: ComplexTypeInfoSet,
     public enumInfos: EnumInfo[],
     configuration: EndpointConfiguration,
   ) {
@@ -146,14 +160,14 @@ export class Logger {
   }
 
   public static warn(message: string, ...additional: unknown[]): void {
-    console.warn(`${this.prefix}[WARN] ${message}`,...additional);
+    console.warn(`${this.prefix}[WARN] ${message}`, ...additional);
   }
 
   public static info(message: string, ...additional: unknown[]): void {
-    console.info(`${this.prefix}[INF] ${message}`,...additional);
+    console.info(`${this.prefix}[INF] ${message}`, ...additional);
   }
 
   public static error(message: string, ...additional: unknown[]): void {
-    console.error(`${this.prefix}[ERR] ${message}`,...additional);
+    console.error(`${this.prefix}[ERR] ${message}`, ...additional);
   }
 }

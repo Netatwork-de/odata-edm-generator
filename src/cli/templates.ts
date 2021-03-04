@@ -73,15 +73,77 @@ export class <%= it.className %><% if (it.baseType) { %> extends <%= it.baseType
 
 }`;
 
-const defaultInterfaceTemplateName = '$$interface';
-const defaultInterfaceTemplate = `<%-
+const defaultComplexTypeTemplateName = '$$complex';
+const defaultComplexTypeTemplate = `<%-
 const indent = it.indent;
+const quote = it.quote;
+const derivedTypes = it.derivedTypes;
+const baseType = it.baseType;
+const name =  it.name;
 -%>
-export interface <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType %><% } %> {
+<% if (derivedTypes.length > 0) { -%>
+export enum $$<%= name %>Types {
+<% for(const t of derivedTypes) { -%>
+<%= indent %><%= t.name %> = <%= quote %><%= t.name %><%= quote %>,
+<% } -%>
+}
+
+export <%_ if (it.isAbstract) { %>  abstract <% } %> class <%= name %> {
+
+<%= indent %>protected static get derivedTypes(): typeof <%= name %>[] {
+<%= indent.repeat(2) %>return [
+<% for(const t of derivedTypes) { -%>
+<%= indent.repeat(3) %><%= t.name %>,
+<% } -%>
+<%= indent.repeat(2) %>];
+<%= indent %>}
+
+<%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
+<%= indent.repeat(2) %>if (raw === undefined || raw === null) { return raw as <%= name %>; }
+<%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
+<%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+<%= indent.repeat(2) %>if (!ctor) {
+<%= indent.repeat(3) %>return raw as <%= name %>;
+<%= indent.repeat(2) %>}
+<%= indent.repeat(2) %>const result = new ctor();
+<%= indent.repeat(2) %>result.initialize(raw);
+<%= indent.repeat(2) %>return result;
+<%= indent %>}
+
+<%= indent %>protected static canHandle(_odataType: string): boolean { return false; }
+
+<% for(const p of it.propertyInfos) { -%>
+<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<% } -%>
+<%= indent %>public readonly $$type: $$<%= name %>Types;
+
+<%= indent %>protected initialize(raw: Partial<<%= name %>>) {
+<% for(const p of it.propertyInfos) { -%>
+<%= indent.repeat(2) %>this.<%= p.name %> = raw.<%= p.name %>;
+<% } -%>
+<%= indent %>}
+}
+<%- } else if (baseType !== null) { -%>
+@odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= baseType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
+export <%_ if (it.isAbstract) { %> abstract <% } %> class <%= name %> extends <%= baseType.name %> {
+
+<% for(const p of it.propertyInfos) { -%>
+<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<% } %>
+<%= indent %>protected initialize(raw: Partial<<%= name %>>) {
+<%= indent.repeat(2) %>super.initialize(raw);
+<% for(const p of it.propertyInfos) { -%>
+<%= indent.repeat(2) %>this.<%= p.name %> = raw.<%= p.name %>;
+<% } -%>
+<%= indent %>}
+}
+<%- } else { -%>
+export interface <%= name %> {
 <% for(const p of it.propertyInfos) { -%>
 <%= indent %><%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
 <% } -%>
-}`;
+}
+<%- } -%>`;
 
 const defaultEnumTemplateName = '$$enum';
 const defaultEnumTemplate = `<%-
@@ -93,12 +155,14 @@ export enum <%= it.name %> {
 <%= indent %><%= member %> = <%= quote %><%= member %><%= quote %>,
 <% } -%>
 }`;
+
 const defaultEdmTemplate = `/**
  * This is a generated file. Please don't change this manually.
  */
 <%-
   const quote = it.quote;
   const indent = it.indent;
+  const namespace = it.namespace;
 %>
 
 <% for(const i of it.importDirectives) { -%>
@@ -109,11 +173,11 @@ import {
 } from <%= quote %><%= i.nsPath %><%= quote %>;
 <% } -%>
 <%- for(const info of it.classInfos) { %>
-<%~ include('${defaultClassTemplateName}', {...info, namespace: it.namespace, quote, indent}) %>
+<%~ include('${defaultClassTemplateName}', {...info, namespace, quote, indent}) %>
 <% } -%>
 
-<%- for(const info of it.interfaceInfos) { %>
-<%~ include('${defaultInterfaceTemplateName}', {...info, quote, indent}) %>
+<%- for(const info of it.complexTypeInfos) { %>
+<%~ include('${defaultComplexTypeTemplateName}', {...info, namespace, quote, indent}) %>
 <% } -%>
 
 <%- for(const info of it.enumInfos) { %>
@@ -134,7 +198,7 @@ export class EdmTemplate {
 
   private initializeDefault(): void {
     eta.templates.define(defaultClassTemplateName, eta.compile(defaultClassTemplate));
-    eta.templates.define(defaultInterfaceTemplateName, eta.compile(defaultInterfaceTemplate));
+    eta.templates.define(defaultComplexTypeTemplateName, eta.compile(defaultComplexTypeTemplate));
     eta.templates.define(defaultEnumTemplateName, eta.compile(defaultEnumTemplate));
     this.compiled = eta.compile(defaultEdmTemplate);
   }
@@ -145,7 +209,7 @@ export class EdmTemplate {
 
   public dispose(): void {
     eta.templates.remove(defaultClassTemplateName);
-    eta.templates.remove(defaultInterfaceTemplateName);
+    eta.templates.remove(defaultComplexTypeTemplateName);
     eta.templates.remove(defaultEnumTemplateName);
   }
 }

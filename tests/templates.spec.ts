@@ -3,7 +3,7 @@ import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { ClassInfo, EdmInfo, EnumInfo, InterfaceInfo, PropertyInfo } from '../src/cli/shared';
+import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo } from '../src/cli/shared';
 import { EdmTemplate, EndpointTemplate } from '../src/cli/templates';
 import { standardEndpoints } from './data';
 describe('templates', function () {
@@ -55,12 +55,14 @@ export const enum Endpoints {
             new PropertyInfo('name', 'string', false, false),
           ],
         );
-        const interface1 = new InterfaceInfo(
+        const interface1 = new ComplexTypeInfo(
           'ComplexType1',
           [
             new PropertyInfo('prop11', 'number', false, false),
             new PropertyInfo('prop12', 'string', false, false),
-          ]
+          ],
+          false,
+          null
         );
         const info = new EdmInfo(
           'Awesome.Possum',
@@ -99,22 +101,25 @@ export const enum Endpoints {
           ],
           [
             interface1,
-            new InterfaceInfo(
+            new ComplexTypeInfo(
               'ComplexType2',
               [
                 new PropertyInfo('prop21', 'number', false, false),
                 new PropertyInfo('prop22', 'string', false, false),
                 new PropertyInfo('prop23', 'boolean', false, false),
-              ]
+              ],
+              false,
+              null
             ),
-            new InterfaceInfo(
+            new ComplexTypeInfo(
               'ChildComplexType',
               [
                 new PropertyInfo('prop31', 'number', false, false),
                 new PropertyInfo('prop32', 'string', false, false),
                 new PropertyInfo('prop33', 'boolean', false, false),
               ],
-              interface1.name,
+              false,
+              interface1,
             ),
           ],
           [
@@ -223,9 +228,40 @@ export class Child extends BaseOne {
     }
 }
 
-export interface ComplexType1 {
-    prop11: number;
-    prop12: string;
+export enum $$ComplexType1Types {
+    ChildComplexType = 'ChildComplexType',
+}
+
+export class ComplexType1 {
+
+    protected static get derivedTypes(): typeof ComplexType1[] {
+        return [
+            ChildComplexType,
+        ];
+    }
+
+    public static create(raw: Partial<ComplexType1>): ComplexType1 {
+        if (raw === undefined || raw === null) { return raw as ComplexType1; }
+        const edmType = raw[odataTypeKey];
+        const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+        if (!ctor) {
+            return raw as ComplexType1;
+        }
+        const result = new ctor();
+        result.initialize(raw);
+        return result;
+    }
+
+    protected static canHandle(_odataType: string): boolean { return false; }
+
+    public prop11: number;
+    public prop12: string;
+    public readonly $$type: $$ComplexType1Types;
+
+    protected initialize(raw: Partial<ComplexType1>) {
+        this.prop11 = raw.prop11;
+        this.prop12 = raw.prop12;
+    }
 }
 
 export interface ComplexType2 {
@@ -234,10 +270,19 @@ export interface ComplexType2 {
     prop23: boolean;
 }
 
-export interface ChildComplexType extends ComplexType1 {
-    prop31: number;
-    prop32: string;
-    prop33: boolean;
+@odataType('#Awesome.Possum.ChildComplexType', $$ComplexType1Types.ChildComplexType, '$$type')
+export class ChildComplexType extends ComplexType1 {
+
+    public prop31: number;
+    public prop32: string;
+    public prop33: boolean;
+
+    protected initialize(raw: Partial<ChildComplexType>) {
+        super.initialize(raw);
+        this.prop31 = raw.prop31;
+        this.prop32 = raw.prop32;
+        this.prop33 = raw.prop33;
+    }
 }
 
 export enum EnumOne {
