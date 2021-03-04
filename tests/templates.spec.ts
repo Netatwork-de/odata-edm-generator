@@ -64,7 +64,7 @@ export const enum Endpoints {
         );
         const info = new EdmInfo(
           'Awesome.Possum',
-          [],
+          // [],
           [
             new ClassInfo(
               'Foo',

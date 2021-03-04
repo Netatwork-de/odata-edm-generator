@@ -16,7 +16,7 @@ import {
 } from './shared';
 import { EdmTemplate, EndpointTemplate } from './templates';
 
-interface ImportInfo { ns: string; type: string; }
+// interface ImportInfo { ns: string; type: string; }
 
 // this map is not exhaustive (http://docs.oasis-open.org/odata/odata-csdl-json/v4.01/cs01/odata-csdl-json-v4.01-cs01.html#sec_PrimitiveTypes)
 const typeMap = new Map([
@@ -38,7 +38,7 @@ const typeMap = new Map([
   ['Edm.TimeOfDay', 'string'],
 ]);
 
-function getType(originalType: string, imports: ImportInfo[]) {
+function getType(originalType: string/* , imports: ImportInfo[] */) {
   let type: string;
   const isPrimitive = originalType.includes('Edm.');
   const collectionMarker = 'Collection(';
@@ -51,7 +51,7 @@ function getType(originalType: string, imports: ImportInfo[]) {
   } else {
     const nsParts = originalType.split('.');
     type = nsParts.pop()!;
-    imports.push({ ns: nsParts.join('.'), type });
+    // imports.push({ ns: nsParts.join('.'), type });
   }
   return isArray ? `${type}[]` : type;
 }
@@ -65,13 +65,13 @@ function compareTypes(e1: Element, e2: Element) {
   return enCollator.compare(e1.getAttribute('Name') ?? '', e2.getAttribute('Name') ?? '');
 }
 
-function getMembers(properties: Element[], imports: ImportInfo[], keys: string[] = []) {
+function getMembers(properties: Element[], /* imports: ImportInfo[], */ keys: string[] = []) {
   return properties
     .map((property) => {
       const name = property.getAttribute('Name')!;
       return new PropertyInfo(
         name,
-        getType(property.getAttribute('Type')!, imports),
+        getType(property.getAttribute('Type')!/* , imports */),
         property.getAttribute('Nullable') !== 'false',
         keys.includes(name)
       );
@@ -81,7 +81,7 @@ function getMembers(properties: Element[], imports: ImportInfo[], keys: string[]
 
 function generateEntityInfo(
   entityType: Element,
-  imports: ImportInfo[],
+  // imports: ImportInfo[],
   endpoints: Endpoint[],
   endpointImports: string[],
   entities: ClassInfo[],
@@ -98,7 +98,7 @@ function generateEntityInfo(
       ...Array.from(entityType.getElementsByTagName('Property')),
       ...Array.from(entityType.getElementsByTagName('NavigationProperty')),
     ],
-    imports,
+    // imports,
     entityKey
   );
   try {
@@ -132,8 +132,8 @@ function generateEntityInfo(
   }
 }
 
-function generateInterfaceInfo(entityType: Element, imports: ImportInfo[]) {
-  const members = getMembers(Array.from(entityType.getElementsByTagName('Property')), imports);
+function generateInterfaceInfo(entityType: Element/* , imports: ImportInfo[] */) {
+  const members = getMembers(Array.from(entityType.getElementsByTagName('Property'))/* , imports */);
   return new InterfaceInfo(entityType.getAttribute('Name')!, members, getBaseTypeName(entityType));
 }
 
@@ -152,62 +152,64 @@ function generateCodeContent(
   edmxNode: HTMLElement,
   endpoints: Endpoint[],
   configuration: EndpointConfiguration,
-): EdmInfo[] {
-  const items: EdmInfo[] = [];
-  for (const schema of Array.from(edmxNode.getElementsByTagName('Schema'))) {
-
-    const entityTypes = Array.from(schema.getElementsByTagName('EntityType'));
-    const complexTypes = Array.from(schema.getElementsByTagName('ComplexType'));
-    const enumTypes = Array.from(schema.getElementsByTagName('EnumType'));
-
-    if (entityTypes.length === 0 && enumTypes.length === 0 && complexTypes.length === 0) { continue; }
-
-    const imports: ImportInfo[] = [];
-    const endpointImports: string[] = [];
-
-    const entitySets = Array.from(edmxNode.getElementsByTagName('EntitySet'))
-      .map((e) => new EntitySet(e.getAttribute('Name')!, e.getAttribute('EntityType')!.split('.').pop()!));
-    const singletons = Array.from(edmxNode.getElementsByTagName('Singleton'))
-      .map((e) => new Singleton(e.getAttribute('Name')!, e.getAttribute('Type')!.split('.').pop()!));
-    const entities = entityTypes
-      .sort(compareTypes)
-      .reduce(
-        (acc, et) => generateEntityInfo(
-          et,
-          imports,
-          endpoints,
-          endpointImports,
-          acc,
-          entitySets,
-          singletons,
-        ),
-        [] as ClassInfo[]);
-    const interfaces = complexTypes
-      .sort(compareTypes)
-      .map((ct) => generateInterfaceInfo(ct, imports));
-    const enums = enumTypes
-      .sort(compareTypes)
-      .map((et) => generateStringEnum(et));
-
-    items.push(new EdmInfo(schema.getAttribute('Namespace')!, imports, entities, interfaces, enums, configuration));
+): EdmInfo | null {
+  const schemaElements = edmxNode.getElementsByTagName('Schema');
+  const numSchema = schemaElements.length;
+  if (numSchema === 0) {
+    throw new Error('No schema found to generate the EDM.');
   }
-  return items;
+  if (numSchema > 1) {
+    throw new Error('Multiple schemas not yet supported.');
+  }
+  const schema = schemaElements.item(0)!;
+  const entityTypes = Array.from(schema.getElementsByTagName('EntityType'));
+  const complexTypes = Array.from(schema.getElementsByTagName('ComplexType'));
+  const enumTypes = Array.from(schema.getElementsByTagName('EnumType'));
+
+  if (entityTypes.length === 0 && enumTypes.length === 0 && complexTypes.length === 0) { return null; }
+
+  // const imports: ImportInfo[] = [];
+  const endpointImports: string[] = [];
+
+  const entitySets = Array.from(edmxNode.getElementsByTagName('EntitySet'))
+    .map((e) => new EntitySet(e.getAttribute('Name')!, e.getAttribute('EntityType')!.split('.').pop()!));
+  const singletons = Array.from(edmxNode.getElementsByTagName('Singleton'))
+    .map((e) => new Singleton(e.getAttribute('Name')!, e.getAttribute('Type')!.split('.').pop()!));
+  const entities = entityTypes
+    .sort(compareTypes)
+    .reduce(
+      (acc, et) => generateEntityInfo(
+        et,
+        // imports,
+        endpoints,
+        endpointImports,
+        acc,
+        entitySets,
+        singletons,
+      ),
+      [] as ClassInfo[]);
+  const interfaces = complexTypes
+    .sort(compareTypes)
+    .map((ct) => generateInterfaceInfo(ct/* , imports */));
+  const enums = enumTypes
+    .sort(compareTypes)
+    .map((et) => generateStringEnum(et));
+
+  return new EdmInfo(schema.getAttribute('Namespace')!, /* imports, */ entities, interfaces, enums, configuration);
 }
 
-function generateEdmFile(items: EdmInfo[]) {
-  for (const item of items) {
-    const filePath = item.filePath;
+function generateEdmFile(edmInfo: EdmInfo) {
+  const filePath = edmInfo.filePath;
 
-    const dirName = dirname(filePath);
-    if (!existsSync(dirName)) {
-      mkdirSync(dirName, { recursive: true });
-    }
-
-    const template = new EdmTemplate();
-    const content = template.render(item);
-    writeFileSync(filePath, content);
-    template.dispose();
+  const dirName = dirname(filePath);
+  if (!existsSync(dirName)) {
+    mkdirSync(dirName, { recursive: true });
   }
+
+  const template = new EdmTemplate();
+  const content = template.render(edmInfo);
+  writeFileSync(filePath, content);
+  template.dispose();
 }
 
 export function generateEdm(metadata: string, endpoints: Endpoint[], configuration: EndpointConfiguration): void {
@@ -218,8 +220,10 @@ export function generateEdm(metadata: string, endpoints: Endpoint[], configurati
   if (error.length !== 0) {
     throw new Error(`Error parsing the edmx xml.${EOL}Parsing error: ${error.map((e) => e.outerHTML).join(EOL)}`);
   }
-  const items: EdmInfo[] = generateCodeContent(parsed, endpoints, configuration);
-  generateEdmFile(items);
+  const edmInfo = generateCodeContent(parsed, endpoints, configuration);
+  if (edmInfo !== null) {
+    generateEdmFile(edmInfo);
+  }
 }
 
 export function generateEndpointsFile(endpoints: Endpoint[], configuration: EndpointConfiguration): void {

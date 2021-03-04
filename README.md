@@ -10,3 +10,4 @@
 - [ ] Configuration option to customize imports
 - [ ] Configuration options to customize the type map
 - [ ] Support endpoint-specific overrides
+- [ ] Support multiple schemas

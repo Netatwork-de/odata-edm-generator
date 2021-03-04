@@ -64,7 +64,7 @@ export class EdmInfo {
   public readonly indent: string;
   public constructor(
     public namespace: string,
-    public imports: ImportInfo[],
+    // public imports: ImportInfo[],
     public classInfos: ClassInfo[],
     public interfaceInfos: InterfaceInfo[],
     public enumInfos: EnumInfo[],
@@ -78,25 +78,26 @@ export class EdmInfo {
   }
 
   private createImportDirectives(configuration: EndpointConfiguration): void {
-    const importMap = this.imports.reduce((acc, i) => {
-      let prevImports = acc.get(i.ns);
-      if (!prevImports) {
-        prevImports = new Set<string>();
-      }
-      prevImports.add(i.type);
-      acc.set(i.ns, prevImports);
-      return acc;
-    }, new Map<string, Set<string>>());
-
     const filePath = this.filePath;
-    const directives = this.importDirectives = Array.from(importMap)
-      .filter(([ns,]) => ns !== this.namespace)
-      .map(([ns, imports]) => ([
-        relative(dirname(filePath), nsToPath(ns, configuration)).replace(/\\/g, '/'),
-        Array.from(imports).sort()
-      ] as [string, string[]]))
-      .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
-      .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
+    // const importMap = this.imports.reduce((acc, i) => {
+    //   let prevImports = acc.get(i.ns);
+    //   if (!prevImports) {
+    //     prevImports = new Set<string>();
+    //   }
+    //   prevImports.add(i.type);
+    //   acc.set(i.ns, prevImports);
+    //   return acc;
+    // }, new Map<string, Set<string>>());
+
+    // const directives = this.importDirectives = Array.from(importMap)
+    //   .filter(([ns,]) => ns !== this.namespace)
+    //   .map(([ns, imports]) => ([
+    //     relative(dirname(filePath), nsToPath(ns, configuration)).replace(/\\/g, '/'),
+    //     Array.from(imports).sort()
+    //   ] as [string, string[]]))
+    //   .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
+    //   .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
+    const directives: ImportDirectiveInfo[] = this.importDirectives = [];
     directives.push(
       new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
       new ImportDirectiveInfo(
