@@ -23,6 +23,7 @@ const typeMap = new Map([
   ['Edm.Binary', 'string'],
   ['Edm.Boolean', 'boolean'],
   ['Edm.Byte', 'number'],
+  ['Edm.Date', 'string'],
   ['Edm.DateTime', 'string'],
   ['Edm.DateTimeOffset', 'string'],
   ['Edm.Decimal', 'number'],
