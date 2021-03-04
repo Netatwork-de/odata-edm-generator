@@ -11,6 +11,7 @@ import {
   EnumInfo,
   getEndpointsPath,
   InterfaceInfo,
+  Logger,
   propertyComparator,
   PropertyInfo,
 } from './shared';
@@ -128,7 +129,7 @@ function generateEntityInfo(
     ));
     return entities;
   } catch (e) {
-    console.error(`Entity generation failed for ${JSON.stringify(entityType, undefined, 2)}`);
+    Logger.error(`Entity generation failed for ${JSON.stringify(entityType, undefined, 2)}`);
     throw e;
   }
 }

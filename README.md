@@ -11,3 +11,4 @@
 - [ ] Configuration options to customize the type map
 - [ ] Support endpoint-specific overrides
 - [ ] Support multiple schemas
+- [ ] support abstract type

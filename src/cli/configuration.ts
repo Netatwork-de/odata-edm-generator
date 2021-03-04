@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { existsSync, mkdirSync, statSync } from 'fs';
 import { isAbsolute, resolve } from 'path';
-import { EndpointConfiguration } from './shared';
+import { EndpointConfiguration, Logger } from './shared';
 
 export class Configuration {
 
@@ -62,7 +62,7 @@ export class Configuration {
       }
     }
     if (unconsumedArgs.length > 0) {
-      console.warn(`Unconsumed args: ${unconsumedArgs.join(', ')}`);
+      Logger.warn(`Unconsumed args: ${unconsumedArgs.join(', ')}`);
     }
     return this._instance = Object.freeze(instance);
   }
@@ -132,7 +132,7 @@ export class Configuration {
         this.quote = '"';
         break;
       default:
-        console.warn(`Unsupported quoteStyle: '${String(quoteStyle)}'; default value will be used.`);
+        Logger.warn(`Unsupported quoteStyle: '${String(quoteStyle)}'; default value will be used.`);
         break;
     }
   }
@@ -143,7 +143,7 @@ export class Configuration {
     if (!Number.isNaN(numIdent)) {
       this.indent = ' '.repeat(numIdent);
     } else {
-      console.warn(`Unsupported indent: '${String(indentSize)}'; default value will be used.`);
+      Logger.warn(`Unsupported indent: '${String(indentSize)}'; default value will be used.`);
     }
   }
 

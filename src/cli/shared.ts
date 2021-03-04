@@ -136,3 +136,24 @@ export class EndpointConfiguration {
     public outputDir: string,
   ) { }
 }
+
+export class Logger {
+  private static get prefix(): string {
+    return `[gen-edm @ ${new Date().toISOString()}]`;
+  }
+  public static log(message: string, ...additional: unknown[]): void {
+    console.log(`${this.prefix}[LOG] ${message}`, ...additional);
+  }
+
+  public static warn(message: string, ...additional: unknown[]): void {
+    console.warn(`${this.prefix}[WARN] ${message}`,...additional);
+  }
+
+  public static info(message: string, ...additional: unknown[]): void {
+    console.info(`${this.prefix}[INF] ${message}`,...additional);
+  }
+
+  public static error(message: string, ...additional: unknown[]): void {
+    console.error(`${this.prefix}[ERR] ${message}`,...additional);
+  }
+}
