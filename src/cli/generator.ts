@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import * as fs from 'fs';
+import { existsSync, writeFileSync, mkdirSync } from 'fs';
 import { EOL } from 'os';
-import * as path from 'path';
+import { dirname } from 'path';
 import { DOMParser } from 'xmldom';
 import {
   ClassInfo,
@@ -198,14 +198,14 @@ function generateEdmFile(items: EdmInfo[]) {
   for (const item of items) {
     const filePath = item.filePath;
 
-    const dirName = path.dirname(filePath);
-    if (!fs.existsSync(dirName)) {
-      fs.mkdirSync(dirName, { recursive: true });
+    const dirName = dirname(filePath);
+    if (!existsSync(dirName)) {
+      mkdirSync(dirName, { recursive: true });
     }
 
     const template = new EdmTemplate();
     const content = template.render(item);
-    fs.writeFileSync(filePath, content);
+    writeFileSync(filePath, content);
     template.dispose();
   }
 }
@@ -223,7 +223,12 @@ export function generateEdm(metadata: string, endpoints: Endpoint[], configurati
 }
 
 export function generateEndpointsFile(endpoints: Endpoint[], configuration: EndpointConfiguration): void {
-  fs.writeFileSync(getEndpointsPath(configuration), new EndpointTemplate().render(endpoints));
+  const path = getEndpointsPath(configuration);
+  const dirName = dirname(path);
+  if (!existsSync(dirName)) {
+    mkdirSync(dirName, { recursive: true });
+  }
+  writeFileSync(path, new EndpointTemplate().render(endpoints));
 }
 
 class EntitySet {

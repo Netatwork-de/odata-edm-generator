@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { assert } from 'chai';
-import { readdirSync, readFileSync, existsSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import mockFs from 'mock-fs';
 import { join } from 'path';
+import { URL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
 import { generateEdm, generateEndpointsFile } from '../src/cli/generator';
+import { EndpointConfiguration } from '../src/cli/shared';
 
 describe('generator', function () {
 
@@ -47,25 +52,36 @@ describe('generator', function () {
         const baseOutputPath = join(process.cwd(), uuid());
         const caseDir = join(dataPath, dirName);
         const inputDir = join(caseDir, 'input');
-        const edmxXml = readFileSync(join(inputDir, 'metadata.xml'), 'utf8');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        const endpoints = JSON.parse(readFileSync(join(inputDir, 'endpoints.json'), 'utf8')).value;
-        const expected = readAllContent(join(caseDir, 'expected'));
 
-        const args = ['--outputDir', baseOutputPath, '--endpoint', 'https://api.example.com'];
-        const configFilePath = join(inputDir, 'config.js');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mockFsConfig: any = { [baseOutputPath]: {} };
+        const configFilePath = join(inputDir, 'config.js');
+
+        let configuredEndpoints: EndpointConfiguration[] | undefined = undefined;
+        let hasConfiguredEndpoints = false;
+        const args = ['--outputDir', baseOutputPath];
         if (existsSync(configFilePath)) {
           args.unshift('--config', configFilePath);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           mockFsConfig[configFilePath] = mockFs.load(configFilePath);
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          configuredEndpoints = require(configFilePath).endpoints;
+          hasConfiguredEndpoints = Array.isArray(configuredEndpoints) && configuredEndpoints.length > 0;
         }
+        if (!hasConfiguredEndpoints) {
+          args.push('--endpoint', 'https://api.example.com');
+        }
+        const expected = readAllContent(join(caseDir, 'expected'));
         mockFs(mockFsConfig, { createCwd: true });
         const configuration = Configuration.createFromCLIArgs(args);
 
-        // act
         for (const ep of configuration.endpoints) {
+          let epInput = join(inputDir, new URL(ep.url).hostname);
+          epInput = mockFs.bypass(() => existsSync(epInput)) ? epInput : inputDir;
+
+          const edmxXml = mockFs.bypass(() => readFileSync(join(epInput, 'metadata.xml'), 'utf8'));
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          const endpoints = mockFs.bypass(() => JSON.parse(readFileSync(join(epInput, 'endpoints.json'), 'utf8')).value);
+
+          // act
           generateEndpointsFile(endpoints, ep);
           generateEdm(edmxXml, endpoints, ep);
         }

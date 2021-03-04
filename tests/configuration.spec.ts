@@ -1,6 +1,6 @@
+import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
-import { assert } from 'chai';
 import { Configuration } from '../src/cli/configuration';
 import { EndpointConfiguration } from '../src/cli/shared';
 
@@ -20,7 +20,7 @@ describe('configuration', function () {
     const defaultOptions: Partial<Configuration> = { quote: '\'', indent: ' '.repeat(4) };
     for (const prefix of ['', '-', '--']) {
       const outputDir = join(process.cwd(), 'out');
-      const endpoints = [new EndpointConfiguration('https://api.example.com', outputDir)];
+      let endpoints = [new EndpointConfiguration('https://api.example.com', outputDir)];
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out'],
         { ...defaultOptions, endpoints, outputDir },
@@ -36,6 +36,20 @@ describe('configuration', function () {
       yield new TestData(
         [`${prefix}endpoint`, 'https://api.example.com', `${prefix}outputDir`, 'out', `${prefix}indentSize`, '2'],
         { ...defaultOptions, endpoints, outputDir, indent: '  ' },
+      );
+      endpoints = [new EndpointConfiguration('https://foo.example.com', 'foo'), new EndpointConfiguration('https://bar.example.com', 'bar')];
+      yield new TestData(
+        [
+          `${prefix}endpoints`, JSON.stringify([new EndpointConfiguration('https://foo.example.com', 'foo'), new EndpointConfiguration('https://bar.example.com', join(outputDir, 'bar'))]),
+          `${prefix}outputDir`, 'out',
+          `${prefix}indentSize`, '2'
+        ],
+        {
+          ...defaultOptions,
+          endpoints: [new EndpointConfiguration('https://foo.example.com', join(outputDir, 'foo')), new EndpointConfiguration('https://bar.example.com', join(outputDir, 'bar'))],
+          outputDir,
+          indent: '  '
+        },
       );
     }
   }
