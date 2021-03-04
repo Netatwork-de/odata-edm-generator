@@ -96,9 +96,9 @@ export class Foo {
 
 @odataEndpoint(Endpoints.Children)
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
-export class Child extends Base {
+export class ChildOne extends Base {
 
-    public static create<TChild extends Child = Child>(this: Class<TChild>, model: Partial<TChild>): TChild {
+    public static create<TChildOne extends ChildOne = ChildOne>(this: Class<TChildOne>, model: Partial<TChildOne>): TChildOne {
         return new this(
             model.ChildId,
             model.BaseProp12,
@@ -126,6 +126,88 @@ export class Child extends Base {
             BaseProp13,
             BaseProp11,
             BaseProp14,
+        );
+    }
+}
+
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class ChildTwo extends Base {
+
+    public static create<TChildTwo extends ChildTwo = ChildTwo>(this: Class<TChildTwo>, model: Partial<TChildTwo>): TChildTwo {
+        return new this(
+            model.Id,
+            model.BaseProp12,
+            model.BaseProp13,
+            model.ChildProp12,
+            model.ChildProp13,
+            model.BaseProp11,
+            model.BaseProp14,
+            model.ChildProp11,
+        );
+    }
+
+    public constructor(
+        public Id: number,
+        public BaseProp12: number,
+        public BaseProp13: string,
+        public ChildProp12: number,
+        public ChildProp13: string,
+        public BaseProp11?: string,
+        public BaseProp14?: number,
+        public ChildProp11?: number,
+    ) {
+        super(
+            BaseProp12,
+            BaseProp13,
+            BaseProp11,
+            BaseProp14,
+        );
+    }
+}
+
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class GrandChild extends ChildOne {
+
+    public static create<TGrandChild extends GrandChild = GrandChild>(this: Class<TGrandChild>, model: Partial<TGrandChild>): TGrandChild {
+        return new this(
+            model.ChildId,
+            model.Id,
+            model.BaseProp12,
+            model.BaseProp13,
+            model.ChildProp12,
+            model.ChildProp13,
+            model.GrandChildProp12,
+            model.GrandChildProp13,
+            model.BaseProp11,
+            model.BaseProp14,
+            model.ChildProp11,
+            model.GrandChildProp11,
+        );
+    }
+
+    public constructor(
+        public ChildId: number,
+        public Id: number,
+        public BaseProp12: number,
+        public BaseProp13: string,
+        public ChildProp12: number,
+        public ChildProp13: string,
+        public GrandChildProp12: number,
+        public GrandChildProp13: string,
+        public BaseProp11?: string,
+        public BaseProp14?: number,
+        public ChildProp11?: number,
+        public GrandChildProp11?: number,
+    ) {
+        super(
+            ChildId,
+            BaseProp12,
+            BaseProp13,
+            ChildProp12,
+            ChildProp13,
+            BaseProp11,
+            BaseProp14,
+            ChildProp11,
         );
     }
 }
