@@ -42,6 +42,11 @@
                 <Property Name="BazzProp1" Type="Edm.String"/>
                 <Property Name="BazzProp2" Type="Edm.Byte" Nullable="false"/>
                 <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="BarId" Type="Edm.Int32"/>
+                <NavigationProperty Name="Foos" Type="Collection(Company.Service.Foo)"/>
+                <NavigationProperty Name="Bar" Type="Company.Service.Bar">
+                  <ReferentialConstraint Property="BarId" ReferencedProperty="Id"/>
+                </NavigationProperty>
             </EntityType>
             <ComplexType Name="Interface1">
                 <Property Name="I1P1" Type="Edm.String" Nullable="false"/>

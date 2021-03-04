@@ -57,14 +57,20 @@ export class Bazz {
         return new this(
             model.Id,
             model.BazzProp2,
+            model.Bar,
+            model.BarId,
             model.BazzProp1,
+            model.Foos,
         );
     }
 
     public constructor(
         public Id: number,
         public BazzProp2: number,
+        public Bar?: Bar,
+        public BarId?: number,
         public BazzProp1?: string,
+        public Foos?: Foo[],
     ) { }
 }
 
