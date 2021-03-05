@@ -90,19 +90,19 @@ Below is an example of the file.
 ```js
 module.exports = {
   // base output directory
-	outputDir: 'src/generated/',
+  outputDir: 'src/generated/',
 
   // generate code for multiple OData endpoints
-	endpoints: [
-		{
-			url: 'https://example.com/api/foo',
-			outputDir: 'intranet-role',
-		},
-		{
-			url: 'https://example.com/api/bar',
-			outputDir: 'account-management',
-		},
-	],
+  endpoints: [
+    {
+      url: 'https://example.com/api/foo',
+      outputDir: 'intranet-role',
+    },
+    {
+      url: 'https://example.com/api/bar',
+      outputDir: 'account-management',
+    },
+  ],
 
   quoteStyle: 'double',
 
