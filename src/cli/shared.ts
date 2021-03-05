@@ -51,6 +51,20 @@ export class ComplexTypeInfo {
 }
 
 export class ComplexTypeInfoSet extends Array<ComplexTypeInfo> {
+  public constructor(...items: ComplexTypeInfo[]) {
+    super(
+      ...items
+        .reduce(
+          (acc, item) => {
+            if (!acc.find((i) => i.name === item.name)) {
+              acc.push(item);
+            }
+            return acc;
+          },
+          [] as ComplexTypeInfo[])
+    );
+    Object.setPrototypeOf(this, ComplexTypeInfoSet.prototype);
+  }
   public push(item: ComplexTypeInfo): number {
     if (this.find((x) => x.name === item.name)) { return this.length; }
     return super.push(item);
@@ -187,6 +201,7 @@ export class EndpointConfiguration {
   public constructor(
     public readonly url: string,
     public outputDir: string,
+    public readonly ignore: string[] = []
   ) { }
 }
 

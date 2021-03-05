@@ -3,7 +3,7 @@ import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo } from '../src/cli/shared';
+import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../src/cli/shared';
 import { EdmTemplate, EndpointTemplate } from '../src/cli/templates';
 import { standardEndpoints } from './data';
 describe('templates', function () {
@@ -99,7 +99,7 @@ export const enum Endpoints {
               base1,
             ),
           ],
-          [
+          new ComplexTypeInfoSet(
             interface1,
             new ComplexTypeInfo(
               'ComplexType2',
@@ -121,7 +121,7 @@ export const enum Endpoints {
               false,
               interface1,
             ),
-          ],
+          ),
           [
             new EnumInfo(
               'EnumOne',

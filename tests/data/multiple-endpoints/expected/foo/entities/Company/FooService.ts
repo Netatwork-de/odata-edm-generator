@@ -12,28 +12,6 @@ import {
   Endpoints,
 } from '../../Endpoints';
 
-export class Bar {
-
-  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
-    return new this(
-      raw.Id,
-      raw.Prop12,
-      raw.Prop13,
-      raw.Prop11,
-      raw.Prop14,
-    );
-  }
-
-  public constructor(
-    public Id: number,
-    public Prop12: string,
-    public Prop13: number,
-    public Prop11?: string,
-    public Prop14?: number,
-  ) { }
-}
-
 export class Base {
 
   public static create<TBase extends Base = Base>(this: Class<TBase>, raw: Partial<TBase>): TBase {
@@ -62,14 +40,22 @@ export class Bazz {
     return new this(
       raw.Id,
       raw.BazzProp2,
+      Bar.create(raw.Bar),
+      raw.BarId,
       raw.BazzProp1,
+      raw.Cp,
+      raw.Foos,
     );
   }
 
   public constructor(
     public Id: number,
     public BazzProp2: number,
+    public Bar?: Bar,
+    public BarId?: number,
     public BazzProp1?: string,
+    public Cp?: Interface2,
+    public Foos?: Foo[],
   ) { }
 }
 
@@ -94,14 +80,74 @@ export class Foo {
   ) { }
 }
 
+export class Bar {
+
+  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+    return new this(
+      raw.Id,
+      raw.Prop12,
+      raw.Prop13,
+      raw.Prop11,
+      raw.Prop14,
+    );
+  }
+
+  public constructor(
+    public Id: number,
+    public Prop12: string,
+    public Prop13: number,
+    public Prop11?: string,
+    public Prop14?: number,
+  ) { }
+}
+
 @odataEndpoint(Endpoints.Children)
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
-export class Child extends Base {
+export class ChildOne extends Base {
 
-  public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
+  public static create<TChildOne extends ChildOne = ChildOne>(this: Class<TChildOne>, raw: Partial<TChildOne>): TChildOne {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildOne; }
     return new this(
       raw.ChildId,
+      raw.BaseProp12,
+      raw.BaseProp13,
+      raw.ChildProp12,
+      raw.ChildProp13,
+      raw.BaseProp11,
+      raw.BaseProp14,
+      raw.ChildProp11,
+      StandardCondition.create(raw.Condition),
+    );
+  }
+
+  public constructor(
+    public ChildId: number,
+    public BaseProp12: number,
+    public BaseProp13: string,
+    public ChildProp12: number,
+    public ChildProp13: string,
+    public BaseProp11?: string,
+    public BaseProp14?: number,
+    public ChildProp11?: number,
+    public Condition?: StandardCondition,
+  ) {
+    super(
+      BaseProp12,
+      BaseProp13,
+      BaseProp11,
+      BaseProp14,
+    );
+  }
+}
+
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class ChildTwo extends Base {
+
+  public static create<TChildTwo extends ChildTwo = ChildTwo>(this: Class<TChildTwo>, raw: Partial<TChildTwo>): TChildTwo {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildTwo; }
+    return new this(
+      raw.Id,
       raw.BaseProp12,
       raw.BaseProp13,
       raw.ChildProp12,
@@ -113,7 +159,7 @@ export class Child extends Base {
   }
 
   public constructor(
-    public ChildId: number,
+    public Id: number,
     public BaseProp12: number,
     public BaseProp13: string,
     public ChildProp12: number,
@@ -131,6 +177,95 @@ export class Child extends Base {
   }
 }
 
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class GrandChild extends ChildOne {
+
+  public static create<TGrandChild extends GrandChild = GrandChild>(this: Class<TGrandChild>, raw: Partial<TGrandChild>): TGrandChild {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TGrandChild; }
+    return new this(
+      raw.ChildId,
+      raw.Id,
+      raw.BaseProp12,
+      raw.BaseProp13,
+      raw.ChildProp12,
+      raw.ChildProp13,
+      raw.GrandChildProp12,
+      raw.GrandChildProp13,
+      raw.BaseProp11,
+      raw.BaseProp14,
+      raw.ChildProp11,
+      StandardCondition.create(raw.Condition),
+      raw.GrandChildProp11,
+    );
+  }
+
+  public constructor(
+    public ChildId: number,
+    public Id: number,
+    public BaseProp12: number,
+    public BaseProp13: string,
+    public ChildProp12: number,
+    public ChildProp13: string,
+    public GrandChildProp12: number,
+    public GrandChildProp13: string,
+    public BaseProp11?: string,
+    public BaseProp14?: number,
+    public ChildProp11?: number,
+    public Condition?: StandardCondition,
+    public GrandChildProp11?: number,
+  ) {
+    super(
+      ChildId,
+      BaseProp12,
+      BaseProp13,
+      ChildProp12,
+      ChildProp13,
+      BaseProp11,
+      BaseProp14,
+      ChildProp11,
+      Condition,
+    );
+  }
+}
+
+export enum $$BaseConfigurationTypes {
+  BarConfiguration = 'BarConfiguration',
+  FooConfiguration = 'FooConfiguration',
+}
+
+export class BaseConfiguration {
+
+  protected static get derivedTypes(): typeof BaseConfiguration[] {
+    return [
+      BarConfiguration,
+      FooConfiguration,
+    ];
+  }
+
+  public static create(raw: Partial<BaseConfiguration>): BaseConfiguration {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as BaseConfiguration; }
+    const edmType = raw[odataTypeKey];
+    const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+    if (!ctor) {
+      return raw as BaseConfiguration;
+    }
+    const result = new ctor();
+    result.initialize(raw);
+    return result;
+  }
+
+  protected static canHandle(_odataType: string): boolean { return false; }
+
+  public BC1P1: number;
+  public BC1P2?: string;
+  public readonly $$type: $$BaseConfigurationTypes;
+
+  protected initialize(raw: Partial<BaseConfiguration>) {
+    this.BC1P1 = raw.BC1P1;
+    this.BC1P2 = raw.BC1P2;
+  }
+}
+
 export interface Interface1 {
   I1P1: string;
   I1P2?: number;
@@ -139,6 +274,118 @@ export interface Interface1 {
 export interface Interface2 {
   I2P1: number;
   I2P2?: string;
+}
+
+export enum $$StandardConditionTypes {
+  BarCondition = 'BarCondition',
+  FizzCondition = 'FizzCondition',
+  FooCondition = 'FooCondition',
+}
+
+export class StandardCondition {
+
+  protected static get derivedTypes(): typeof StandardCondition[] {
+    return [
+      BarCondition,
+      FizzCondition,
+      FooCondition,
+    ];
+  }
+
+  public static create(raw: Partial<StandardCondition>): StandardCondition {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as StandardCondition; }
+    const edmType = raw[odataTypeKey];
+    const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+    if (!ctor) {
+      return raw as StandardCondition;
+    }
+    const result = new ctor();
+    result.initialize(raw);
+    return result;
+  }
+
+  protected static canHandle(_odataType: string): boolean { return false; }
+
+  public BC1P1: number;
+  public BC1P2?: string;
+  public readonly $$type: $$StandardConditionTypes;
+
+  protected initialize(raw: Partial<StandardCondition>) {
+    this.BC1P1 = raw.BC1P1;
+    this.BC1P2 = raw.BC1P2;
+  }
+}
+
+@odataType('#Company.FooService.BarCondition', $$StandardConditionTypes.BarCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class BarCondition extends StandardCondition {
+
+  public CBC1P1: number;
+  public CBC1P2?: Interface1;
+
+  protected initialize(raw: Partial<BarCondition>) {
+    super.initialize(raw);
+    this.CBC1P1 = raw.CBC1P1;
+    this.CBC1P2 = raw.CBC1P2;
+  }
+}
+
+@odataType('#Company.FooService.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class BarConfiguration extends BaseConfiguration {
+
+  public CBC1P1: number;
+  public CBC1P2?: Interface1;
+
+  protected initialize(raw: Partial<BarConfiguration>) {
+    super.initialize(raw);
+    this.CBC1P1 = raw.CBC1P1;
+    this.CBC1P2 = raw.CBC1P2;
+  }
+}
+
+@odataType('#Company.FooService.FizzCondition', $$StandardConditionTypes.FizzCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FizzCondition extends StandardCondition {
+
+  public FC1P1: number;
+  public FC1P2?: Interface1;
+  public FC1P3?: BaseConfiguration;
+
+  protected initialize(raw: Partial<FizzCondition>) {
+    super.initialize(raw);
+    this.FC1P1 = raw.FC1P1;
+    this.FC1P2 = raw.FC1P2;
+    this.FC1P3 = BaseConfiguration.create(raw.FC1P3);
+  }
+}
+
+@odataType('#Company.FooService.FooCondition', $$StandardConditionTypes.FooCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FooCondition extends StandardCondition {
+
+  public FC1P1: number;
+  public FC1P2?: Enum1;
+
+  protected initialize(raw: Partial<FooCondition>) {
+    super.initialize(raw);
+    this.FC1P1 = raw.FC1P1;
+    this.FC1P2 = raw.FC1P2;
+  }
+}
+
+@odataType('#Company.FooService.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FooConfiguration extends BaseConfiguration {
+
+  public FC1P1: number;
+  public FC1P2?: Enum1;
+
+  protected initialize(raw: Partial<FooConfiguration>) {
+    super.initialize(raw);
+    this.FC1P1 = raw.FC1P1;
+    this.FC1P2 = raw.FC1P2;
+  }
 }
 
 export enum Enum1 {

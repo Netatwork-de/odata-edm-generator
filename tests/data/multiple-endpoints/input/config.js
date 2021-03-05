@@ -3,7 +3,13 @@ module.exports = {
   endpoints: [
     {
       url: 'https://foo.example.com',
-      outputDir: 'foo'
+      outputDir: 'foo',
+      ignore: [
+        'DummyCondition',
+        'Status',
+        'Ignored1',
+        'Ignored2',
+      ]
     },
     {
       url: 'https://bar.example.com',

@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { assert } from 'chai';
+import { red, green, gray } from 'chalk';
+import { diffLines } from 'diff';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import mockFs from 'mock-fs';
 import { join } from 'path';
@@ -37,7 +39,21 @@ describe('generator', function () {
     const expectedKeys = Array.from(expected.keys()).sort();
     assert.deepStrictEqual(actualKeys, expectedKeys, 'mismatch in entries');
     for (const key of actualKeys) {
-      assert.strictEqual(actual.get(key), expected.get(key), `mismatch in content for ${key}`);
+      const changes = diffLines(expected.get(key)!, actual.get(key)!);
+      const len = changes.length;
+      if (len > 1) {
+        changes.forEach((part) => {
+          if (part.added) {
+            process.stderr.write(green(part.value));
+          } else if (part.removed) {
+            process.stderr.write(red(part.value));
+          } else {
+            const lines = part.value.split(/[\n\r|\r]/);
+            process.stderr.write(gray([...lines.slice(0, 10), '...', ...lines.slice(-10)].join('\n')));
+          }
+        });
+        assert.fail('Content mismatch; check the diff.');
+      }
     }
   }
 
@@ -90,6 +106,8 @@ describe('generator', function () {
         // assert
         const actual = readAllContent(baseOutputPath);
         assertContent(actual, expected);
+      } catch (e) {
+        assert.fail(e);
       } finally {
         // cleanup
         mockFs.restore();

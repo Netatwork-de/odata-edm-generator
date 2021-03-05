@@ -66,7 +66,7 @@ function compareTypes(e1: Element, e2: Element) {
   const baseType2 = e2.getAttribute('BaseType');
   if (baseType1 && !baseType2) { return 1; }
   if (!baseType1 && baseType2) { return -1; }
-  return enCollator.compare(e1.getAttribute('Name') ?? '', e2.getAttribute('Name') ?? '');
+  return enCollator.compare(e1.getAttribute('Name')!, e2.getAttribute('Name')!);
 }
 
 function getMembers(properties: Element[], /* imports: ImportInfo[], */ keys: string[] = []) {
@@ -91,7 +91,10 @@ function generateEntityInfo(
   entities: ClassInfo[],
   entitySets: EntitySet[],
   singletons: Singleton[],
+  ignored: string[],
 ) {
+  const entityName = entityType.getAttribute('Name')!;
+  if (ignored.includes(entityName)) { return entities; }
   const entityKey = Array.from(entityType.getElementsByTagName('Key'))
     .flatMap((k) => Array.from(k.getElementsByTagName('PropertyRef'))
       .map((pr) => pr.getAttribute('Name')!)
@@ -106,7 +109,6 @@ function generateEntityInfo(
     entityKey
   );
   try {
-    const entityName = entityType.getAttribute('Name')!;
 
     const entitySetName = entitySets.find((es) => es.typeName === entityName)?.name;
     let endpoint = endpoints.find((ep) => ep.name === entitySetName && ep.kind === 'EntitySet')?.name;
@@ -119,9 +121,12 @@ function generateEntityInfo(
     }
 
     const baseTypeName = getBaseTypeName(entityType);
-    const baseEntity = entities.find((e) => e.name === baseTypeName);
-    if (baseTypeName && !baseEntity) {
-      throw new Error(`base type ${baseTypeName} not found.`);
+    let baseEntity: ClassInfo | undefined = undefined;
+    if (baseTypeName
+      && !ignored.includes(baseTypeName)
+      && (baseEntity = entities.find((e) => e.name === baseTypeName)) === undefined
+    ) {
+      throw new Error(`Base type '${baseTypeName}' not found.`);
     }
     entities.push(new ClassInfo(
       entityName,
@@ -131,19 +136,33 @@ function generateEntityInfo(
     ));
     return entities;
   } catch (e) {
-    Logger.error(`Entity generation failed for ${JSON.stringify(entityType, undefined, 2)}`);
+    Logger.error(`Entity generation failed for '${entityType.getAttribute('Name')!}'`);
     throw e;
   }
 }
 
-function generateComplexTypeInfo(acc: ComplexTypeInfoSet, entityType: Element/* , imports: ImportInfo[] */): ComplexTypeInfoSet {
+function generateComplexTypeInfo(
+  acc: ComplexTypeInfoSet,
+  entityType: Element,
+  complexTypes: Element[],
+  ignored: string[],
+  /* , imports: ImportInfo[] */
+): ComplexTypeInfoSet {
   const name = entityType.getAttribute('Name')!;
+
+  if (ignored.includes(name)) { return acc; }
+
   const baseTypeName = getBaseTypeName(entityType);
   let baseType: ComplexTypeInfo | null = null;
   if (baseTypeName !== undefined
+    && !ignored.includes(baseTypeName)
     && (baseType = acc.find((x) => x.name === baseTypeName) ?? null) === null) {
-    // As the types are already sorted, the base type info is expected to be generated, before the derived types.
-    throw new Error(`Base type '${baseTypeName}' was not found for '${name}'.`);
+    const x = complexTypes.find((ct) => ct.getAttribute('Name') === baseTypeName);
+    if (x === undefined) {
+      throw new Error(`Base type '${baseTypeName}' was not found for '${name}'.`);
+    }
+    generateComplexTypeInfo(acc, x, complexTypes, ignored);
+    baseType = acc[acc.length - 1];
   }
   const members = getMembers(Array.from(entityType.getElementsByTagName('Property')) /* , imports */);
   const complexType = new ComplexTypeInfo(
@@ -162,9 +181,12 @@ function getBaseTypeName(type: Element) {
     ?.pop();
 }
 
-function generateStringEnum(enumType: Element) {
+function generateStringEnum(acc: EnumInfo[], enumType: Element, ignored: string[]): EnumInfo[] {
+  const name = enumType.getAttribute('Name')!;
+  if (ignored.includes(name)) { return acc; }
   const members = Array.from(enumType.getElementsByTagName('Member')).map((m) => m.getAttribute('Name')!);
-  return new EnumInfo(enumType.getAttribute('Name')!, members);
+  acc.push(new EnumInfo(name, members));
+  return acc;
 }
 
 function generateCodeContent(
@@ -190,6 +212,7 @@ function generateCodeContent(
   // const imports: ImportInfo[] = [];
   const endpointImports: string[] = [];
 
+  const ignored = configuration.ignore;
   const entitySets = Array.from(edmxNode.getElementsByTagName('EntitySet'))
     .map((e) => new EntitySet(e.getAttribute('Name')!, e.getAttribute('EntityType')!.split('.').pop()!));
   const singletons = Array.from(edmxNode.getElementsByTagName('Singleton'))
@@ -205,14 +228,15 @@ function generateCodeContent(
         acc,
         entitySets,
         singletons,
+        ignored,
       ),
       [] as ClassInfo[]);
   const $complexTypes = complexTypes
     .sort(compareTypes)
-    .reduce(generateComplexTypeInfo, new ComplexTypeInfoSet());
+    .reduce((acc, item) => generateComplexTypeInfo(acc, item, complexTypes, ignored), new ComplexTypeInfoSet());
   const enums = enumTypes
     .sort(compareTypes)
-    .map((et) => generateStringEnum(et));
+    .reduce((acc, et) => generateStringEnum(acc, et, ignored), [] as EnumInfo[]);
 
   return new EdmInfo(schema.getAttribute('Namespace')!, /* imports, */ entities, $complexTypes, enums, configuration);
 }

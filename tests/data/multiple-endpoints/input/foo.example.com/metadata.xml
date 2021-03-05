@@ -1,64 +1,134 @@
 <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
-    <edmx:DataServices>
-        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Company.FooService">
-            <EntityType Name="Foo">
-                <Key>
-                    <PropertyRef Name="Id"/>
-                </Key>
-                <Property Name="StrProp" Type="Edm.String"/>
-                <Property Name="DateStrProp" Type="Edm.DateTimeOffset" Nullable="false"/>
-                <Property Name="ByteProp" Type="Edm.Byte" Nullable="false"/>
-                <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
-            </EntityType>
-            <EntityType Name="Bar">
-                <Key>
-                    <PropertyRef Name="Id"/>
-                </Key>
-                <Property Name="Prop11" Type="Edm.String"/>
-                <Property Name="Prop12" Type="Edm.DateTime" Nullable="false"/>
-                <Property Name="Prop13" Type="Edm.Decimal" Nullable="false"/>
-                <Property Name="Prop14" Type="Edm.Double"/>
-                <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
-            </EntityType>
-            <EntityType Name="Base">
-                <Property Name="BaseProp11" Type="Edm.Duration"/>
-                <Property Name="BaseProp12" Type="Edm.Float" Nullable="false"/>
-                <Property Name="BaseProp13" Type="Edm.Guid" Nullable="false"/>
-                <Property Name="BaseProp14" Type="Edm.Int16"/>
-            </EntityType>
-            <EntityType Name="Child" BaseType="Company.Service.Base">
-                <Key>
-                    <PropertyRef Name="ChildId"/>
-                </Key>
-                <Property Name="ChildProp11" Type="Edm.Int64"/>
-                <Property Name="ChildProp12" Type="Edm.SByte" Nullable="false"/>
-                <Property Name="ChildProp13" Type="Edm.TimeOfDay" Nullable="false"/>
-                <Property Name="ChildId" Type="Edm.Int32" Nullable="false"/>
-            </EntityType>
-            <EntityType Name="Bazz">
-                <Key>
-                    <PropertyRef Name="Id"/>
-                </Key>
-                <Property Name="BazzProp1" Type="Edm.String"/>
-                <Property Name="BazzProp2" Type="Edm.Byte" Nullable="false"/>
-                <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
-            </EntityType>
-            <ComplexType Name="Interface1">
-                <Property Name="I1P1" Type="Edm.String" Nullable="false"/>
-                <Property Name="I1P2" Type="Edm.Int32"/>
-            </ComplexType>
-            <ComplexType Name="Interface2">
-                <Property Name="I2P1" Type="Edm.Int32" Nullable="false"/>
-                <Property Name="I2P2" Type="Edm.Guid"/>
-            </ComplexType>
-            <EnumType Name="Enum1">
-                <Member Name="Member1" Value="0"/>
-                <Member Name="Member2" Value="0"/>
-                <Member Name="Member3" Value="0"/>
-            </EnumType>
-            <EntitySet Name="Foos" EntityType="Company.Service.Foo"/>
-            <EntitySet Name="Fizz" EntityType="Company.Service.Bazz"/>
-            <Singleton Name="Children" Type="Company.Service.Child"/>
-        </Schema>
-    </edmx:DataServices>
+  <edmx:DataServices>
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Company.FooService">
+      <EntityType Name="ChildTwo" BaseType="Company.Service.Base">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="ChildProp11" Type="Edm.Int64" />
+        <Property Name="ChildProp12" Type="Edm.SByte" Nullable="false" />
+        <Property Name="ChildProp13" Type="Edm.TimeOfDay" Nullable="false" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityType Name="GrandChild" BaseType="Company.Service.ChildOne">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="GrandChildProp11" Type="Edm.Int64" />
+        <Property Name="GrandChildProp12" Type="Edm.SByte" Nullable="false" />
+        <Property Name="GrandChildProp13" Type="Edm.TimeOfDay" Nullable="false" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Foo">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="StrProp" Type="Edm.String" />
+        <Property Name="DateStrProp" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="ByteProp" Type="Edm.Byte" Nullable="false" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Ignored1">
+        <Property Name="Prop11" Type="Edm.String" />
+        <Property Name="Prop14" Type="Edm.Double" />
+      </EntityType>
+      <EntityType Name="Ignored2">
+        <Property Name="Prop11" Type="Edm.String" />
+        <Property Name="Prop14" Type="Edm.Double" />
+      </EntityType>
+      <EntityType Name="Bar" BaseType="Company.Service.Ignored2">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Prop11" Type="Edm.String" />
+        <Property Name="Prop12" Type="Edm.DateTime" Nullable="false" />
+        <Property Name="Prop13" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="Prop14" Type="Edm.Double" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Base">
+        <Property Name="BaseProp11" Type="Edm.Duration" />
+        <Property Name="BaseProp12" Type="Edm.Float" Nullable="false" />
+        <Property Name="BaseProp13" Type="Edm.Guid" Nullable="false" />
+        <Property Name="BaseProp14" Type="Edm.Int16" />
+      </EntityType>
+      <EntityType Name="ChildOne" BaseType="Company.Service.Base">
+        <Key>
+          <PropertyRef Name="ChildId" />
+        </Key>
+        <Property Name="ChildProp11" Type="Edm.Int64" />
+        <Property Name="ChildProp12" Type="Edm.SByte" Nullable="false" />
+        <Property Name="ChildProp13" Type="Edm.TimeOfDay" Nullable="false" />
+        <Property Name="ChildId" Type="Edm.Int32" Nullable="false" />
+        <NavigationProperty Name="Condition" Type="Company.Service.StandardCondition" />
+      </EntityType>
+      <EntityType Name="Bazz">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="BazzProp1" Type="Edm.String" />
+        <Property Name="BazzProp2" Type="Edm.Byte" Nullable="false" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BarId" Type="Edm.Int32" />
+        <NavigationProperty Name="Cp" Type="Company.Service.Interface2" />
+        <NavigationProperty Name="Foos" Type="Collection(Company.Service.Foo)" />
+        <NavigationProperty Name="Bar" Type="Company.Service.Bar">
+          <ReferentialConstraint Property="BarId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <ComplexType Name="Interface1">
+        <Property Name="I1P1" Type="Edm.String" Nullable="false" />
+        <Property Name="I1P2" Type="Edm.Int32" />
+      </ComplexType>
+      <ComplexType Name="Interface2">
+        <Property Name="I2P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="I2P2" Type="Edm.Guid" />
+      </ComplexType>
+      <ComplexType Name="BaseConfiguration">
+        <Property Name="BC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BC1P2" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="FooConfiguration" BaseType="Company.Service.BaseConfiguration">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Enum1" />
+      </ComplexType>
+      <ComplexType Name="BarConfiguration" BaseType="Company.Service.BaseConfiguration">
+        <Property Name="CBC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CBC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="DummyCondition" Abstract="true">
+        <Property Name="Dummy_Do_Not_Use" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="StandardCondition" BaseType="Company.Service.DummyCondition" Abstract="true">
+        <Property Name="BC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BC1P2" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="FooCondition" BaseType="Company.Service.StandardCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Enum1" />
+      </ComplexType>
+      <ComplexType Name="BarCondition" BaseType="Company.Service.StandardCondition">
+        <Property Name="CBC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CBC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="FizzCondition" BaseType="Company.Service.StandardCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Interface1" />
+        <Property Name="FC1P3" Type="Company.Service.BaseConfiguration" />
+      </ComplexType>
+      <EnumType Name="Enum1">
+        <Member Name="Member1" Value="0" />
+        <Member Name="Member2" Value="1" />
+        <Member Name="Member3" Value="2" />
+      </EnumType>
+      <EnumType Name="Status">
+        <Member Name="Waiting" Value="0" />
+        <Member Name="Processing" Value="1" />
+        <Member Name="Completed" Value="2" />
+      </EnumType>
+      <EntitySet Name="Foos" EntityType="Company.Service.Foo" />
+      <EntitySet Name="Fizz" EntityType="Company.Service.Bazz" />
+      <Singleton Name="Children" Type="Company.Service.ChildOne" />
+    </Schema>
+  </edmx:DataServices>
 </edmx:Edmx>

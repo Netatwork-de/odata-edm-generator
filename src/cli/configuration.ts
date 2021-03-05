@@ -104,7 +104,7 @@ export class Configuration {
     } else if (Array.isArray(endpoints)) {
       for (const ep of endpoints) {
         const dir = ep.outputDir;
-        $endpoints.push(new EndpointConfiguration(ep.url, dir));
+        $endpoints.push(new EndpointConfiguration(ep.url, dir, ep.ignore));
       }
     }
     this.adjustOutputPaths();
