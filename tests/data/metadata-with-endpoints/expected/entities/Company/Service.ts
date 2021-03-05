@@ -14,13 +14,14 @@ import {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, model: Partial<TBar>): TBar {
+    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
         return new this(
-            model.Id,
-            model.Prop12,
-            model.Prop13,
-            model.Prop11,
-            model.Prop14,
+            raw.Id,
+            raw.Prop12,
+            raw.Prop13,
+            raw.Prop11,
+            raw.Prop14,
         );
     }
 
@@ -35,12 +36,13 @@ export class Bar {
 
 export class Base {
 
-    public static create<TBase extends Base = Base>(this: Class<TBase>, model: Partial<TBase>): TBase {
+    public static create<TBase extends Base = Base>(this: Class<TBase>, raw: Partial<TBase>): TBase {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBase; }
         return new this(
-            model.BaseProp12,
-            model.BaseProp13,
-            model.BaseProp11,
-            model.BaseProp14,
+            raw.BaseProp12,
+            raw.BaseProp13,
+            raw.BaseProp11,
+            raw.BaseProp14,
         );
     }
 
@@ -55,15 +57,16 @@ export class Base {
 @odataEndpoint(Endpoints.Fizz)
 export class Bazz {
 
-    public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, model: Partial<TBazz>): TBazz {
+    public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: Partial<TBazz>): TBazz {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBazz; }
         return new this(
-            model.Id,
-            model.BazzProp2,
-            model.Bar,
-            model.BarId,
-            model.BazzProp1,
-            model.Cp,
-            model.Foos,
+            raw.Id,
+            raw.BazzProp2,
+            Bar.create(raw.Bar),
+            raw.BarId,
+            raw.BazzProp1,
+            raw.Cp,
+            raw.Foos,
         );
     }
 
@@ -81,12 +84,13 @@ export class Bazz {
 @odataEndpoint(Endpoints.Foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, model: Partial<TFoo>): TFoo {
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
         return new this(
-            model.Id,
-            model.ByteProp,
-            model.DateStrProp,
-            model.StrProp,
+            raw.Id,
+            raw.ByteProp,
+            raw.DateStrProp,
+            raw.StrProp,
         );
     }
 
@@ -102,16 +106,18 @@ export class Foo {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildOne extends Base {
 
-    public static create<TChildOne extends ChildOne = ChildOne>(this: Class<TChildOne>, model: Partial<TChildOne>): TChildOne {
+    public static create<TChildOne extends ChildOne = ChildOne>(this: Class<TChildOne>, raw: Partial<TChildOne>): TChildOne {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildOne; }
         return new this(
-            model.ChildId,
-            model.BaseProp12,
-            model.BaseProp13,
-            model.ChildProp12,
-            model.ChildProp13,
-            model.BaseProp11,
-            model.BaseProp14,
-            model.ChildProp11,
+            raw.ChildId,
+            raw.BaseProp12,
+            raw.BaseProp13,
+            raw.ChildProp12,
+            raw.ChildProp13,
+            raw.BaseProp11,
+            raw.BaseProp14,
+            raw.ChildProp11,
+            BaseCondition.create(raw.Condition),
         );
     }
 
@@ -124,6 +130,7 @@ export class ChildOne extends Base {
         public BaseProp11?: string,
         public BaseProp14?: number,
         public ChildProp11?: number,
+        public Condition?: BaseCondition,
     ) {
         super(
             BaseProp12,
@@ -137,16 +144,17 @@ export class ChildOne extends Base {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildTwo extends Base {
 
-    public static create<TChildTwo extends ChildTwo = ChildTwo>(this: Class<TChildTwo>, model: Partial<TChildTwo>): TChildTwo {
+    public static create<TChildTwo extends ChildTwo = ChildTwo>(this: Class<TChildTwo>, raw: Partial<TChildTwo>): TChildTwo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildTwo; }
         return new this(
-            model.Id,
-            model.BaseProp12,
-            model.BaseProp13,
-            model.ChildProp12,
-            model.ChildProp13,
-            model.BaseProp11,
-            model.BaseProp14,
-            model.ChildProp11,
+            raw.Id,
+            raw.BaseProp12,
+            raw.BaseProp13,
+            raw.ChildProp12,
+            raw.ChildProp13,
+            raw.BaseProp11,
+            raw.BaseProp14,
+            raw.ChildProp11,
         );
     }
 
@@ -172,20 +180,22 @@ export class ChildTwo extends Base {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class GrandChild extends ChildOne {
 
-    public static create<TGrandChild extends GrandChild = GrandChild>(this: Class<TGrandChild>, model: Partial<TGrandChild>): TGrandChild {
+    public static create<TGrandChild extends GrandChild = GrandChild>(this: Class<TGrandChild>, raw: Partial<TGrandChild>): TGrandChild {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TGrandChild; }
         return new this(
-            model.ChildId,
-            model.Id,
-            model.BaseProp12,
-            model.BaseProp13,
-            model.ChildProp12,
-            model.ChildProp13,
-            model.GrandChildProp12,
-            model.GrandChildProp13,
-            model.BaseProp11,
-            model.BaseProp14,
-            model.ChildProp11,
-            model.GrandChildProp11,
+            raw.ChildId,
+            raw.Id,
+            raw.BaseProp12,
+            raw.BaseProp13,
+            raw.ChildProp12,
+            raw.ChildProp13,
+            raw.GrandChildProp12,
+            raw.GrandChildProp13,
+            raw.BaseProp11,
+            raw.BaseProp14,
+            raw.ChildProp11,
+            BaseCondition.create(raw.Condition),
+            raw.GrandChildProp11,
         );
     }
 
@@ -201,6 +211,7 @@ export class GrandChild extends ChildOne {
         public BaseProp11?: string,
         public BaseProp14?: number,
         public ChildProp11?: number,
+        public Condition?: BaseCondition,
         public GrandChildProp11?: number,
     ) {
         super(
@@ -212,6 +223,7 @@ export class GrandChild extends ChildOne {
             BaseProp11,
             BaseProp14,
             ChildProp11,
+            Condition,
         );
     }
 }
@@ -233,7 +245,7 @@ export class BaseCondition {
     }
 
     public static create(raw: Partial<BaseCondition>): BaseCondition {
-        if (raw === undefined || raw === null) { return raw as BaseCondition; }
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as BaseCondition; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
@@ -271,7 +283,7 @@ export class BaseConfiguration {
     }
 
     public static create(raw: Partial<BaseConfiguration>): BaseConfiguration {
-        if (raw === undefined || raw === null) { return raw as BaseConfiguration; }
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as BaseConfiguration; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
@@ -338,11 +350,13 @@ export class FizzCondition extends BaseCondition {
 
     public FC1P1: number;
     public FC1P2?: Interface1;
+    public FC1P3?: BaseConfiguration;
 
     protected initialize(raw: Partial<FizzCondition>) {
         super.initialize(raw);
         this.FC1P1 = raw.FC1P1;
         this.FC1P2 = raw.FC1P2;
+        this.FC1P3 = BaseConfiguration.create(raw.FC1P3);
     }
 }
 

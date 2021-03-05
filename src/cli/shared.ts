@@ -15,7 +15,7 @@ export interface ImportInfo {
 export class PropertyInfo {
   public constructor(
     public name: string,
-    public type: string,
+    public type: string | ClassInfo | ComplexTypeInfo,
     public isNullable: boolean,
     public isKey: boolean,
   ) { }
@@ -23,7 +23,7 @@ export class PropertyInfo {
 
 export class ClassInfo {
   public constructor(
-    public className: string,
+    public name: string,
     public propertyInfos: PropertyInfo[],
     public endpoint?: string,
     public baseType?: ClassInfo,
@@ -71,6 +71,7 @@ export class ImportDirectiveInfo {
   ) { }
 }
 
+const primitivePropertyTypes = ['string', 'number', 'boolean'];
 export class EdmInfo {
   public importDirectives!: ImportDirectiveInfo[];
   public readonly filePath: string;
@@ -88,6 +89,7 @@ export class EdmInfo {
     this.quote = config.quote;
     this.indent = config.indent;
     this.filePath = `${nsToPath(namespace, configuration)}.ts`;
+    this.adjustPropertyTypes();
     this.createImportDirectives(configuration);
   }
 
@@ -111,8 +113,7 @@ export class EdmInfo {
     //   ] as [string, string[]]))
     //   .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
     //   .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
-    const directives: ImportDirectiveInfo[] = this.importDirectives = [];
-    directives.push(
+    this.importDirectives = [
       new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint', 'odataType', 'odataTypeKey']),
       new ImportDirectiveInfo(
         relative(dirname(filePath), getEndpointsPath(configuration))
@@ -120,7 +121,45 @@ export class EdmInfo {
           .replace('.ts', ''),
         ['Endpoints']
       ),
-    );
+    ];
+  }
+
+  private adjustPropertyTypes() {
+    const entities = this.classInfos;
+    const complexTypes = this.complexTypeInfos;
+    const lookup: Map<string, string | ClassInfo | ComplexTypeInfo> = new Map<string, ClassInfo | ComplexTypeInfo>();
+
+    const mapTypes = (prop: PropertyInfo) => {
+      const typeStr: string = prop.type as string;
+      if (primitivePropertyTypes.includes(typeStr)) { return; }
+      let type;
+      if ((type = lookup.get(typeStr)) !== undefined) {
+        prop.type = type;
+        return;
+      }
+      if ((type = entities.find((e) => e.name === typeStr)) !== undefined) {
+        lookup.set(typeStr, prop.type = type);
+        return;
+      }
+      if (((type = complexTypes.find((c) => c.name === typeStr))?.derivedTypes.length ?? 0) > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        lookup.set(typeStr, prop.type = type!);
+        return;
+      }
+      lookup.set(typeStr, typeStr);
+    };
+
+    for (const entity of entities) {
+      for (const prop of entity.propertyInfos) {
+        mapTypes(prop);
+      }
+    }
+
+    for (const complexType of complexTypes) {
+      for (const prop of complexType.propertyInfos) {
+        mapTypes(prop);
+      }
+    }
   }
 }
 

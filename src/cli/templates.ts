@@ -48,19 +48,20 @@ const defaultClassTemplate = `<%-
 <%- if (it.baseType && it.propertyInfos.length > it.baseType.propertyInfos.length) { -%>
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 <% } -%>
-export class <%= it.className %><% if (it.baseType) { %> extends <%= it.baseType.className %><% } %> {
+export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name %><% } %> {
 
-<%= indent %>public static create<T<%= it.className %> extends <%= it.className %> = <%= it.className %>>(this: Class<T<%= it.className %>>, model: Partial<T<%= it.className %>>): T<%= it.className %> {
+<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: Partial<T<%= it.name %>>): T<%= it.name %> {
+<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as T<%= it.name %>; }
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(3) %>model.<%= p.name %>,
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
 <% } -%>
 <%= indent.repeat(2) %>);
 <%= indent %>}
 
 <%= indent %>public constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>,
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
 <% } -%>
 <%= indent %>) <%_ if (it.baseType) { %> {
 <%= indent.repeat(2) %>super(
@@ -99,7 +100,7 @@ export class <%= name %> {
 <%= indent %>}
 
 <%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null) { return raw as <%= name %>; }
+<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as <%= name %>; }
 <%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
 <%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
 <%= indent.repeat(2) %>if (!ctor) {
@@ -113,13 +114,13 @@ export class <%= name %> {
 <%= indent %>protected static canHandle(_odataType: string): boolean { return false; }
 
 <% for(const p of it.propertyInfos) { -%>
-<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>;
 <% } -%>
 <%= indent %>public readonly $$type: $$<%= name %>Types;
 
 <%= indent %>protected initialize(raw: Partial<<%= name %>>) {
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>this.<%= p.name %> = raw.<%= p.name %>;
+<%= indent.repeat(2) %>this.<%= p.name %> = <% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>;
 <% } -%>
 <%= indent %>}
 }
@@ -129,12 +130,12 @@ export class <%= name %> {
 export class <%= name %> extends <%= baseType.name %> {
 
 <% for(const p of it.propertyInfos) { -%>
-<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>;
 <% } %>
 <%= indent %>protected initialize(raw: Partial<<%= name %>>) {
 <%= indent.repeat(2) %>super.initialize(raw);
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>this.<%= p.name %> = raw.<%= p.name %>;
+<%= indent.repeat(2) %>this.<%= p.name %> = <% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>;
 <% } -%>
 <%= indent %>}
 }

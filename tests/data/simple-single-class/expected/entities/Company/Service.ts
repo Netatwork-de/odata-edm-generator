@@ -14,12 +14,13 @@ import {
 
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, model: Partial<TFoo>): TFoo {
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
         return new this(
-            model.Id,
-            model.ByteProp,
-            model.DateStrProp,
-            model.StrProp,
+            raw.Id,
+            raw.ByteProp,
+            raw.DateStrProp,
+            raw.StrProp,
         );
     }
 

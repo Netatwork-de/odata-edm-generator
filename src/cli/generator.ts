@@ -118,7 +118,7 @@ function generateEntityInfo(
     }
 
     const baseTypeName = getBaseTypeName(entityType);
-    const baseEntity = entities.find((e) => e.className === baseTypeName);
+    const baseEntity = entities.find((e) => e.name === baseTypeName);
     if (baseTypeName && !baseEntity) {
       throw new Error(`base type ${baseTypeName} not found.`);
     }

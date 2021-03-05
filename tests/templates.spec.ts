@@ -156,12 +156,13 @@ import {
 @odataEndpoint(Endpoints.foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, model: Partial<TFoo>): TFoo {
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
         return new this(
-            model.id,
-            model.name,
-            model.isActive,
-            model.optional,
+            raw.id,
+            raw.name,
+            raw.isActive,
+            raw.optional,
         );
     }
 
@@ -175,12 +176,13 @@ export class Foo {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, model: Partial<TBar>): TBar {
+    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
         return new this(
-            model.id,
-            model.boolProp,
-            model.strProp,
-            model.optionalProp,
+            raw.id,
+            raw.boolProp,
+            raw.strProp,
+            raw.optionalProp,
         );
     }
 
@@ -194,9 +196,10 @@ export class Bar {
 
 export class BaseOne {
 
-    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, model: Partial<TBaseOne>): TBaseOne {
+    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: Partial<TBaseOne>): TBaseOne {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBaseOne; }
         return new this(
-            model.name,
+            raw.name,
         );
     }
 
@@ -209,12 +212,13 @@ export class BaseOne {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends BaseOne {
 
-    public static create<TChild extends Child = Child>(this: Class<TChild>, model: Partial<TChild>): TChild {
+    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
         return new this(
-            model.id,
-            model.name,
-            model.strProp,
-            model.optionalProp,
+            raw.id,
+            raw.name,
+            raw.strProp,
+            raw.optionalProp,
         );
     }
 
@@ -243,7 +247,7 @@ export class ComplexType1 {
     }
 
     public static create(raw: Partial<ComplexType1>): ComplexType1 {
-        if (raw === undefined || raw === null) { return raw as ComplexType1; }
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as ComplexType1; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {

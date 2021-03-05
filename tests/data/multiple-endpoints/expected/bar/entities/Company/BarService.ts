@@ -15,13 +15,14 @@ import {
 @odataEndpoint(Endpoints.Bars)
 export class Bar {
 
-  public static create<TBar extends Bar = Bar>(this: Class<TBar>, model: Partial<TBar>): TBar {
+  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
     return new this(
-      model.Id,
-      model.Prop12,
-      model.Prop13,
-      model.Prop11,
-      model.Prop14,
+      raw.Id,
+      raw.Prop12,
+      raw.Prop13,
+      raw.Prop11,
+      raw.Prop14,
     );
   }
 
@@ -36,12 +37,13 @@ export class Bar {
 
 export class Base {
 
-  public static create<TBase extends Base = Base>(this: Class<TBase>, model: Partial<TBase>): TBase {
+  public static create<TBase extends Base = Base>(this: Class<TBase>, raw: Partial<TBase>): TBase {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBase; }
     return new this(
-      model.BaseProp12,
-      model.BaseProp13,
-      model.BaseProp11,
-      model.BaseProp14,
+      raw.BaseProp12,
+      raw.BaseProp13,
+      raw.BaseProp11,
+      raw.BaseProp14,
     );
   }
 
@@ -56,11 +58,12 @@ export class Base {
 @odataEndpoint(Endpoints.Fizz)
 export class Bazz {
 
-  public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, model: Partial<TBazz>): TBazz {
+  public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: Partial<TBazz>): TBazz {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBazz; }
     return new this(
-      model.Id,
-      model.BazzProp2,
-      model.BazzProp1,
+      raw.Id,
+      raw.BazzProp2,
+      raw.BazzProp1,
     );
   }
 
@@ -73,12 +76,13 @@ export class Bazz {
 
 export class Foo {
 
-  public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, model: Partial<TFoo>): TFoo {
+  public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
     return new this(
-      model.Id,
-      model.ByteProp,
-      model.DateStrProp,
-      model.StrProp,
+      raw.Id,
+      raw.ByteProp,
+      raw.DateStrProp,
+      raw.StrProp,
     );
   }
 
@@ -94,16 +98,17 @@ export class Foo {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends Base {
 
-  public static create<TChild extends Child = Child>(this: Class<TChild>, model: Partial<TChild>): TChild {
+  public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
     return new this(
-      model.ChildId,
-      model.BaseProp12,
-      model.BaseProp13,
-      model.ChildProp12,
-      model.ChildProp13,
-      model.BaseProp11,
-      model.BaseProp14,
-      model.ChildProp11,
+      raw.ChildId,
+      raw.BaseProp12,
+      raw.BaseProp13,
+      raw.ChildProp12,
+      raw.ChildProp13,
+      raw.BaseProp11,
+      raw.BaseProp14,
+      raw.ChildProp11,
     );
   }
 

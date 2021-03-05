@@ -52,6 +52,7 @@
         <Property Name="ChildProp12" Type="Edm.SByte" Nullable="false" />
         <Property Name="ChildProp13" Type="Edm.TimeOfDay" Nullable="false" />
         <Property Name="ChildId" Type="Edm.Int32" Nullable="false" />
+        <NavigationProperty Name="Condition" Type="Company.Service.BaseCondition" />
       </EntityType>
       <EntityType Name="Bazz">
         <Key>
@@ -102,6 +103,7 @@
       <ComplexType Name="FizzCondition" BaseType="Company.Service.BaseCondition">
         <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
         <Property Name="FC1P2" Type="Company.Service.Interface1" />
+        <Property Name="FC1P3" Type="Company.Service.BaseConfiguration" />
       </ComplexType>
       <EnumType Name="Enum1">
         <Member Name="Member1" Value="0" />
