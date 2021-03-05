@@ -31,10 +31,15 @@ async function main() {
         `Usage: gen-edm options
 
 A CLI tool to generate EDM from OData service.
+For details, refer the docs: https://github.com/Netatwork-de/odata-edm-generator.
 
 Options:
-  --endpoint    The OData endpoint. '{endpoint}' is used to get the list of endpoints, and '{endpoint}/$metadata' is used to get the EDM.
-  --outputDir  The base output directory to write the generated files.
+  --config       The path to the config file.
+  --outputDir    The base output directory to write the generated files.
+  --endpoint     The OData endpoint. '{endpoint}' is used to get the list of endpoints, and '{endpoint}/$metadata' is used to get the EDM.
+  --endpoints    Serialized array of endpoints configuration. Only one of 'endpoint' and 'endpoints' can be provided.
+  --quoteStyle   Single or double quote to use; Allowed values are 'single', and 'double'.
+  --indentSize   Number of spaces to use for indentation.
 `
       );
       return;
