@@ -5,6 +5,7 @@ import { assert } from 'chai';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import mockFs from 'mock-fs';
 import { join } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-shadow
 import { URL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';

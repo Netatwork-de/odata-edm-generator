@@ -172,8 +172,8 @@ export function propertyComparator(p1: PropertyInfo, p2: PropertyInfo): number {
   const isP1Key = p1.isKey;
   if (isP1Key !== p2.isKey) { return isP1Key ? -1 : 1; }
 
-  const p1Nullable = p1.isNullable;
-  if (p1Nullable !== p2.isNullable) { return !p1Nullable ? -1 : 1; }
+  const isP1Nullable = p1.isNullable;
+  if (isP1Nullable !== p2.isNullable) { return !isP1Nullable ? -1 : 1; }
 
   return enCollator.compare(p1.name.toLowerCase(), p2.name.toLowerCase());
 }

@@ -32,7 +32,7 @@ export const enum Endpoints {
     it('Respects the given template', function () {
       try {
         Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
-        const template = 'export const enum Endpoints {<% for(const endpoint of it.endpoints) { %> <%= endpoint.name %> = "<%= endpoint.url %>",<% } %>}'
+        const template = 'export const enum Endpoints {<% for(const endpoint of it.endpoints) { %> <%= endpoint.name %> = "<%= endpoint.url %>",<% } %>}';
         const actual = new EndpointTemplate(template).render(standardEndpoints);
         assert.strictEqual(actual, 'export const enum Endpoints { People = "People", Foos = "Foos", Bar = "fizzbazz",}');
       } finally {

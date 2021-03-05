@@ -162,9 +162,9 @@ type QuoteStyle = 'single' | 'double';
 type ConfigSchema = Partial<
   Omit<Configuration, 'quote' | 'indent'>
   & {
-    quoteStyle: QuoteStyle,
-    indentSize: string | number,
-    endpoint: string,
-    endpoints: EndpointConfiguration[],
+    quoteStyle: QuoteStyle;
+    indentSize: string | number;
+    endpoint: string;
+    endpoints: EndpointConfiguration[];
   }
 >;

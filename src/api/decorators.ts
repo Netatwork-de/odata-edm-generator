@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Decorator to associate an endpoint with an odata entity.
@@ -44,7 +45,7 @@ export function odataType(rawOdataType: string, friendlyType?: string, typePrope
         }
 
         return class extends constructorFunction {
-            constructor(...args: any[]) {
+            public constructor(...args: any[]) {
                 super(...args);
                 Reflect.set(this, odataTypeKey, rawOdataType);
             }
