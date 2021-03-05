@@ -37,6 +37,7 @@ export class ClassInfo {
 
 export class ComplexTypeInfo {
   public derivedTypes: ComplexTypeInfoSet = new ComplexTypeInfoSet();
+  public readonly rootType: ComplexTypeInfo | null = null;
 
   public constructor(
     public readonly name: string,
@@ -44,8 +45,12 @@ export class ComplexTypeInfo {
     public readonly isAbstract: boolean,
     public readonly baseType: ComplexTypeInfo | null,
   ) {
-    if (baseType !== null) {
-      baseType.derivedTypes.push(this);
+    let current = baseType;
+    while (current?.baseType) {
+      current = current.baseType;
+    }
+    if (current) {
+      (this.rootType = current).derivedTypes.push(this);
     }
   }
 }

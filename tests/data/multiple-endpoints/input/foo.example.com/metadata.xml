@@ -116,6 +116,29 @@
         <Property Name="FC1P2" Type="Company.Service.Interface1" />
         <Property Name="FC1P3" Type="Company.Service.BaseConfiguration" />
       </ComplexType>
+      <ComplexType Name="DummyType" Abstract="true">
+        <Property Name="Dummy_Do_Not_Use" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="BranchOneCondition" BaseType="Company.Service.DummyType" Abstract="true">
+        <Property Name="B1C1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="B1C1P2" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="B1FooCondition" BaseType="Company.Service.BranchOneCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Enum1" />
+      </ComplexType>
+      <ComplexType Name="B1BarCondition" BaseType="Company.Service.BranchOneCondition">
+        <Property Name="CBC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CBC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="B1FizzCondition" BaseType="Company.Service.BranchOneCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="BranchTwoCondition" BaseType="Company.Service.DummyType">
+        <Property Name="B2C1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="B2C1P2" Type="Edm.String" />
+      </ComplexType>
       <EnumType Name="Enum1">
         <Member Name="Member1" Value="0" />
         <Member Name="Member2" Value="1" />

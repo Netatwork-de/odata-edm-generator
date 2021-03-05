@@ -266,6 +266,46 @@ export class BaseConfiguration {
   }
 }
 
+export enum $$DummyTypeTypes {
+  B1BarCondition = 'B1BarCondition',
+  B1FizzCondition = 'B1FizzCondition',
+  B1FooCondition = 'B1FooCondition',
+  BranchTwoCondition = 'BranchTwoCondition',
+}
+
+export class DummyType {
+
+  protected static get derivedTypes(): typeof DummyType[] {
+    return [
+      B1BarCondition,
+      B1FizzCondition,
+      B1FooCondition,
+      BranchTwoCondition,
+    ];
+  }
+
+  public static create(raw: Partial<DummyType>): DummyType {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw as DummyType; }
+    const edmType = raw[odataTypeKey];
+    const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+    if (!ctor) {
+      return raw as DummyType;
+    }
+    const result = new ctor();
+    result.initialize(raw);
+    return result;
+  }
+
+  protected static canHandle(_odataType: string): boolean { return false; }
+
+  public Dummy_Do_Not_Use?: string;
+  public readonly $$type: $$DummyTypeTypes;
+
+  protected initialize(raw: Partial<DummyType>) {
+    this.Dummy_Do_Not_Use = raw.Dummy_Do_Not_Use;
+  }
+}
+
 export interface Interface1 {
   I1P1: string;
   I1P2?: number;
@@ -274,6 +314,57 @@ export interface Interface1 {
 export interface Interface2 {
   I2P1: number;
   I2P2?: string;
+}
+
+export class BranchOneCondition extends DummyType {
+
+  public B1C1P1: number;
+  public B1C1P2?: string;
+
+  protected initialize(raw: Partial<BranchOneCondition>) {
+    super.initialize(raw);
+    this.B1C1P1 = raw.B1C1P1;
+    this.B1C1P2 = raw.B1C1P2;
+  }
+}
+
+@odataType('#Company.FooService.B1BarCondition', $$DummyTypeTypes.B1BarCondition, '$$type')
+export class B1BarCondition extends BranchOneCondition {
+
+  public CBC1P1: number;
+  public CBC1P2?: Interface1;
+
+  protected initialize(raw: Partial<B1BarCondition>) {
+    super.initialize(raw);
+    this.CBC1P1 = raw.CBC1P1;
+    this.CBC1P2 = raw.CBC1P2;
+  }
+}
+
+@odataType('#Company.FooService.B1FizzCondition', $$DummyTypeTypes.B1FizzCondition, '$$type')
+export class B1FizzCondition extends BranchOneCondition {
+
+  public FC1P1: number;
+  public FC1P2?: Interface1;
+
+  protected initialize(raw: Partial<B1FizzCondition>) {
+    super.initialize(raw);
+    this.FC1P1 = raw.FC1P1;
+    this.FC1P2 = raw.FC1P2;
+  }
+}
+
+@odataType('#Company.FooService.B1FooCondition', $$DummyTypeTypes.B1FooCondition, '$$type')
+export class B1FooCondition extends BranchOneCondition {
+
+  public FC1P1: number;
+  public FC1P2?: Enum1;
+
+  protected initialize(raw: Partial<B1FooCondition>) {
+    super.initialize(raw);
+    this.FC1P1 = raw.FC1P1;
+    this.FC1P2 = raw.FC1P2;
+  }
 }
 
 export enum $$StandardConditionTypes {
@@ -317,7 +408,6 @@ export class StandardCondition {
 }
 
 @odataType('#Company.FooService.BarCondition', $$StandardConditionTypes.BarCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarCondition extends StandardCondition {
 
   public CBC1P1: number;
@@ -331,7 +421,6 @@ export class BarCondition extends StandardCondition {
 }
 
 @odataType('#Company.FooService.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarConfiguration extends BaseConfiguration {
 
   public CBC1P1: number;
@@ -344,8 +433,20 @@ export class BarConfiguration extends BaseConfiguration {
   }
 }
 
+@odataType('#Company.FooService.BranchTwoCondition', $$DummyTypeTypes.BranchTwoCondition, '$$type')
+export class BranchTwoCondition extends DummyType {
+
+  public B2C1P1: number;
+  public B2C1P2?: string;
+
+  protected initialize(raw: Partial<BranchTwoCondition>) {
+    super.initialize(raw);
+    this.B2C1P1 = raw.B2C1P1;
+    this.B2C1P2 = raw.B2C1P2;
+  }
+}
+
 @odataType('#Company.FooService.FizzCondition', $$StandardConditionTypes.FizzCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FizzCondition extends StandardCondition {
 
   public FC1P1: number;
@@ -361,7 +462,6 @@ export class FizzCondition extends StandardCondition {
 }
 
 @odataType('#Company.FooService.FooCondition', $$StandardConditionTypes.FooCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooCondition extends StandardCondition {
 
   public FC1P1: number;
@@ -375,7 +475,6 @@ export class FooCondition extends StandardCondition {
 }
 
 @odataType('#Company.FooService.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooConfiguration extends BaseConfiguration {
 
   public FC1P1: number;

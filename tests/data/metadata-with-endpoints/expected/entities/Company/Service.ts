@@ -317,7 +317,6 @@ export interface Interface2 {
 }
 
 @odataType('#Company.Service.BarCondition', $$BaseConditionTypes.BarCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarCondition extends BaseCondition {
 
     public CBC1P1: number;
@@ -331,7 +330,6 @@ export class BarCondition extends BaseCondition {
 }
 
 @odataType('#Company.Service.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarConfiguration extends BaseConfiguration {
 
     public CBC1P1: number;
@@ -345,7 +343,6 @@ export class BarConfiguration extends BaseConfiguration {
 }
 
 @odataType('#Company.Service.FizzCondition', $$BaseConditionTypes.FizzCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FizzCondition extends BaseCondition {
 
     public FC1P1: number;
@@ -361,7 +358,6 @@ export class FizzCondition extends BaseCondition {
 }
 
 @odataType('#Company.Service.FooCondition', $$BaseConditionTypes.FooCondition, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooCondition extends BaseCondition {
 
     public FC1P1: number;
@@ -375,7 +371,6 @@ export class FooCondition extends BaseCondition {
 }
 
 @odataType('#Company.Service.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooConfiguration extends BaseConfiguration {
 
     public FC1P1: number;

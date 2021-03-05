@@ -39,20 +39,22 @@ describe('generator', function () {
     const expectedKeys = Array.from(expected.keys()).sort();
     assert.deepStrictEqual(actualKeys, expectedKeys, 'mismatch in entries');
     for (const key of actualKeys) {
-      const changes = diffLines(expected.get(key)!, actual.get(key)!);
+      const expectedContent = expected.get(key)!;
+      const actualContent = actual.get(key)!;
+      const changes = diffLines(expectedContent, actualContent);
       const len = changes.length;
       if (len > 1) {
-        changes.forEach((part) => {
-          if (part.added) {
-            process.stderr.write(green(part.value));
-          } else if (part.removed) {
-            process.stderr.write(red(part.value));
+        for (const change of changes) {
+          if (change.added) {
+            process.stderr.write(green(change.value.replace(/\s/g, '.')));
+          } else if (change.removed) {
+            process.stderr.write(red(change.value.replace(/\s/g, '.')));
           } else {
-            const lines = part.value.split(/[\n\r|\r]/);
+            const lines = change.value.split(/[\n\r|\n]/);
             process.stderr.write(gray([...lines.slice(0, 10), '...', ...lines.slice(-10)].join('\n')));
           }
-        });
-        assert.fail('Content mismatch; check the diff.');
+        }
+        assert.strictEqual(actualContent, expectedContent, `Content mismatch in '${key}'; check the diff.`);
       }
     }
   }

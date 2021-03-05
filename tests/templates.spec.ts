@@ -277,7 +277,6 @@ export interface ComplexType2 {
 }
 
 @odataType('#Awesome.Possum.ChildComplexType', $$ComplexType1Types.ChildComplexType, '$$type')
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildComplexType extends ComplexType1 {
 
     public prop31: number;

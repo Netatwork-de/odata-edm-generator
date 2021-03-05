@@ -85,7 +85,9 @@ const name =  it.name;
 <% if (derivedTypes.length > 0) { -%>
 export enum $$<%= name %>Types {
 <% for(const t of derivedTypes) { -%>
+<% if (!t.isAbstract) { -%>
 <%= indent %><%= t.name %> = <%= quote %><%= t.name %><%= quote %>,
+<% } -%>
 <% } -%>
 }
 
@@ -94,7 +96,9 @@ export class <%= name %> {
 <%= indent %>protected static get derivedTypes(): typeof <%= name %>[] {
 <%= indent.repeat(2) %>return [
 <% for(const t of derivedTypes) { -%>
+<% if (!t.isAbstract) { -%>
 <%= indent.repeat(3) %><%= t.name %>,
+<% } -%>
 <% } -%>
 <%= indent.repeat(2) %>];
 <%= indent %>}
@@ -125,8 +129,9 @@ export class <%= name %> {
 <%= indent %>}
 }
 <%- } else if (baseType !== null) { -%>
-@odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= baseType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
-// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+<% if (!it.isAbstract) { -%>
+@odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= it.rootType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
+<% } -%>
 export class <%= name %> extends <%= baseType.name %> {
 
 <% for(const p of it.propertyInfos) { -%>
