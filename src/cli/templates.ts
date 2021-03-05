@@ -88,7 +88,7 @@ export enum $$<%= name %>Types {
 <% } -%>
 }
 
-export <%_ if (it.isAbstract) { %>  abstract <% } %> class <%= name %> {
+export class <%= name %> {
 
 <%= indent %>protected static get derivedTypes(): typeof <%= name %>[] {
 <%= indent.repeat(2) %>return [
@@ -125,7 +125,8 @@ export <%_ if (it.isAbstract) { %>  abstract <% } %> class <%= name %> {
 }
 <%- } else if (baseType !== null) { -%>
 @odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= baseType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
-export <%_ if (it.isAbstract) { %> abstract <% } %> class <%= name %> extends <%= baseType.name %> {
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class <%= name %> extends <%= baseType.name %> {
 
 <% for(const p of it.propertyInfos) { -%>
 <%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;

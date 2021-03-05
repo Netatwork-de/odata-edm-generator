@@ -5,6 +5,8 @@
 import {
     Class,
     odataEndpoint,
+    odataType,
+    odataTypeKey,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
@@ -60,6 +62,7 @@ export class Bazz {
             model.Bar,
             model.BarId,
             model.BazzProp1,
+            model.Cp,
             model.Foos,
         );
     }
@@ -70,6 +73,7 @@ export class Bazz {
         public Bar?: Bar,
         public BarId?: number,
         public BazzProp1?: string,
+        public Cp?: Interface2,
         public Foos?: Foo[],
     ) { }
 }
@@ -212,6 +216,84 @@ export class GrandChild extends ChildOne {
     }
 }
 
+export enum $$BaseConditionTypes {
+    BarCondition = 'BarCondition',
+    FizzCondition = 'FizzCondition',
+    FooCondition = 'FooCondition',
+}
+
+export class BaseCondition {
+
+    protected static get derivedTypes(): typeof BaseCondition[] {
+        return [
+            BarCondition,
+            FizzCondition,
+            FooCondition,
+        ];
+    }
+
+    public static create(raw: Partial<BaseCondition>): BaseCondition {
+        if (raw === undefined || raw === null) { return raw as BaseCondition; }
+        const edmType = raw[odataTypeKey];
+        const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+        if (!ctor) {
+            return raw as BaseCondition;
+        }
+        const result = new ctor();
+        result.initialize(raw);
+        return result;
+    }
+
+    protected static canHandle(_odataType: string): boolean { return false; }
+
+    public BC1P1: number;
+    public BC1P2?: string;
+    public readonly $$type: $$BaseConditionTypes;
+
+    protected initialize(raw: Partial<BaseCondition>) {
+        this.BC1P1 = raw.BC1P1;
+        this.BC1P2 = raw.BC1P2;
+    }
+}
+
+export enum $$BaseConfigurationTypes {
+    BarConfiguration = 'BarConfiguration',
+    FooConfiguration = 'FooConfiguration',
+}
+
+export class BaseConfiguration {
+
+    protected static get derivedTypes(): typeof BaseConfiguration[] {
+        return [
+            BarConfiguration,
+            FooConfiguration,
+        ];
+    }
+
+    public static create(raw: Partial<BaseConfiguration>): BaseConfiguration {
+        if (raw === undefined || raw === null) { return raw as BaseConfiguration; }
+        const edmType = raw[odataTypeKey];
+        const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
+        if (!ctor) {
+            return raw as BaseConfiguration;
+        }
+        const result = new ctor();
+        result.initialize(raw);
+        return result;
+    }
+
+    protected static canHandle(_odataType: string): boolean { return false; }
+
+    public BC1P1: number;
+    public BC1P2?: string;
+    public readonly $$type: $$BaseConfigurationTypes;
+
+    protected initialize(raw: Partial<BaseConfiguration>) {
+        this.BC1P1 = raw.BC1P1;
+        this.BC1P2 = raw.BC1P2;
+    }
+}
+
 export interface Interface1 {
     I1P1: string;
     I1P2?: number;
@@ -220,6 +302,76 @@ export interface Interface1 {
 export interface Interface2 {
     I2P1: number;
     I2P2?: string;
+}
+
+@odataType('#Company.Service.BarCondition', $$BaseConditionTypes.BarCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class BarCondition extends BaseCondition {
+
+    public CBC1P1: number;
+    public CBC1P2?: Interface1;
+
+    protected initialize(raw: Partial<BarCondition>) {
+        super.initialize(raw);
+        this.CBC1P1 = raw.CBC1P1;
+        this.CBC1P2 = raw.CBC1P2;
+    }
+}
+
+@odataType('#Company.Service.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class BarConfiguration extends BaseConfiguration {
+
+    public CBC1P1: number;
+    public CBC1P2?: Interface1;
+
+    protected initialize(raw: Partial<BarConfiguration>) {
+        super.initialize(raw);
+        this.CBC1P1 = raw.CBC1P1;
+        this.CBC1P2 = raw.CBC1P2;
+    }
+}
+
+@odataType('#Company.Service.FizzCondition', $$BaseConditionTypes.FizzCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FizzCondition extends BaseCondition {
+
+    public FC1P1: number;
+    public FC1P2?: Interface1;
+
+    protected initialize(raw: Partial<FizzCondition>) {
+        super.initialize(raw);
+        this.FC1P1 = raw.FC1P1;
+        this.FC1P2 = raw.FC1P2;
+    }
+}
+
+@odataType('#Company.Service.FooCondition', $$BaseConditionTypes.FooCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FooCondition extends BaseCondition {
+
+    public FC1P1: number;
+    public FC1P2?: Enum1;
+
+    protected initialize(raw: Partial<FooCondition>) {
+        super.initialize(raw);
+        this.FC1P1 = raw.FC1P1;
+        this.FC1P2 = raw.FC1P2;
+    }
+}
+
+@odataType('#Company.Service.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
+export class FooConfiguration extends BaseConfiguration {
+
+    public FC1P1: number;
+    public FC1P2?: Enum1;
+
+    protected initialize(raw: Partial<FooConfiguration>) {
+        super.initialize(raw);
+        this.FC1P1 = raw.FC1P1;
+        this.FC1P2 = raw.FC1P2;
+    }
 }
 
 export enum Enum1 {

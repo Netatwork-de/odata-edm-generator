@@ -5,6 +5,8 @@
 import {
     Class,
     odataEndpoint,
+    odataType,
+    odataTypeKey,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,

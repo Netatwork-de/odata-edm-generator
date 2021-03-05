@@ -61,6 +61,7 @@
         <Property Name="BazzProp2" Type="Edm.Byte" Nullable="false" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
         <Property Name="BarId" Type="Edm.Int32" />
+        <NavigationProperty Name="Cp" Type="Company.Service.Interface2" />
         <NavigationProperty Name="Foos" Type="Collection(Company.Service.Foo)" />
         <NavigationProperty Name="Bar" Type="Company.Service.Bar">
           <ReferentialConstraint Property="BarId" ReferencedProperty="Id" />
@@ -73,6 +74,34 @@
       <ComplexType Name="Interface2">
         <Property Name="I2P1" Type="Edm.Int32" Nullable="false" />
         <Property Name="I2P2" Type="Edm.Guid" />
+      </ComplexType>
+      <ComplexType Name="BaseConfiguration">
+        <Property Name="BC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BC1P2" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="FooConfiguration" BaseType="Company.Service.BaseConfiguration">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Enum1" />
+      </ComplexType>
+      <ComplexType Name="BarConfiguration" BaseType="Company.Service.BaseConfiguration">
+        <Property Name="CBC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CBC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="BaseCondition" Abstract="true">
+        <Property Name="BC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BC1P2" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="FooCondition" BaseType="Company.Service.BaseCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Enum1" />
+      </ComplexType>
+      <ComplexType Name="BarCondition" BaseType="Company.Service.BaseCondition">
+        <Property Name="CBC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CBC1P2" Type="Company.Service.Interface1" />
+      </ComplexType>
+      <ComplexType Name="FizzCondition" BaseType="Company.Service.BaseCondition">
+        <Property Name="FC1P1" Type="Edm.Int32" Nullable="false" />
+        <Property Name="FC1P2" Type="Company.Service.Interface1" />
       </ComplexType>
       <EnumType Name="Enum1">
         <Member Name="Member1" Value="0" />

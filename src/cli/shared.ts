@@ -113,7 +113,7 @@ export class EdmInfo {
     //   .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
     const directives: ImportDirectiveInfo[] = this.importDirectives = [];
     directives.push(
-      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint']),
+      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint', 'odataType', 'odataTypeKey']),
       new ImportDirectiveInfo(
         relative(dirname(filePath), getEndpointsPath(configuration))
           .replace(/\\/g, '/')
