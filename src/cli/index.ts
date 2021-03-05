@@ -2,7 +2,7 @@
 
 import * as https from 'https';
 import { Configuration } from './configuration';
-import { generateEdm, generateEndpointsFile } from './generator';
+import { Generator } from './generator';
 import { Endpoint, Logger } from './shared';
 
 function getData(url: string) {
@@ -24,11 +24,10 @@ function getData(url: string) {
 }
 
 async function main() {
-  try {
-    const args = process.argv.slice(2);
-    if (args.length === 0 || args[0].replace(/^-*/g, '') === 'help') {
-      Logger.log(
-        `Usage: gen-edm options
+  const args = process.argv.slice(2);
+  if (args.length === 0 || args[0].replace(/^-*/g, '') === 'help') {
+    Logger.log(
+      `Usage: gen-edm options
 
 A CLI tool to generate EDM from OData service.
 For details, refer the docs: https://github.com/Netatwork-de/odata-edm-generator.
@@ -41,22 +40,26 @@ Options:
   --quoteStyle   Single or double quote to use; Allowed values are 'single', and 'double'.
   --indentSize   Number of spaces to use for indentation.
 `
-      );
-      return;
-    }
+    );
+    return;
+  }
 
+  let generator: Generator | null = null;
+  try {
     const configuration = Configuration.createFromCLIArgs(args);
+    generator = new Generator();
     for (const ep of configuration.endpoints) {
       const baseEndpoint = ep.url;
       const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
-      generateEndpointsFile(endpoints, ep);
+      generator.generateEndpointsFile(endpoints, ep);
       Logger.info(`generated endpoints for ${baseEndpoint}.`);
 
-      generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
+      generator.generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
       Logger.info(`generated EDM for ${baseEndpoint}.`);
     }
   } finally {
+    generator?.dispose();
     Configuration.dispose();
   }
 }

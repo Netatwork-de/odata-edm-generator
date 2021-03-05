@@ -11,7 +11,7 @@ import { join } from 'path';
 import { URL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { generateEdm, generateEndpointsFile } from '../src/cli/generator';
+import { Generator } from '../src/cli/generator';
 import { EndpointConfiguration } from '../src/cli/shared';
 
 describe('generator', function () {
@@ -66,6 +66,7 @@ describe('generator', function () {
   ) {
     const dirName = dirent.name;
     it(`works for ${dirName}`, function () {
+      let generator: Generator | null = null;
       try {
         // arrange
         const baseOutputPath = join(process.cwd(), uuid());
@@ -91,6 +92,7 @@ describe('generator', function () {
         const expected = readAllContent(join(caseDir, 'expected'));
         mockFs(mockFsConfig, { createCwd: true });
         const configuration = Configuration.createFromCLIArgs(args);
+        generator = new Generator();
 
         for (const ep of configuration.endpoints) {
           let epInput = join(inputDir, new URL(ep.url).hostname);
@@ -101,8 +103,8 @@ describe('generator', function () {
           const endpoints = mockFs.bypass(() => JSON.parse(readFileSync(join(epInput, 'endpoints.json'), 'utf8')).value);
 
           // act
-          generateEndpointsFile(endpoints, ep);
-          generateEdm(edmxXml, endpoints, ep);
+          generator.generateEndpointsFile(endpoints, ep);
+          generator.generateEdm(edmxXml, endpoints, ep);
         }
 
         // assert
@@ -113,6 +115,7 @@ describe('generator', function () {
       } finally {
         // cleanup
         mockFs.restore();
+        generator?.dispose();
         Configuration.dispose();
       }
     });
