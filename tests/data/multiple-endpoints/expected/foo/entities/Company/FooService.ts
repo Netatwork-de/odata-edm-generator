@@ -239,7 +239,7 @@ export class BaseConfiguration {
     return [
       BarConfiguration,
       FooConfiguration,
-    ];
+    ] as unknown as typeof BaseConfiguration[];
   }
 
   public static create(raw: Partial<BaseConfiguration>): BaseConfiguration {
@@ -249,21 +249,16 @@ export class BaseConfiguration {
     if (!ctor) {
       return raw as BaseConfiguration;
     }
-    const result = new ctor();
-    result.initialize(raw);
-    return result;
+    return ctor.create(raw);
   }
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public BC1P1: number;
-  public BC1P2?: string;
   public readonly $$type: $$BaseConfigurationTypes;
-
-  protected initialize(raw: Partial<BaseConfiguration>) {
-    this.BC1P1 = raw.BC1P1;
-    this.BC1P2 = raw.BC1P2;
-  }
+  public constructor(
+    public BC1P1: number,
+    public BC1P2?: string,
+  ) { }
 }
 
 export enum $$DummyTypeTypes {
@@ -273,7 +268,7 @@ export enum $$DummyTypeTypes {
   BranchTwoCondition = 'BranchTwoCondition',
 }
 
-export class DummyType {
+export abstract class DummyType {
 
   protected static get derivedTypes(): typeof DummyType[] {
     return [
@@ -281,7 +276,7 @@ export class DummyType {
       B1FizzCondition,
       B1FooCondition,
       BranchTwoCondition,
-    ];
+    ] as unknown as typeof DummyType[];
   }
 
   public static create(raw: Partial<DummyType>): DummyType {
@@ -291,19 +286,15 @@ export class DummyType {
     if (!ctor) {
       return raw as DummyType;
     }
-    const result = new ctor();
-    result.initialize(raw);
-    return result;
+    return ctor.create(raw);
   }
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public Dummy_Do_Not_Use?: string;
   public readonly $$type: $$DummyTypeTypes;
-
-  protected initialize(raw: Partial<DummyType>) {
-    this.Dummy_Do_Not_Use = raw.Dummy_Do_Not_Use;
-  }
+  protected constructor(
+    public Dummy_Do_Not_Use?: string,
+  ) { }
 }
 
 export interface Interface1 {
@@ -316,55 +307,104 @@ export interface Interface2 {
   I2P2?: string;
 }
 
-export class BranchOneCondition extends DummyType {
+export abstract class BranchOneCondition extends DummyType {
 
-  public B1C1P1: number;
-  public B1C1P2?: string;
-
-  protected initialize(raw: Partial<BranchOneCondition>) {
-    super.initialize(raw);
-    this.B1C1P1 = raw.B1C1P1;
-    this.B1C1P2 = raw.B1C1P2;
+  protected constructor(
+    public B1C1P1: number,
+    public B1C1P2?: string,
+    public Dummy_Do_Not_Use?: string,
+  ) {
+    super(
+      Dummy_Do_Not_Use,
+    );
   }
 }
 
 @odataType('#Company.FooService.B1BarCondition', $$DummyTypeTypes.B1BarCondition, '$$type')
 export class B1BarCondition extends BranchOneCondition {
 
-  public CBC1P1: number;
-  public CBC1P2?: Interface1;
-
-  protected initialize(raw: Partial<B1BarCondition>) {
-    super.initialize(raw);
-    this.CBC1P1 = raw.CBC1P1;
-    this.CBC1P2 = raw.CBC1P2;
+  public constructor(
+    public B1C1P1: number,
+    public CBC1P1: number,
+    public B1C1P2?: string,
+    public CBC1P2?: Interface1,
+    public Dummy_Do_Not_Use?: string,
+  ) {
+    super(
+      B1C1P1,
+      B1C1P2,
+      Dummy_Do_Not_Use,
+    );
   }
+
+  public static create(raw: Partial<B1BarCondition>): B1BarCondition {
+    return new B1BarCondition(
+      raw.B1C1P1,
+      raw.CBC1P1,
+      raw.B1C1P2,
+      raw.CBC1P2,
+      raw.Dummy_Do_Not_Use,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.B1FizzCondition', $$DummyTypeTypes.B1FizzCondition, '$$type')
 export class B1FizzCondition extends BranchOneCondition {
 
-  public FC1P1: number;
-  public FC1P2?: Interface1;
-
-  protected initialize(raw: Partial<B1FizzCondition>) {
-    super.initialize(raw);
-    this.FC1P1 = raw.FC1P1;
-    this.FC1P2 = raw.FC1P2;
+  public constructor(
+    public B1C1P1: number,
+    public FC1P1: number,
+    public B1C1P2?: string,
+    public Dummy_Do_Not_Use?: string,
+    public FC1P2?: Interface1,
+  ) {
+    super(
+      B1C1P1,
+      B1C1P2,
+      Dummy_Do_Not_Use,
+    );
   }
+
+  public static create(raw: Partial<B1FizzCondition>): B1FizzCondition {
+    return new B1FizzCondition(
+      raw.B1C1P1,
+      raw.FC1P1,
+      raw.B1C1P2,
+      raw.Dummy_Do_Not_Use,
+      raw.FC1P2,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.B1FooCondition', $$DummyTypeTypes.B1FooCondition, '$$type')
 export class B1FooCondition extends BranchOneCondition {
 
-  public FC1P1: number;
-  public FC1P2?: Enum1;
-
-  protected initialize(raw: Partial<B1FooCondition>) {
-    super.initialize(raw);
-    this.FC1P1 = raw.FC1P1;
-    this.FC1P2 = raw.FC1P2;
+  public constructor(
+    public B1C1P1: number,
+    public FC1P1: number,
+    public B1C1P2?: string,
+    public Dummy_Do_Not_Use?: string,
+    public FC1P2?: Enum1,
+  ) {
+    super(
+      B1C1P1,
+      B1C1P2,
+      Dummy_Do_Not_Use,
+    );
   }
+
+  public static create(raw: Partial<B1FooCondition>): B1FooCondition {
+    return new B1FooCondition(
+      raw.B1C1P1,
+      raw.FC1P1,
+      raw.B1C1P2,
+      raw.Dummy_Do_Not_Use,
+      raw.FC1P2,
+    );
+  }
+
 }
 
 export enum $$StandardConditionTypes {
@@ -373,14 +413,14 @@ export enum $$StandardConditionTypes {
   FooCondition = 'FooCondition',
 }
 
-export class StandardCondition {
+export abstract class StandardCondition {
 
   protected static get derivedTypes(): typeof StandardCondition[] {
     return [
       BarCondition,
       FizzCondition,
       FooCondition,
-    ];
+    ] as unknown as typeof StandardCondition[];
   }
 
   public static create(raw: Partial<StandardCondition>): StandardCondition {
@@ -390,101 +430,171 @@ export class StandardCondition {
     if (!ctor) {
       return raw as StandardCondition;
     }
-    const result = new ctor();
-    result.initialize(raw);
-    return result;
+    return ctor.create(raw);
   }
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public BC1P1: number;
-  public BC1P2?: string;
   public readonly $$type: $$StandardConditionTypes;
-
-  protected initialize(raw: Partial<StandardCondition>) {
-    this.BC1P1 = raw.BC1P1;
-    this.BC1P2 = raw.BC1P2;
-  }
+  protected constructor(
+    public BC1P1: number,
+    public BC1P2?: string,
+  ) { }
 }
 
 @odataType('#Company.FooService.BarCondition', $$StandardConditionTypes.BarCondition, '$$type')
 export class BarCondition extends StandardCondition {
 
-  public CBC1P1: number;
-  public CBC1P2?: Interface1;
-
-  protected initialize(raw: Partial<BarCondition>) {
-    super.initialize(raw);
-    this.CBC1P1 = raw.CBC1P1;
-    this.CBC1P2 = raw.CBC1P2;
+  public constructor(
+    public BC1P1: number,
+    public CBC1P1: number,
+    public BC1P2?: string,
+    public CBC1P2?: Interface1,
+  ) {
+    super(
+      BC1P1,
+      BC1P2,
+    );
   }
+
+  public static create(raw: Partial<BarCondition>): BarCondition {
+    return new BarCondition(
+      raw.BC1P1,
+      raw.CBC1P1,
+      raw.BC1P2,
+      raw.CBC1P2,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
 export class BarConfiguration extends BaseConfiguration {
 
-  public CBC1P1: number;
-  public CBC1P2?: Interface1;
-
-  protected initialize(raw: Partial<BarConfiguration>) {
-    super.initialize(raw);
-    this.CBC1P1 = raw.CBC1P1;
-    this.CBC1P2 = raw.CBC1P2;
+  public constructor(
+    public BC1P1: number,
+    public CBC1P1: number,
+    public BC1P2?: string,
+    public CBC1P2?: Interface1,
+  ) {
+    super(
+      BC1P1,
+      BC1P2,
+    );
   }
+
+  public static create(raw: Partial<BarConfiguration>): BarConfiguration {
+    return new BarConfiguration(
+      raw.BC1P1,
+      raw.CBC1P1,
+      raw.BC1P2,
+      raw.CBC1P2,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.BranchTwoCondition', $$DummyTypeTypes.BranchTwoCondition, '$$type')
 export class BranchTwoCondition extends DummyType {
 
-  public B2C1P1: number;
-  public B2C1P2?: string;
-
-  protected initialize(raw: Partial<BranchTwoCondition>) {
-    super.initialize(raw);
-    this.B2C1P1 = raw.B2C1P1;
-    this.B2C1P2 = raw.B2C1P2;
+  public constructor(
+    public B2C1P1: number,
+    public B2C1P2?: string,
+    public Dummy_Do_Not_Use?: string,
+  ) {
+    super(
+      Dummy_Do_Not_Use,
+    );
   }
+
+  public static create(raw: Partial<BranchTwoCondition>): BranchTwoCondition {
+    return new BranchTwoCondition(
+      raw.B2C1P1,
+      raw.B2C1P2,
+      raw.Dummy_Do_Not_Use,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.FizzCondition', $$StandardConditionTypes.FizzCondition, '$$type')
 export class FizzCondition extends StandardCondition {
 
-  public FC1P1: number;
-  public FC1P2?: Interface1;
-  public FC1P3?: BaseConfiguration;
-
-  protected initialize(raw: Partial<FizzCondition>) {
-    super.initialize(raw);
-    this.FC1P1 = raw.FC1P1;
-    this.FC1P2 = raw.FC1P2;
-    this.FC1P3 = BaseConfiguration.create(raw.FC1P3);
+  public constructor(
+    public BC1P1: number,
+    public FC1P1: number,
+    public BC1P2?: string,
+    public FC1P2?: Interface1,
+    public FC1P3?: BaseConfiguration,
+  ) {
+    super(
+      BC1P1,
+      BC1P2,
+    );
   }
+
+  public static create(raw: Partial<FizzCondition>): FizzCondition {
+    return new FizzCondition(
+      raw.BC1P1,
+      raw.FC1P1,
+      raw.BC1P2,
+      raw.FC1P2,
+      BaseConfiguration.create(raw.FC1P3),
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.FooCondition', $$StandardConditionTypes.FooCondition, '$$type')
 export class FooCondition extends StandardCondition {
 
-  public FC1P1: number;
-  public FC1P2?: Enum1;
-
-  protected initialize(raw: Partial<FooCondition>) {
-    super.initialize(raw);
-    this.FC1P1 = raw.FC1P1;
-    this.FC1P2 = raw.FC1P2;
+  public constructor(
+    public BC1P1: number,
+    public FC1P1: number,
+    public BC1P2?: string,
+    public FC1P2?: Enum1,
+  ) {
+    super(
+      BC1P1,
+      BC1P2,
+    );
   }
+
+  public static create(raw: Partial<FooCondition>): FooCondition {
+    return new FooCondition(
+      raw.BC1P1,
+      raw.FC1P1,
+      raw.BC1P2,
+      raw.FC1P2,
+    );
+  }
+
 }
 
 @odataType('#Company.FooService.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
 export class FooConfiguration extends BaseConfiguration {
 
-  public FC1P1: number;
-  public FC1P2?: Enum1;
-
-  protected initialize(raw: Partial<FooConfiguration>) {
-    super.initialize(raw);
-    this.FC1P1 = raw.FC1P1;
-    this.FC1P2 = raw.FC1P2;
+  public constructor(
+    public BC1P1: number,
+    public FC1P1: number,
+    public BC1P2?: string,
+    public FC1P2?: Enum1,
+  ) {
+    super(
+      BC1P1,
+      BC1P2,
+    );
   }
+
+  public static create(raw: Partial<FooConfiguration>): FooConfiguration {
+    return new FooConfiguration(
+      raw.BC1P1,
+      raw.FC1P1,
+      raw.BC1P2,
+      raw.FC1P2,
+    );
+  }
+
 }
 
 export enum Enum1 {

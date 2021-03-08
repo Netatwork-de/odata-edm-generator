@@ -243,7 +243,7 @@ export class ComplexType1 {
     protected static get derivedTypes(): typeof ComplexType1[] {
         return [
             ChildComplexType,
-        ];
+        ] as unknown as typeof ComplexType1[];
     }
 
     public static create(raw: Partial<ComplexType1>): ComplexType1 {
@@ -253,21 +253,16 @@ export class ComplexType1 {
         if (!ctor) {
             return raw as ComplexType1;
         }
-        const result = new ctor();
-        result.initialize(raw);
-        return result;
+        return ctor.create(raw);
     }
 
     protected static canHandle(_odataType: string): boolean { return false; }
 
-    public prop11: number;
-    public prop12: string;
     public readonly $$type: $$ComplexType1Types;
-
-    protected initialize(raw: Partial<ComplexType1>) {
-        this.prop11 = raw.prop11;
-        this.prop12 = raw.prop12;
-    }
+    public constructor(
+        public prop11: number,
+        public prop12: string,
+    ) { }
 }
 
 export interface ComplexType2 {
@@ -279,16 +274,29 @@ export interface ComplexType2 {
 @odataType('#Awesome.Possum.ChildComplexType', $$ComplexType1Types.ChildComplexType, '$$type')
 export class ChildComplexType extends ComplexType1 {
 
-    public prop31: number;
-    public prop32: string;
-    public prop33: boolean;
-
-    protected initialize(raw: Partial<ChildComplexType>) {
-        super.initialize(raw);
-        this.prop31 = raw.prop31;
-        this.prop32 = raw.prop32;
-        this.prop33 = raw.prop33;
+    public constructor(
+        public prop11: number,
+        public prop12: string,
+        public prop31: number,
+        public prop32: string,
+        public prop33: boolean,
+    ) {
+        super(
+            prop11,
+            prop12,
+        );
     }
+
+    public static create(raw: Partial<ChildComplexType>): ChildComplexType {
+        return new ChildComplexType(
+            raw.prop11,
+            raw.prop12,
+            raw.prop31,
+            raw.prop32,
+            raw.prop33,
+        );
+    }
+
 }
 
 export enum EnumOne {

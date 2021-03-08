@@ -46,6 +46,12 @@ export class ComplexTypeInfo {
     public readonly baseType: ComplexTypeInfo | null,
   ) {
     let current = baseType;
+
+    if (current) {
+      this.propertyInfos.push(...current.propertyInfos);
+      this.propertyInfos.sort(propertyComparator);
+    }
+
     while (current?.baseType) {
       current = current.baseType;
     }

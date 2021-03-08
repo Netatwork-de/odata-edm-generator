@@ -81,6 +81,7 @@ const quote = it.quote;
 const derivedTypes = it.derivedTypes;
 const baseType = it.baseType;
 const name =  it.name;
+const isAbstract = it.isAbstract;
 -%>
 <% if (derivedTypes.length > 0) { -%>
 export enum $$<%= name %>Types {
@@ -91,7 +92,7 @@ export enum $$<%= name %>Types {
 <% } -%>
 }
 
-export class <%= name %> {
+export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 
 <%= indent %>protected static get derivedTypes(): typeof <%= name %>[] {
 <%= indent.repeat(2) %>return [
@@ -100,7 +101,7 @@ export class <%= name %> {
 <%= indent.repeat(3) %><%= t.name %>,
 <% } -%>
 <% } -%>
-<%= indent.repeat(2) %>];
+<%= indent.repeat(2) %>] as unknown as typeof <%= name %>[];
 <%= indent %>}
 
 <%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
@@ -110,39 +111,46 @@ export class <%= name %> {
 <%= indent.repeat(2) %>if (!ctor) {
 <%= indent.repeat(3) %>return raw as <%= name %>;
 <%= indent.repeat(2) %>}
-<%= indent.repeat(2) %>const result = new ctor();
-<%= indent.repeat(2) %>result.initialize(raw);
-<%= indent.repeat(2) %>return result;
+<%= indent.repeat(2) %>return ctor.create(raw);
 <%= indent %>}
 
 <%= indent %>protected static canHandle(_odataType: string): boolean { return false; }
 
-<% for(const p of it.propertyInfos) { -%>
-<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>;
-<% } -%>
 <%= indent %>public readonly $$type: $$<%= name %>Types;
-
-<%= indent %>protected initialize(raw: Partial<<%= name %>>) {
+<%= indent %><% if(isAbstract) { %>protected<% } else { %>public<% } %> constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>this.<%= p.name %> = <% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>;
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
 <% } -%>
-<%= indent %>}
+<%= indent %>) { }
 }
 <%- } else if (baseType !== null) { -%>
-<% if (!it.isAbstract) { -%>
+<% if (!isAbstract) { -%>
 @odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= it.rootType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
 <% } -%>
-export class <%= name %> extends <%= baseType.name %> {
+export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseType.name %> {
 
+<%= indent %><% if(isAbstract) { %>protected<% } else { %>public<% } %> constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>;
-<% } %>
-<%= indent %>protected initialize(raw: Partial<<%= name %>>) {
-<%= indent.repeat(2) %>super.initialize(raw);
-<% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>this.<%= p.name %> = <% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>;
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
 <% } -%>
+<%= indent %>) <%_ if (it.baseType) { %> {
+<%= indent.repeat(2) %>super(
+<% for(const p of it.baseType.propertyInfos) { -%>
+<%= indent.repeat(3) %><%= p.name %>,
+<% } -%>
+<%= indent.repeat(2) %>);
 <%= indent %>}
+<%- } else { %> { } <%_ } -%>
+<% if(!isAbstract) { %>
+
+<%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
+<%= indent.repeat(2) %>return new <%= name %>(
+<% for(const p of it.propertyInfos) { -%>
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
+<% } -%>
+<%= indent.repeat(2) %>);
+<%= indent %>}
+<% } %>
 }
 <%- } else { -%>
 export interface <%= name %> {
