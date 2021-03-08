@@ -1,5 +1,9 @@
 # @netatwork/odata-edm-generator
 
+[![npm version](https://img.shields.io/npm/v/@netatwork/odata-edm-generator)](https://www.npmjs.com/package/@netatwork/odata-edm-generator)
+[![npm download](https://img.shields.io/npm/dt/@netatwork/odata-edm-generator?label=npm%20download)](https://www.npmjs.com/package/@netatwork/odata-edm-generator)
+![build status](https://github.com/Netatwork-de/odata-edm-generator/workflows/build/badge.svg)
+
 This is a CLI-utility to generate OData EDM and endpoints in TypeScript.
 
 ## Install
@@ -130,7 +134,7 @@ For more examples check the [tests](https://github.com/Netatwork-de/odata-edm-ge
 
 ### Input
 
-<details open>
+<details>
 <summary> Endpoints </summary>
 
 ```json
@@ -157,7 +161,7 @@ For more examples check the [tests](https://github.com/Netatwork-de/odata-edm-ge
 ```
 </details>
 
-<details open>
+<details>
 <summary> Metadata </summary>
 
 ```xml
@@ -307,7 +311,7 @@ For more examples check the [tests](https://github.com/Netatwork-de/odata-edm-ge
 
 ### Output
 
-<details open>
+<details>
 <summary>out/Endpoints.ts</summary>
 
 ```ts
@@ -322,7 +326,7 @@ export const enum Endpoints {
 ```
 </details>
 
-<details open>
+<details>
 <summary>out/entities/Company/FooService.ts</summary>
 
 ```ts
