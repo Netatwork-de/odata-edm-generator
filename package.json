@@ -42,7 +42,6 @@
     "@types/mock-fs": "^4.13.1",
     "@types/node": "^17.0.14",
     "@types/uuid": "^8.3.4",
-    "@types/xmldom": "^0.1.31",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "chai": "^4.3.6",
@@ -67,7 +66,7 @@
   },
   "dependencies": {
     "eta": "^1.12.3",
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.8.0"
   },
   "commitlint": {
     "extends": [
