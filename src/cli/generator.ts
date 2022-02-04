@@ -73,11 +73,12 @@ function getMembers(properties: Element[], /* imports: ImportInfo[], */ keys: st
   return properties
     .map((property) => {
       const name = property.getAttribute('Name')!;
+      const isKey = keys.includes(name);
       return new PropertyInfo(
         name,
         getType(property.getAttribute('Type')!/* , imports */),
-        property.getAttribute('Nullable') !== 'false',
-        keys.includes(name)
+        !isKey && property.getAttribute('Nullable') !== 'false',
+        isKey
       );
     })
     .sort(propertyComparator);

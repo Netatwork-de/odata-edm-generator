@@ -68,6 +68,27 @@
           <ReferentialConstraint Property="BarId" ReferencedProperty="Id" />
         </NavigationProperty>
       </EntityType>
+      <EntityType Name="DomainSetting">
+        <Key>
+          <PropertyRef Name="DomainId" />
+        </Key>
+        <Property Name="DomainId" Type="Edm.Int32" />
+        <Property Name="DomainName" Type="Edm.String" />
+        <Property Name="UserCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CertificateCount" Type="Edm.Int32" Nullable="false" />
+        <NavigationProperty Name="Domain" Type="Company.Service.Domain">
+          <ReferentialConstraint Property="DomainId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Domain">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="TXT" Type="Edm.String" Nullable="false" />
+        <Property Name="TrustedSubnetsData" Type="Edm.Binary" />
+        <Property Name="CertificateData" Type="Edm.Binary" />
+      </EntityType>
       <ComplexType Name="Interface1">
         <Property Name="I1P1" Type="Edm.String" Nullable="false" />
         <Property Name="I1P2" Type="Edm.Int32" />

@@ -81,6 +81,48 @@ export class Bazz {
     ) { }
 }
 
+export class Domain {
+
+    public static create<TDomain extends Domain = Domain>(this: Class<TDomain>, raw: Partial<TDomain>): TDomain {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TDomain; }
+        return new this(
+            raw.Id,
+            raw.TXT,
+            raw.CertificateData,
+            raw.TrustedSubnetsData,
+        );
+    }
+
+    public constructor(
+        public Id: number,
+        public TXT: string,
+        public CertificateData?: string,
+        public TrustedSubnetsData?: string,
+    ) { }
+}
+
+export class DomainSetting {
+
+    public static create<TDomainSetting extends DomainSetting = DomainSetting>(this: Class<TDomainSetting>, raw: Partial<TDomainSetting>): TDomainSetting {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw as TDomainSetting; }
+        return new this(
+            raw.DomainId,
+            raw.CertificateCount,
+            raw.UserCount,
+            Domain.create(raw.Domain),
+            raw.DomainName,
+        );
+    }
+
+    public constructor(
+        public DomainId: number,
+        public CertificateCount: number,
+        public UserCount: number,
+        public Domain?: Domain,
+        public DomainName?: string,
+    ) { }
+}
+
 @odataEndpoint(Endpoints.Foos)
 export class Foo {
 

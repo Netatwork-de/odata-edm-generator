@@ -14,7 +14,7 @@
     "build": "tsc && tsc -p tsconfig.esm.json",
     "dev": "tsc -w --preserveWatchOutput",
     "test": "nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js",
-    "test:dev": "cross-env DEV=true nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js"
+    "test:dev": "cross-env DEV=true nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js --bail"
   },
   "repository": {
     "type": "git",
