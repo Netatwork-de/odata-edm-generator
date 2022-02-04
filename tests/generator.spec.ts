@@ -2,17 +2,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { assert } from 'chai';
-import { red, green, gray } from 'chalk';
+import { red, green, gray } from 'colorette';
 import { diffLines } from 'diff';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import mockFs from 'mock-fs';
+import type { DirectoryItems } from 'mock-fs/lib/filesystem';
 import { join } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import { URL } from 'url';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration';
-import { Generator } from '../src/cli/generator';
-import { EndpointConfiguration } from '../src/cli/shared';
+import { $Generator } from '../src/cli/generator';
+import { Endpoint, EndpointConfiguration } from '../src/cli/shared';
 
 describe('generator', function () {
 
@@ -66,14 +67,14 @@ describe('generator', function () {
   ) {
     const dirName = dirent.name;
     it(`works for ${dirName}`, function () {
-      let generator: Generator | null = null;
+      let generator: $Generator | null = null;
       try {
         // arrange
         const baseOutputPath = join(process.cwd(), uuid());
         const caseDir = join(dataPath, dirName);
         const inputDir = join(caseDir, 'input');
 
-        const mockFsConfig: any = { [baseOutputPath]: {} };
+        const mockFsConfig: DirectoryItems = { [baseOutputPath]: {} };
         const configFilePath = join(inputDir, 'config.js');
 
         let configuredEndpoints: EndpointConfiguration[] | undefined = undefined;
@@ -92,7 +93,7 @@ describe('generator', function () {
         const expected = readAllContent(join(caseDir, 'expected'));
         mockFs(mockFsConfig, { createCwd: true });
         const configuration = Configuration.createFromCLIArgs(args);
-        generator = new Generator();
+        generator = new $Generator();
 
         for (const ep of configuration.endpoints) {
           let epInput = join(inputDir, new URL(ep.url).hostname);
@@ -100,7 +101,7 @@ describe('generator', function () {
 
           const edmxXml = mockFs.bypass(() => readFileSync(join(epInput, 'metadata.xml'), 'utf8'));
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          const endpoints = mockFs.bypass(() => JSON.parse(readFileSync(join(epInput, 'endpoints.json'), 'utf8')).value);
+          const endpoints: Endpoint[] = mockFs.bypass(() => JSON.parse(readFileSync(join(epInput, 'endpoints.json'), 'utf8')).value);
 
           // act
           generator.generateEndpointsFile(endpoints, ep);
@@ -111,7 +112,7 @@ describe('generator', function () {
         const actual = readAllContent(baseOutputPath);
         assertContent(actual, expected);
       } catch (e) {
-        assert.fail(e);
+        assert.fail((e as Error).message);
       } finally {
         // cleanup
         mockFs.restore();

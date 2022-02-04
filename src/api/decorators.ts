@@ -41,11 +41,12 @@ export function odataType(rawOdataType: string, friendlyType?: string, typePrope
         }
         Reflect.defineProperty(constructorFunction, 'canHandle', { get() { return (arg: string) => arg === rawOdataType; } });
         if (friendlyType && typePropertyName) {
-            Reflect.set(constructorFunction.prototype, typePropertyName, friendlyType);
+            Reflect.set(constructorFunction.prototype as object, typePropertyName, friendlyType);
         }
 
         return class extends constructorFunction {
             public constructor(...args: any[]) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 super(...args);
                 Reflect.set(this, odataTypeKey, rawOdataType);
             }

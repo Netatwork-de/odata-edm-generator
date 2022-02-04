@@ -89,7 +89,7 @@ function getBaseTypeName(type: Element) {
     ?.split('.')
     ?.pop();
 }
-export class Generator {
+export class $Generator {
 
   private readonly endpointTemplate = new EndpointTemplate();
   private readonly edmTemplate = new EdmTemplate();

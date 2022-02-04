@@ -37,14 +37,14 @@ export class Configuration {
             throw new Error(`The config file "${configPath}" does not exist.`);
           }
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          instance.applyConfiguration(require(configPath));
+          instance.applyConfiguration(require(configPath) as ConfigSchema);
           break;
         }
         case 'endpoint':
           instance.setEndpoints(args[i + 1]);
           break;
         case 'endpoints':
-          instance.setEndpoints(JSON.parse(args[i + 1]));
+          instance.setEndpoints(JSON.parse(args[i + 1]) as string | EndpointConfiguration[]);
           break;
         case 'outputDir': {
           instance.setOutputDir(args[i + 1], true);

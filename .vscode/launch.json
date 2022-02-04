@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "run tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "request": "launch",
+      "args": [
+        "--config",
+        "./tests/.mocharc.js",
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "type": "pwa-node",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

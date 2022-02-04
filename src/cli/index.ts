@@ -2,7 +2,7 @@
 
 import * as https from 'https';
 import { Configuration } from './configuration';
-import { Generator } from './generator';
+import { $Generator } from './generator';
 import { Endpoint, Logger } from './shared';
 
 function getData(url: string) {
@@ -43,10 +43,10 @@ Options:
     return;
   }
 
-  let generator: Generator | null = null;
+  let generator: $Generator | null = null;
   try {
     const configuration = Configuration.createFromCLIArgs(args);
-    generator = new Generator();
+    generator = new $Generator();
     for (const ep of configuration.endpoints) {
       const baseEndpoint = ep.url;
       const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
