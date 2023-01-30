@@ -1,6 +1,6 @@
 {
   "name": "@netatwork/odata-edm-generator",
-  "version": "1.0.0-4",
+  "version": "1.0.0-5",
   "description": "OData EDM generator",
   "typings": "dist/types/decorators",
   "main": "dist/cjs/api/decorators.js",
