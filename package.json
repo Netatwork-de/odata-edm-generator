@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/Netatwork-de/odata-edm-generator#readme",
   "devDependencies": {
-    "@commitlint/cli": "^17.6.6",
+    "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^17.3.0",
     "@netatwork/mocha-utils": "^2.1.4",
     "@types/chai": "^4.3.4",
