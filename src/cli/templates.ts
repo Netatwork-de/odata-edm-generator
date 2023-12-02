@@ -1,9 +1,6 @@
-import * as eta from 'eta';
-import type { TemplateFunction } from 'eta/dist/types/compile';
+import { Eta } from 'eta';
 import { Configuration } from './configuration';
 import { EdmInfo, Endpoint } from './shared';
-
-eta.configure({ autoTrim: false, autoEscape: false });
 
 const defaultEndpointsTemplate = `/**
  * This is a generated file. Please don't change this manually.
@@ -19,26 +16,28 @@ export const enum Endpoints {
 }`;
 
 export class EndpointTemplate {
-  private readonly compiled: TemplateFunction;
+  private static readonly templateName: string = '@endpoint';
+  private readonly eta: Eta;
   public constructor(
     template: string = defaultEndpointsTemplate,
   ) {
-    this.compiled = eta.compile(template);
+    const eta = this.eta = new Eta({ autoTrim: false, autoEscape: false });
+    eta.loadTemplate(EndpointTemplate.templateName, template);
   }
 
   public render(endpoints: Endpoint[]): string {
     const config = Configuration.instance;
-    return this.compiled(
+    return this.eta.render(
+      EndpointTemplate.templateName,
       {
         endpoints,
         quote: config.quote,
         indent: config.indent,
-      },
-      eta.config);
+      });
   }
 }
 
-const defaultClassTemplateName = '$$class';
+const defaultClassTemplateName = '@$$class';
 const defaultClassTemplate = `<%-
   const indent = it.indent;
 -%>
@@ -74,7 +73,7 @@ export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name
 
 }`;
 
-const defaultComplexTypeTemplateName = '$$complex';
+const defaultComplexTypeTemplateName = '@$$complex';
 const defaultComplexTypeTemplate = `<%-
 const indent = it.indent;
 const quote = it.quote;
@@ -160,7 +159,7 @@ export interface <%= name %> {
 }
 <%- } -%>`;
 
-const defaultEnumTemplateName = '$$enum';
+const defaultEnumTemplateName = '@$$enum';
 const defaultEnumTemplate = `<%-
   const quote = it.quote;
   const indent = it.indent;
@@ -199,32 +198,29 @@ import {
 <%~ include('${defaultEnumTemplateName}', {...info, quote, indent}) %>
 <% } -%>`;
 export class EdmTemplate {
-  private compiled!: TemplateFunction;
+  private static readonly templateName: string = '@edm';
+  private readonly eta!: Eta;
 
   public constructor(
     template?: string,
   ) {
+    this.eta = new Eta({ autoTrim: false, autoEscape: false });
     if (template !== undefined) {
-      this.compiled = eta.compile(template);
+      this.eta.loadTemplate(EdmTemplate.templateName, template);
     } else {
       this.initializeDefault();
     }
   }
 
   private initializeDefault(): void {
-    eta.templates.define(defaultClassTemplateName, eta.compile(defaultClassTemplate));
-    eta.templates.define(defaultComplexTypeTemplateName, eta.compile(defaultComplexTypeTemplate));
-    eta.templates.define(defaultEnumTemplateName, eta.compile(defaultEnumTemplate));
-    this.compiled = eta.compile(defaultEdmTemplate);
+    const eta = this.eta;
+    eta.loadTemplate(defaultClassTemplateName, defaultClassTemplate);
+    eta.loadTemplate(defaultComplexTypeTemplateName, defaultComplexTypeTemplate);
+    eta.loadTemplate(defaultEnumTemplateName, defaultEnumTemplate);
+    eta.loadTemplate(EdmTemplate.templateName, defaultEdmTemplate);
   }
 
   public render(info: EdmInfo): string {
-    return this.compiled(info, eta.config);
-  }
-
-  public dispose(): void {
-    eta.templates.remove(defaultClassTemplateName);
-    eta.templates.remove(defaultComplexTypeTemplateName);
-    eta.templates.remove(defaultEnumTemplateName);
+    return this.eta.render(EdmTemplate.templateName, info);
   }
 }

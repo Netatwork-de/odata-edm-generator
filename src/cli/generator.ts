@@ -117,10 +117,6 @@ export class $Generator {
     writeFileSync(path, this.endpointTemplate.render(endpoints));
   }
 
-  public dispose(): void {
-    this.edmTemplate.dispose();
-  }
-
   private generateStringEnum(acc: EnumInfo[], enumType: Element, ignored: string[]): EnumInfo[] {
     const name = enumType.getAttribute('Name')!;
     if (ignored.includes(name)) { return acc; }
