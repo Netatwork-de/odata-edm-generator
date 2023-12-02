@@ -58,7 +58,6 @@ Options:
       Logger.info(`generated EDM for ${baseEndpoint}.`);
     }
   } finally {
-    generator?.dispose();
     Configuration.dispose();
   }
 }
