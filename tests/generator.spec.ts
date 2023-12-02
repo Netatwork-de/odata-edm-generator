@@ -116,7 +116,6 @@ describe('generator', function () {
       } finally {
         // cleanup
         mockFs.restore();
-        generator?.dispose();
         Configuration.dispose();
       }
     });
