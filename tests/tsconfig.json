@@ -1,7 +1,9 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"target": "ES5"
+    "target": "ES6",
+    "module": "ES2020",
+    "outDir": "./.artifacts/dist",
 	},
 	"include": [
 		"../tests"

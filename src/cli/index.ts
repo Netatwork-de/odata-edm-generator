@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import * as https from 'https';
-import { Configuration } from './configuration';
-import { $Generator } from './generator';
-import { Endpoint, Logger } from './shared';
+import { Configuration } from './configuration.js';
+import { $Generator } from './generator.js';
+import { Endpoint, Logger } from './shared.js';
 
 function getData(url: string) {
   return new Promise<string>((resolve, reject) => {
@@ -45,16 +45,16 @@ Options:
 
   let generator: $Generator | null = null;
   try {
-    const configuration = Configuration.createFromCLIArgs(args);
+    const configuration = await Configuration.createFromCLIArgs(args);
     generator = new $Generator();
     for (const ep of configuration.endpoints) {
       const baseEndpoint = ep.url;
       const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
-      generator.generateEndpointsFile(endpoints, ep);
+      await generator.generateEndpointsFile(endpoints, ep);
       Logger.info(`generated endpoints for ${baseEndpoint}.`);
 
-      generator.generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
+      await generator.generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
       Logger.info(`generated EDM for ${baseEndpoint}.`);
     }
   } finally {

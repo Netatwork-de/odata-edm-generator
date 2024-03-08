@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
-import { Configuration } from '../src/cli/configuration';
-import { EndpointConfiguration } from '../src/cli/shared';
+import { Configuration } from '../src/cli/configuration.js';
+import { EndpointConfiguration } from '../src/cli/shared.js';
 
 describe('configuration', function () {
   class TestData {
@@ -55,14 +55,14 @@ describe('configuration', function () {
   }
 
   for (const data of getTestData()) {
-    it(`createFromCLIArgs works correctly - ${data.toString()}`, function () {
+    it(`createFromCLIArgs works correctly - ${data.toString()}`, async function () {
       try {
         const expectedOutputPath = data.expected.outputDir;
         mockFs({
           ...(expectedOutputPath ? { [expectedOutputPath]: {} } : {})
         }, { createCwd: true });
 
-        const actual = Configuration.createFromCLIArgs(data.args);
+        const actual = await Configuration.createFromCLIArgs(data.args);
         assert.deepStrictEqual(JSON.parse(JSON.stringify(actual)), data.expected);
       } finally {
         Configuration.dispose();

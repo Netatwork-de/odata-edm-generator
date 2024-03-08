@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "CommonJS",
+    "target": "ESNext",
+    "module": "ES2020",
     "lib": [
-      "ESNext",
       "dom"
     ],
-    "declaration": false,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./dist/types",
     "sourceMap": true,
-    "outDir": "./dist/cjs",
+    "outDir": "./dist/esm",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,

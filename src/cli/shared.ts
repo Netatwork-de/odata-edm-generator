@@ -1,5 +1,5 @@
 import { dirname, join, relative } from 'path';
-import { Configuration } from './configuration';
+import { Configuration } from './configuration.js';
 
 export interface Endpoint {
   name: string;
