@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { existsSync, writeFileSync, mkdirSync } from 'fs';
+import { promises as fs } from 'fs';
 import { EOL } from 'os';
 import { dirname } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -18,6 +18,7 @@ import {
   ComplexTypeInfoSet,
 } from './shared.js';
 import { EdmTemplate, EndpointTemplate } from './templates.js';
+import { exists } from './file-system-helper.js';
 
 // interface ImportInfo { ns: string; type: string; }
 
@@ -94,7 +95,7 @@ export class $Generator {
   private readonly endpointTemplate = new EndpointTemplate();
   private readonly edmTemplate = new EdmTemplate();
 
-  public generateEdm(metadata: string, endpoints: Endpoint[], configuration: EndpointConfiguration): void {
+  public async generateEdm(metadata: string, endpoints: Endpoint[], configuration: EndpointConfiguration): Promise<void> {
     const parsed = new DOMParser()
       .parseFromString(metadata, 'application/xml')
       .documentElement;
@@ -104,17 +105,17 @@ export class $Generator {
     }
     const edmInfo = this.generateCodeContent(parsed, endpoints, configuration);
     if (edmInfo !== null) {
-      this.generateEdmFile(edmInfo);
+      await this.generateEdmFile(edmInfo);
     }
   }
 
-  public generateEndpointsFile(endpoints: Endpoint[], configuration: EndpointConfiguration): void {
+  public async generateEndpointsFile(endpoints: Endpoint[], configuration: EndpointConfiguration): Promise<void> {
     const path = getEndpointsPath(configuration);
     const dirName = dirname(path);
-    if (!existsSync(dirName)) {
-      mkdirSync(dirName, { recursive: true });
+    if (!await exists(dirName)) {
+      await fs.mkdir(dirName, { recursive: true });
     }
-    writeFileSync(path, this.endpointTemplate.render(endpoints));
+    await fs.writeFile(path, this.endpointTemplate.render(endpoints));
   }
 
   private generateStringEnum(acc: EnumInfo[], enumType: Element, ignored: string[]): EnumInfo[] {
@@ -177,17 +178,17 @@ export class $Generator {
     return new EdmInfo(schema.getAttribute('Namespace')!, /* imports, */ entities, $complexTypes, enums, configuration);
   }
 
-  private generateEdmFile(edmInfo: EdmInfo) {
+  private async generateEdmFile(edmInfo: EdmInfo) {
     const filePath = edmInfo.filePath;
 
     const dirName = dirname(filePath);
-    if (!existsSync(dirName)) {
-      mkdirSync(dirName, { recursive: true });
+    if (!await exists(dirName)) {
+      await fs.mkdir(dirName, { recursive: true });
     }
 
     const template = this.edmTemplate;
     const content = template.render(edmInfo);
-    writeFileSync(filePath, content);
+    await fs.writeFile(filePath, content);
   }
 
   private generateEntityInfo(

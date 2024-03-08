@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { existsSync, mkdirSync, statSync } from 'fs';
+import { promises as fs } from 'fs';
 import { isAbsolute, resolve } from 'path';
 import { EndpointConfiguration, Logger } from './shared.js';
+import { exists as exists } from './file-system-helper.js';
 
 export class Configuration {
 
@@ -33,11 +34,11 @@ export class Configuration {
             throw new Error('When providing a configuration file, the --config needs to be the first CLI argument.');
           }
           const configPath = resolve(process.cwd(), args[i + 1]);
-          if (!existsSync(configPath) || !statSync(configPath).isFile()) {
+          if (!await exists(configPath) || !(await fs.stat(configPath)).isFile()) {
             throw new Error(`The config file "${configPath}" does not exist.`);
           }
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          instance.applyConfiguration(await require(configPath) as ConfigSchema);
+          await instance.applyConfiguration(await require(configPath) as ConfigSchema);
           break;
         }
         case 'endpoint':
@@ -47,7 +48,7 @@ export class Configuration {
           instance.setEndpoints(JSON.parse(args[i + 1]) as string | EndpointConfiguration[]);
           break;
         case 'outputDir': {
-          instance.setOutputDir(args[i + 1], true);
+          await instance.setOutputDir(args[i + 1], true);
           break;
         }
         case 'quoteStyle':
@@ -78,8 +79,8 @@ export class Configuration {
 
   private constructor() { /* noop */ }
 
-  private applyConfiguration(config: ConfigSchema) {
-    this.setOutputDir(config.outputDir, false);
+  private async applyConfiguration(config: ConfigSchema) {
+    await this.setOutputDir(config.outputDir, false);
     this.setEndpointsFromConfig(config);
     this.setQuote(config.quoteStyle);
     this.setIndentation(config.indentSize);
@@ -110,12 +111,12 @@ export class Configuration {
     this.adjustOutputPaths();
   }
 
-  private setOutputDir(outputDir: string | undefined, throwError: boolean) {
+  private async setOutputDir(outputDir: string | undefined, throwError: boolean) {
     if (!outputDir) { return; }
     const absolutePath: string = resolve(process.cwd(), outputDir);
-    if (!existsSync(absolutePath)) {
-      mkdirSync(absolutePath, { recursive: true });
-    } else if (throwError && !statSync(absolutePath).isDirectory()) {
+    if (!await exists(absolutePath)) {
+      await fs.mkdir(absolutePath, { recursive: true });
+    } else if (throwError && !(await fs.stat(absolutePath)).isDirectory()) {
       throw new Error(`The output path "${absolutePath}" is not a directory.`);
     }
     this.outputDir = absolutePath;

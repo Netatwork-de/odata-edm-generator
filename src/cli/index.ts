@@ -51,10 +51,10 @@ Options:
       const baseEndpoint = ep.url;
       const { value: endpoints } = JSON.parse(await getData(baseEndpoint)) as { value: Endpoint[] };
 
-      generator.generateEndpointsFile(endpoints, ep);
+      await generator.generateEndpointsFile(endpoints, ep);
       Logger.info(`generated endpoints for ${baseEndpoint}.`);
 
-      generator.generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
+      await generator.generateEdm(await getData(`${baseEndpoint}/$metadata`), endpoints, ep);
       Logger.info(`generated EDM for ${baseEndpoint}.`);
     }
   } finally {
