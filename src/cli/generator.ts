@@ -16,8 +16,8 @@ import {
   propertyComparator,
   PropertyInfo,
   ComplexTypeInfoSet,
-} from './shared';
-import { EdmTemplate, EndpointTemplate } from './templates';
+} from './shared.js';
+import { EdmTemplate, EndpointTemplate } from './templates.js';
 
 // interface ImportInfo { ns: string; type: string; }
 

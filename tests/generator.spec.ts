@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -11,9 +13,11 @@ import { join } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import { URL } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Configuration } from '../src/cli/configuration';
-import { $Generator } from '../src/cli/generator';
-import { Endpoint, EndpointConfiguration } from '../src/cli/shared';
+import { Configuration } from '../src/cli/configuration.js';
+import { $Generator } from '../src/cli/generator.js';
+import { Endpoint, EndpointConfiguration } from '../src/cli/shared.js';
+
+const __dirname = process.cwd();
 
 describe('generator', function () {
 
@@ -60,13 +64,13 @@ describe('generator', function () {
     }
   }
 
-  const dataPath = join(__dirname, 'data');
+  const dataPath = join(__dirname, 'tests', 'data');
   for (const dirent of
     readdirSync(dataPath, { encoding: 'utf8', withFileTypes: true })
       .filter((x) => x.isDirectory())
   ) {
     const dirName = dirent.name;
-    it(`works for ${dirName}`, function () {
+    it(`works for ${dirName}`, async function () {
       let generator: $Generator | null = null;
       try {
         // arrange
@@ -84,7 +88,7 @@ describe('generator', function () {
           args.unshift('--config', configFilePath);
           mockFsConfig[configFilePath] = mockFs.load(configFilePath);
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          configuredEndpoints = require(configFilePath).endpoints;
+          configuredEndpoints = (await import(configFilePath)).endpoints;
           hasConfiguredEndpoints = Array.isArray(configuredEndpoints) && configuredEndpoints.length > 0;
         }
         if (!hasConfiguredEndpoints) {
@@ -92,7 +96,7 @@ describe('generator', function () {
         }
         const expected = readAllContent(join(caseDir, 'expected'));
         mockFs(mockFsConfig, { createCwd: true });
-        const configuration = Configuration.createFromCLIArgs(args);
+        const configuration = await Configuration.createFromCLIArgs(args);
         generator = new $Generator();
 
         for (const ep of configuration.endpoints) {

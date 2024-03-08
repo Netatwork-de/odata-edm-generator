@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { existsSync, mkdirSync, statSync } from 'fs';
 import { isAbsolute, resolve } from 'path';
-import { EndpointConfiguration, Logger } from './shared';
+import { EndpointConfiguration, Logger } from './shared.js';
 
 export class Configuration {
 
@@ -14,7 +14,7 @@ export class Configuration {
     throw new Error('Configuration is not yet initialized.');
   }
 
-  public static createFromCLIArgs(args: string[]): Readonly<Configuration> {
+  public static async createFromCLIArgs(args: string[]): Promise<Readonly<Configuration>> {
     if (this._instance !== null) {
       throw new Error('Configuration is already initialized.');
     }
@@ -37,7 +37,7 @@ export class Configuration {
             throw new Error(`The config file "${configPath}" does not exist.`);
           }
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          instance.applyConfiguration(require(configPath) as ConfigSchema);
+          instance.applyConfiguration(await require(configPath) as ConfigSchema);
           break;
         }
         case 'endpoint':

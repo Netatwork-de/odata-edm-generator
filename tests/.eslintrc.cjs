@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   extends: [
-    '../.eslintrc.js',
+    '../.eslintrc.cjs',
     'plugin:mocha/recommended'
   ],
   plugins: [

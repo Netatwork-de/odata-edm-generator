@@ -2,17 +2,17 @@ import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Configuration } from '../src/cli/configuration';
-import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../src/cli/shared';
-import { EdmTemplate, EndpointTemplate } from '../src/cli/templates';
-import { standardEndpoints } from './data';
+import { Configuration } from '../src/cli/configuration.js';
+import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../src/cli/shared.js';
+import { EdmTemplate, EndpointTemplate } from '../src/cli/templates.js';
+import { standardEndpoints } from './data.js';
 describe('templates', function () {
 
   describe('EndpointTemplate', function () {
 
-    it('Renders correctly', function () {
+    it('Renders correctly', async function () {
       try {
-        Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
+        await Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
         const actual = new EndpointTemplate().render(standardEndpoints);
         assert.strictEqual(actual,
           `/**
@@ -29,9 +29,9 @@ export const enum Endpoints {
       }
     });
 
-    it('Respects the given template', function () {
+    it('Respects the given template', async function () {
       try {
-        Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
+        await Configuration.createFromCLIArgs(['--quoteStyle', 'single']);
         const template = 'export const enum Endpoints {<% for(const endpoint of it.endpoints) { %> <%= endpoint.name %> = "<%= endpoint.url %>",<% } %>}';
         const actual = new EndpointTemplate(template).render(standardEndpoints);
         assert.strictEqual(actual, 'export const enum Endpoints { People = "People", Foos = "Foos", Bar = "fizzbazz",}');
@@ -43,11 +43,11 @@ export const enum Endpoints {
   });
 
   describe('EdmTemplate', function () {
-    it('Renders correctly', function () {
+    it('Renders correctly', async function () {
       try {
         const basePath = join(process.cwd(), uuid());
         mockFs({ [basePath]: {} }, { createCwd: true });
-        const config = Configuration.createFromCLIArgs(['--outputDir', basePath, '--endpoint', 'https://api.example.com']);
+        const config = await Configuration.createFromCLIArgs(['--outputDir', basePath, '--endpoint', 'https://api.example.com']);
 
         const base1 = new ClassInfo(
           'BaseOne',

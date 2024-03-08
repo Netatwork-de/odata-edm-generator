@@ -1,6 +1,6 @@
 import { Eta } from 'eta';
-import { Configuration } from './configuration';
-import { EdmInfo, Endpoint } from './shared';
+import { Configuration } from './configuration.js';
+import { EdmInfo, Endpoint } from './shared.js';
 
 const defaultEndpointsTemplate = `/**
  * This is a generated file. Please don't change this manually.
