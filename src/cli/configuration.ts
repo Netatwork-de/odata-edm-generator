@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import { isAbsolute, resolve } from 'path';
 import { EndpointConfiguration, Logger } from './shared.js';
 import { exists as exists } from './file-system-helper.js';
+import { pathToFileURL } from 'url';
 
 export class Configuration {
 
@@ -37,8 +38,9 @@ export class Configuration {
           if (!await exists(configPath) || !(await fs.stat(configPath)).isFile()) {
             throw new Error(`The config file "${configPath}" does not exist.`);
           }
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          await instance.applyConfiguration(await require(configPath) as ConfigSchema);
+          let importedConfig = await import(pathToFileURL(configPath).href) as ConfigSchema & { default?: ConfigSchema };
+          importedConfig = importedConfig.default as ConfigSchema ?? importedConfig;
+          await instance.applyConfiguration(importedConfig);
           break;
         }
         case 'endpoint':

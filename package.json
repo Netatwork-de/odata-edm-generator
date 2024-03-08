@@ -4,22 +4,20 @@
   "description": "OData EDM generator",
   "type": "module",
   "exports": {
-    "require": "./dist/cjs/api/decorators.js",
-    "import": "./dist/esm/decorators.js"
+    "import": "./dist/esm/api/decorators.js"
   },
-  "typings": "dist/types/decorators",
+  "typings": "dist/types/api/decorators",
   "bin": {
-    "gen-edm": "dist/cjs/cli/index.js"
+    "gen-edm": "dist/esm/cli/index.js"
   },
   "scripts": {
     "lint": "eslint . --ext .ts --cache",
     "prebuild": "rimraf dist && npm run lint",
-    "build": "tsc && tsc -p tsconfig.esm.json",
+    "build": "tsc",
     "dev": "tsc -w --preserveWatchOutput",
     "pretest": "tsc -p tests/tsconfig.json",
-    "test": "mocha ./tests/.artifacts/dist/tests/**/*.js",
-    "test_original": "nyc --nycrc-path ./tests/nyc.config.js mocha --config ./tests/.mocharc.js",
-    "test:dev": "cross-env DEV=true nyc --nycrc-path ./tests/nyc.config.cjs mocha --config ./tests/.mocharc.cjs --bail"
+    "test": "mocha --config ./tests/.mocharc.cjs",
+    "test:dev": "mocha --config ./tests/.mocharc.cjs --bail"
   },
   "repository": {
     "type": "git",
@@ -61,9 +59,7 @@
     "husky": "^9.0.11",
     "mocha": "^10.2.0",
     "mock-fs": "^5.2.0",
-    "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "source-map-support": "^0.5.21",
     "standard-version": "^9.5.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.2",

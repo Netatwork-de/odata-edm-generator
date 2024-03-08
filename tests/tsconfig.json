@@ -4,7 +4,6 @@
     "target": "ES6",
     "module": "ES2020",
     "outDir": "./.artifacts/dist",
-    "declaration": false,
 	},
 	"include": [
 		"../tests"

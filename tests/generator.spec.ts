@@ -6,16 +6,16 @@
 import { assert } from 'chai';
 import { gray, green, red } from 'colorette';
 import { diffLines } from 'diff';
-import { Dirent, promises as fs } from 'fs';
+import { promises as fs, readdirSync } from 'fs';
 import mockFs from 'mock-fs';
 import type { DirectoryItems } from 'mock-fs/lib/filesystem';
-import { join } from 'path';
 import { URL } from 'node:url';
+import { join } from 'path';
 import { v4 as uuid } from 'uuid';
 import { Configuration } from '../src/cli/configuration.js';
+import { exists } from '../src/cli/file-system-helper.js';
 import { $Generator } from '../src/cli/generator.js';
 import { Endpoint, EndpointConfiguration } from '../src/cli/shared.js';
-import { exists } from '../src/cli/file-system-helper.js';
 
 const __dirname = process.cwd();
 
@@ -65,14 +65,10 @@ describe('generator', function () {
   }
 
   const dataPath = join(__dirname, 'tests', 'data');
-  let directoryEntries: Dirent[] = [];
-  before(async function () {
-    directoryEntries = (await fs.readdir(dataPath, { encoding: 'utf8', withFileTypes: true }))
-    .filter((x) => x.isDirectory());
-  });
-  for (const dirent of directoryEntries) {
+  for (const dirent of (readdirSync(dataPath, { encoding: 'utf8', withFileTypes: true }))
+    .filter((x) => x.isDirectory())) {
     const dirName = dirent.name;
-    it.only(`works for ${dirName}`, async function () {
+    it(`works for ${dirName}`, async function () {
       let generator: $Generator | null = null;
       try {
         // arrange
@@ -81,15 +77,17 @@ describe('generator', function () {
         const inputDir = join(caseDir, 'input');
 
         const mockFsConfig: DirectoryItems = { [baseOutputPath]: {} };
-        const configFilePath = join(inputDir, 'config.js');
+        const configFilePath = join(inputDir, 'config.cjs');
 
         let configuredEndpoints: EndpointConfiguration[] | undefined = undefined;
         let hasConfiguredEndpoints = false;
         const args = ['--outputDir', baseOutputPath];
-        if (await exists(configFilePath)) {
+        if (await mockFs.bypass(() => exists(configFilePath))) {
           args.unshift('--config', configFilePath);
           mockFsConfig[configFilePath] = mockFs.load(configFilePath);
-          configuredEndpoints = (await import(`file:///${configFilePath}`)).endpoints;
+          let importedConfig = await import(`file:///${configFilePath}`);
+          importedConfig = importedConfig.default ?? importedConfig;
+          configuredEndpoints = importedConfig.endpoints;
           hasConfiguredEndpoints = Array.isArray(configuredEndpoints) && configuredEndpoints.length > 0;
         }
         if (!hasConfiguredEndpoints) {
@@ -102,12 +100,11 @@ describe('generator', function () {
 
         for (const ep of configuration.endpoints) {
           let epInput = join(inputDir, new URL(ep.url).hostname);
-          epInput = await exists(epInput) ? epInput : inputDir;
+          epInput = await mockFs.bypass(() => exists(epInput)) ? epInput : inputDir;
 
-          const edmxXml = await fs.readFile(join(epInput, 'metadata.xml'), 'utf8');
-          console.log('[test] edmxXml', edmxXml);
+          const edmxXml = await mockFs.bypass(() => fs.readFile(join(epInput, 'metadata.xml'), 'utf8'));
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          const endpoints: Endpoint[] = JSON.parse(await fs.readFile(join(epInput, 'endpoints.json'), 'utf8')).value;
+          const endpoints: Endpoint[] = JSON.parse(await mockFs.bypass(() => fs.readFile(join(epInput, 'endpoints.json'), 'utf8'))).value;
 
           // act
           await generator.generateEndpointsFile(endpoints, ep);
