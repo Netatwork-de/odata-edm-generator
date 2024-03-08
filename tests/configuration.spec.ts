@@ -55,14 +55,14 @@ describe('configuration', function () {
   }
 
   for (const data of getTestData()) {
-    it(`createFromCLIArgs works correctly - ${data.toString()}`, function () {
+    it(`createFromCLIArgs works correctly - ${data.toString()}`, async function () {
       try {
         const expectedOutputPath = data.expected.outputDir;
         mockFs({
           ...(expectedOutputPath ? { [expectedOutputPath]: {} } : {})
         }, { createCwd: true });
 
-        const actual = Configuration.createFromCLIArgs(data.args);
+        const actual = await Configuration.createFromCLIArgs(data.args);
         assert.deepStrictEqual(JSON.parse(JSON.stringify(actual)), data.expected);
       } finally {
         Configuration.dispose();
