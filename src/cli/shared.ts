@@ -143,7 +143,7 @@ export class EdmInfo {
       new ImportDirectiveInfo(
         relative(dirname(filePath), getEndpointsPath(configuration))
           .replace(/\\/g, '/')
-          .replace('.ts', ''),
+          .replace(/\.ts$/, '.js'),
         ['Endpoints']
       ),
     ];

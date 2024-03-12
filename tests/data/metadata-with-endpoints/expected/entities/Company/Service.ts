@@ -10,7 +10,7 @@ import {
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
-} from '../../Endpoints';
+} from '../../Endpoints.js';
 
 export class Bar {
 
