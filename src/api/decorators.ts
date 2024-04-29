@@ -4,23 +4,23 @@
  * Decorator to associate an endpoint with an odata entity.
  */
 export function odataEndpoint(endpoint: string) {
-    return function(constructor: Class<any>): void {
-        Reflect.defineProperty(constructor, 'ODataEndpoint', { configurable: true, writable: false, enumerable: false, value: endpoint });
-    };
+  return function (constructor: Class<any>): void {
+    Reflect.defineProperty(constructor, 'ODataEndpoint', { configurable: true, writable: false, enumerable: false, value: endpoint });
+  };
 }
 
 export type Class<T> = {
-    readonly prototype: T;
-    new(...args: any[]): T;
+  readonly prototype: T;
+  new(...args: any[]): T;
 };
 export type ODataEntity<T> = Class<T> & {
-    ODataEndpoint: string;
+  ODataEndpoint: string;
 };
 
 export const odataTypeKey = '@odata.type' as const;
 export type ODataComplexType<T> = Class<T> & {
-    readonly prototype: T & { [odataTypeKey]: string };
-    canHandle(arg: string): boolean;
+  readonly prototype: T & { [odataTypeKey]: string };
+  canHandle(arg: string): boolean;
 };
 
 /**
@@ -35,21 +35,21 @@ export function odataType(rawOdataType: string): any;
 export function odataType(rawOdataType: string, friendlyType: string, typePropertyName: string): any;
 export function odataType(rawOdataType: string, friendlyType?: string, typePropertyName?: string): any {
 
-    return function <T extends new (...args: any[]) => any>(constructorFunction: T) {
-        if (!rawOdataType) {
-            throw new Error(`Cannot define odataType on ${constructorFunction.name}, as missing rawOdataType`);
-        }
-        Reflect.defineProperty(constructorFunction, 'canHandle', { get() { return (arg: string) => arg === rawOdataType; } });
-        if (friendlyType && typePropertyName) {
-            Reflect.set(constructorFunction.prototype as object, typePropertyName, friendlyType);
-        }
+  return function <T extends new (...args: any[]) => any>(constructorFunction: T) {
+    if (!rawOdataType) {
+      throw new Error(`Cannot define odataType on ${constructorFunction.name}, as missing rawOdataType`);
+    }
+    Reflect.defineProperty(constructorFunction, 'canHandle', { get() { return (arg: string) => arg === rawOdataType; } });
+    if (friendlyType && typePropertyName) {
+      Reflect.set(constructorFunction.prototype as object, typePropertyName, friendlyType);
+    }
 
-        return class extends constructorFunction {
-            public constructor(...args: any[]) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                super(...args);
-                Reflect.set(this, odataTypeKey, rawOdataType);
-            }
-        };
+    return class extends constructorFunction {
+      public constructor(...args: any[]) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        super(...args);
+        Reflect.set(this, odataTypeKey, rawOdataType);
+      }
     };
+  };
 }
