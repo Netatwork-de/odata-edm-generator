@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+export type ODataEndpointDecorator = <T extends Class<any>>(target: T, context: ClassDecoratorContext<T>) => void;
+
 /**
  * Decorator to associate an endpoint with an odata entity.
  */
-export function odataEndpoint(endpoint: string) {
-  return function (constructor: Class<any>): void {
-    Reflect.defineProperty(constructor, 'ODataEndpoint', { configurable: true, writable: false, enumerable: false, value: endpoint });
+export function odataEndpoint(endpoint: string): ODataEndpointDecorator {
+  return function<T extends Class<any>>(target: T, context: ClassDecoratorContext<T>): void {
+    context.addInitializer(function() {
+      Reflect.defineProperty(this, 'ODataEndpoint', { configurable: true, writable: false, enumerable: false, value: endpoint });
+    });
   };
 }
 
@@ -23,6 +28,8 @@ export type ODataComplexType<T> = Class<T> & {
   canHandle(arg: string): boolean;
 };
 
+export type ODataTypeDecorator = <T extends Class<any>>(target: T, context: ClassDecoratorContext<T>) => T;
+
 /**
  * This is similar to `@odataEndpoint`, but this is more useful for interfaces and abstract class hierarchy in odata.
  * It does as follows:
@@ -31,20 +38,20 @@ export type ODataComplexType<T> = Class<T> & {
  *  - Adds a static method to the class named `canHandle`, which when given a `@odata.type` value (string) returns `true`/`false`
  *    depending on whether the value matches the given `rawOdataType` or not. This is useful for factory methods.
  */
-export function odataType(rawOdataType: string): any;
-export function odataType(rawOdataType: string, friendlyType: string, typePropertyName: string): any;
-export function odataType(rawOdataType: string, friendlyType?: string, typePropertyName?: string): any {
-
-  return function <T extends new (...args: any[]) => any>(constructorFunction: T) {
+export function odataType(rawOdataType: string): ODataTypeDecorator;
+export function odataType(rawOdataType: string, friendlyType: string, typePropertyName: string): ODataTypeDecorator;
+export function odataType(rawOdataType: string, friendlyType?: string, typePropertyName?: string): ODataTypeDecorator {
+  return function<T extends Class<any>>(target: T, context: ClassDecoratorContext<T>) {
     if (!rawOdataType) {
-      throw new Error(`Cannot define odataType on ${constructorFunction.name}, as missing rawOdataType`);
+      throw new Error(`Cannot define odataType on ${target.name}, as missing rawOdataType`);
     }
-    Reflect.defineProperty(constructorFunction, 'canHandle', { get() { return (arg: string) => arg === rawOdataType; } });
-    if (friendlyType && typePropertyName) {
-      Reflect.set(constructorFunction.prototype as object, typePropertyName, friendlyType);
-    }
-
-    return class extends constructorFunction {
+    context.addInitializer(function () {
+      Reflect.defineProperty(this, 'canHandle', { get() { return (arg: string) => arg === rawOdataType; } });
+      if (friendlyType && typePropertyName) {
+        Reflect.set(this.prototype as object, typePropertyName, friendlyType);
+      }
+    });
+    return class extends target {
       public constructor(...args: any[]) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         super(...args);
