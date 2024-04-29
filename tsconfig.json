@@ -1,24 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ES2020",
-    "lib": [
-      "dom"
-    ],
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "./dist/types",
     "sourceMap": true,
     "outDir": "./dist/esm",
     "strict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "stripInternal": true,
     "removeComments": true,
     "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "downlevelIteration": true
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": [
     "./src"
