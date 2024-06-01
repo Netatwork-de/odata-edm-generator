@@ -22,7 +22,7 @@ export type ODataEntity<T> = Class<T> & {
   ODataEndpoint: string;
 };
 
-export const odataTypeKey = '@odata.type' as const;
+export const odataTypeKey = '@odata.type';
 export type ODataComplexType<T> = Class<T> & {
   readonly prototype: T & { [odataTypeKey]: string };
   canHandle(arg: string): boolean;
