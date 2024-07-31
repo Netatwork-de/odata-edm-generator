@@ -276,6 +276,10 @@ export enum $$BaseConditionTypes {
     FooCondition = 'FooCondition',
 }
 
+export interface BaseCondition {
+    readonly $$type: $$BaseConditionTypes;
+}
+
 export abstract class BaseCondition {
 
     protected static get derivedTypes(): typeof BaseCondition[] {
@@ -298,7 +302,6 @@ export abstract class BaseCondition {
 
     protected static canHandle(_odataType: string): boolean { return false; }
 
-    public readonly $$type: $$BaseConditionTypes;
     protected constructor(
         public BC1P1: number,
         public BC1P2?: string,
@@ -308,6 +311,10 @@ export abstract class BaseCondition {
 export enum $$BaseConfigurationTypes {
     BarConfiguration = 'BarConfiguration',
     FooConfiguration = 'FooConfiguration',
+}
+
+export interface BaseConfiguration {
+    readonly $$type: $$BaseConfigurationTypes;
 }
 
 export class BaseConfiguration {
@@ -331,7 +338,6 @@ export class BaseConfiguration {
 
     protected static canHandle(_odataType: string): boolean { return false; }
 
-    public readonly $$type: $$BaseConfigurationTypes;
     public constructor(
         public BC1P1: number,
         public BC1P2?: string,

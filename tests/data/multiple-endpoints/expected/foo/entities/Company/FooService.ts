@@ -233,6 +233,10 @@ export enum $$BaseConfigurationTypes {
   FooConfiguration = 'FooConfiguration',
 }
 
+export interface BaseConfiguration {
+  readonly $$type: $$BaseConfigurationTypes;
+}
+
 export class BaseConfiguration {
 
   protected static get derivedTypes(): typeof BaseConfiguration[] {
@@ -254,7 +258,6 @@ export class BaseConfiguration {
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public readonly $$type: $$BaseConfigurationTypes;
   public constructor(
     public BC1P1: number,
     public BC1P2?: string,
@@ -266,6 +269,10 @@ export enum $$DummyTypeTypes {
   B1FizzCondition = 'B1FizzCondition',
   B1FooCondition = 'B1FooCondition',
   BranchTwoCondition = 'BranchTwoCondition',
+}
+
+export interface DummyType {
+  readonly $$type: $$DummyTypeTypes;
 }
 
 export abstract class DummyType {
@@ -291,7 +298,6 @@ export abstract class DummyType {
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public readonly $$type: $$DummyTypeTypes;
   protected constructor(
     public Dummy_Do_Not_Use?: string,
   ) { }
@@ -413,6 +419,10 @@ export enum $$StandardConditionTypes {
   FooCondition = 'FooCondition',
 }
 
+export interface StandardCondition {
+  readonly $$type: $$StandardConditionTypes;
+}
+
 export abstract class StandardCondition {
 
   protected static get derivedTypes(): typeof StandardCondition[] {
@@ -435,7 +445,6 @@ export abstract class StandardCondition {
 
   protected static canHandle(_odataType: string): boolean { return false; }
 
-  public readonly $$type: $$StandardConditionTypes;
   protected constructor(
     public BC1P1: number,
     public BC1P2?: string,

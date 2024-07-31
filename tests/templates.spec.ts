@@ -238,6 +238,10 @@ export enum $$ComplexType1Types {
     ChildComplexType = 'ChildComplexType',
 }
 
+export interface ComplexType1 {
+    readonly $$type: $$ComplexType1Types;
+}
+
 export class ComplexType1 {
 
     protected static get derivedTypes(): typeof ComplexType1[] {
@@ -258,7 +262,6 @@ export class ComplexType1 {
 
     protected static canHandle(_odataType: string): boolean { return false; }
 
-    public readonly $$type: $$ComplexType1Types;
     public constructor(
         public prop11: number,
         public prop12: string,

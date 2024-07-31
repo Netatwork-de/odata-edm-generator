@@ -91,6 +91,10 @@ export enum $$<%= name %>Types {
 <% } -%>
 }
 
+export interface <%= name %> {
+<%= indent %>readonly $$type: $$<%= name %>Types;
+}
+
 export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 
 <%= indent %>protected static get derivedTypes(): typeof <%= name %>[] {
@@ -115,7 +119,6 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 
 <%= indent %>protected static canHandle(_odataType: string): boolean { return false; }
 
-<%= indent %>public readonly $$type: $$<%= name %>Types;
 <%= indent %><% if(isAbstract) { %>protected<% } else { %>public<% } %> constructor(
 <% for(const p of it.propertyInfos) { -%>
 <%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
