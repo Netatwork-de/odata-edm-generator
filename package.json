@@ -4,10 +4,9 @@
   "description": "OData EDM generator",
   "type": "module",
   "exports": {
-    "default" : "./dist/esm/decorators/index.js",
-    "types" : "./dist/esm/decorators/index.d.ts"
+    "default" : "./dist/esm/api/decorators.js",
+    "types" : "./dist/esm/api/decorators.d.ts"
   },
-  "typings": "dist/types/api/decorators",
   "bin": {
     "gen-edm": "dist/esm/cli/index.js"
   },
