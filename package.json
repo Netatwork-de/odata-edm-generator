@@ -1,11 +1,11 @@
 {
   "name": "@netatwork/odata-edm-generator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "OData EDM generator",
   "type": "module",
   "exports": {
-    "default" : "./dist/esm/api/decorators.js",
-    "types" : "./dist/esm/api/decorators.d.ts"
+    "default": "./dist/esm/api/decorators.js",
+    "types": "./dist/esm/api/decorators.d.ts"
   },
   "bin": {
     "gen-edm": "dist/esm/cli/index.js"
