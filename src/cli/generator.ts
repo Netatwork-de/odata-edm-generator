@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import { EOL } from 'os';
 import { dirname } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-shadow
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, MIME_TYPE } from '@xmldom/xmldom';
 import {
   ClassInfo,
   EdmInfo,
@@ -97,7 +97,7 @@ export class $Generator {
 
   public async generateEdm(metadata: string, endpoints: Endpoint[], configuration: EndpointConfiguration): Promise<void> {
     const parsed = new DOMParser()
-      .parseFromString(metadata, 'application/xml')
+      .parseFromString(metadata, MIME_TYPE.XML_APPLICATION)
       .documentElement;
     const error = Array.from(parsed.getElementsByTagName('parsererror'));
     if (error.length !== 0) {

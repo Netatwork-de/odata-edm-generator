@@ -12,7 +12,8 @@
     "stripInternal": true,
     "removeComments": true,
     "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "skipLibCheck": true,
   },
   "include": [
     "./src"
