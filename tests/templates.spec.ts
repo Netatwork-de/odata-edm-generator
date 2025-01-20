@@ -156,7 +156,7 @@ import {
 @odataEndpoint(Endpoints.foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
         return new this(
             raw.id,
@@ -176,7 +176,7 @@ export class Foo {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
+    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
         return new this(
             raw.id,
@@ -196,7 +196,7 @@ export class Bar {
 
 export class BaseOne {
 
-    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: Partial<TBaseOne>): TBaseOne {
+    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as TBaseOne; }
         return new this(
             raw.name,
@@ -212,7 +212,7 @@ export class BaseOne {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends BaseOne {
 
-    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
+    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
         return new this(
             raw.id,
@@ -250,7 +250,7 @@ export class ComplexType1 {
         ] as unknown as typeof ComplexType1[];
     }
 
-    public static create(raw: Partial<ComplexType1>): ComplexType1 {
+    public static create(raw: ComplexType1): ComplexType1 {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as ComplexType1; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
@@ -290,7 +290,7 @@ export class ChildComplexType extends ComplexType1 {
         );
     }
 
-    public static create(raw: Partial<ChildComplexType>): ChildComplexType {
+    public static create(raw: ChildComplexType): ChildComplexType {
         return new this(
             raw.prop11,
             raw.prop12,

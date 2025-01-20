@@ -14,7 +14,7 @@ import {
 
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
         if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
         return new this(
             raw.Id,

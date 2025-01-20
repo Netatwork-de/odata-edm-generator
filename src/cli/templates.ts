@@ -49,7 +49,7 @@ const defaultClassTemplate = `<%-
 <% } -%>
 export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name %><% } %> {
 
-<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: Partial<T<%= it.name %>>): T<%= it.name %> {
+<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
 <%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as T<%= it.name %>; }
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
@@ -107,7 +107,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 <%= indent.repeat(2) %>] as unknown as typeof <%= name %>[];
 <%= indent %>}
 
-<%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
+<%= indent %>public static create(raw: <%= name %>): <%= name %> {
 <%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as <%= name %>; }
 <%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
 <%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
@@ -145,7 +145,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <%- } else { %> { } <%_ } -%>
 <% if(!isAbstract) { %>
 
-<%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
+<%= indent %>public static create(raw: <%= name %>): <%= name %> {
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
 <%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
