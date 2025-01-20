@@ -49,8 +49,8 @@ const defaultClassTemplate = `<%-
 <% } -%>
 export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name %><% } %> {
 
-<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as T<%= it.name %>; }
+<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> | undefined | null = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
+<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw; }
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
 <%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
@@ -107,12 +107,12 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 <%= indent.repeat(2) %>] as unknown as typeof <%= name %>[];
 <%= indent %>}
 
-<%= indent %>public static create(raw: <%= name %>): <%= name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw as <%= name %>; }
+<%= indent %>public static create<T<%= name %> extends <%= name %> | undefined | null = <%= name %>>(raw: T<%= name %>): T<%= name %> {
+<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw; }
 <%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
 <%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
 <%= indent.repeat(2) %>if (!ctor) {
-<%= indent.repeat(3) %>return raw as <%= name %>;
+<%= indent.repeat(3) %>return raw;
 <%= indent.repeat(2) %>}
 <%= indent.repeat(2) %>return ctor.create(raw);
 <%= indent %>}
@@ -128,6 +128,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 <%- } else if (baseType !== null) { -%>
 <% if (!isAbstract) { -%>
 @odataType(<%= quote %>#<%= it.namespace %>.<%= name %><%= quote %>, $$<%= it.rootType.name %>Types.<%= name %>, <%= quote %>$$type<%= quote %>)
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 <% } -%>
 export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseType.name %> {
 
@@ -145,12 +146,13 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <%- } else { %> { } <%_ } -%>
 <% if(!isAbstract) { %>
 
-<%= indent %>public static create(raw: <%= name %>): <%= name %> {
+<%= indent %>public static create<T<%= name %> extends <%= name %> | undefined | null = <%= name %>>(raw: T<%= name %>): T<%= name %> {
+<%= indent.repeat(2) %>if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
 <%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
 <% } -%>
-<%= indent.repeat(2) %>);
+<%= indent.repeat(2) %>) as T<%= name %>;
 <%= indent %>}
 <% } %>
 }

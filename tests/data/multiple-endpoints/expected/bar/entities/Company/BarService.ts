@@ -15,8 +15,8 @@ import {
 @odataEndpoint(Endpoints.Bars)
 export class Bar {
 
-  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+  public static create<TBar extends Bar | undefined | null = Bar>(this: Class<TBar>, raw: TBar): TBar {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw; }
     return new this(
       raw.Id,
       raw.Prop12,
@@ -37,8 +37,8 @@ export class Bar {
 
 export class Base {
 
-  public static create<TBase extends Base = Base>(this: Class<TBase>, raw: TBase): TBase {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBase; }
+  public static create<TBase extends Base | undefined | null = Base>(this: Class<TBase>, raw: TBase): TBase {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw; }
     return new this(
       raw.BaseProp12,
       raw.BaseProp13,
@@ -58,8 +58,8 @@ export class Base {
 @odataEndpoint(Endpoints.Fizz)
 export class Bazz {
 
-  public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: TBazz): TBazz {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBazz; }
+  public static create<TBazz extends Bazz | undefined | null = Bazz>(this: Class<TBazz>, raw: TBazz): TBazz {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw; }
     return new this(
       raw.Id,
       raw.BazzProp2,
@@ -76,8 +76,8 @@ export class Bazz {
 
 export class Foo {
 
-  public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+  public static create<TFoo extends Foo | undefined | null = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw; }
     return new this(
       raw.Id,
       raw.ByteProp,
@@ -98,8 +98,8 @@ export class Foo {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends Base {
 
-  public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
+  public static create<TChild extends Child | undefined | null = Child>(this: Class<TChild>, raw: TChild): TChild {
+    if (raw === undefined || raw === null || raw instanceof this) { return raw; }
     return new this(
       raw.ChildId,
       raw.BaseProp12,

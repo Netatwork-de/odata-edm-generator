@@ -14,8 +14,8 @@ import {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+    public static create<TBar extends Bar | undefined | null = Bar>(this: Class<TBar>, raw: TBar): TBar {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.Id,
             raw.Prop12,
@@ -36,8 +36,8 @@ export class Bar {
 
 export class Base {
 
-    public static create<TBase extends Base = Base>(this: Class<TBase>, raw: TBase): TBase {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBase; }
+    public static create<TBase extends Base | undefined | null = Base>(this: Class<TBase>, raw: TBase): TBase {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.BaseProp12,
             raw.BaseProp13,
@@ -57,8 +57,8 @@ export class Base {
 @odataEndpoint(Endpoints.Fizz)
 export class Bazz {
 
-    public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: TBazz): TBazz {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBazz; }
+    public static create<TBazz extends Bazz | undefined | null = Bazz>(this: Class<TBazz>, raw: TBazz): TBazz {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.Id,
             raw.BazzProp2,
@@ -83,8 +83,8 @@ export class Bazz {
 
 export class Domain {
 
-    public static create<TDomain extends Domain = Domain>(this: Class<TDomain>, raw: TDomain): TDomain {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TDomain; }
+    public static create<TDomain extends Domain | undefined | null = Domain>(this: Class<TDomain>, raw: TDomain): TDomain {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.Id,
             raw.TXT,
@@ -103,8 +103,8 @@ export class Domain {
 
 export class DomainSetting {
 
-    public static create<TDomainSetting extends DomainSetting = DomainSetting>(this: Class<TDomainSetting>, raw: TDomainSetting): TDomainSetting {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TDomainSetting; }
+    public static create<TDomainSetting extends DomainSetting | undefined | null = DomainSetting>(this: Class<TDomainSetting>, raw: TDomainSetting): TDomainSetting {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.DomainId,
             raw.CertificateCount,
@@ -126,8 +126,8 @@ export class DomainSetting {
 @odataEndpoint(Endpoints.Foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+    public static create<TFoo extends Foo | undefined | null = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.Id,
             raw.ByteProp,
@@ -148,8 +148,8 @@ export class Foo {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildOne extends Base {
 
-    public static create<TChildOne extends ChildOne = ChildOne>(this: Class<TChildOne>, raw: TChildOne): TChildOne {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildOne; }
+    public static create<TChildOne extends ChildOne | undefined | null = ChildOne>(this: Class<TChildOne>, raw: TChildOne): TChildOne {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.ChildId,
             raw.BaseProp12,
@@ -186,8 +186,8 @@ export class ChildOne extends Base {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildTwo extends Base {
 
-    public static create<TChildTwo extends ChildTwo = ChildTwo>(this: Class<TChildTwo>, raw: TChildTwo): TChildTwo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChildTwo; }
+    public static create<TChildTwo extends ChildTwo | undefined | null = ChildTwo>(this: Class<TChildTwo>, raw: TChildTwo): TChildTwo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.Id,
             raw.BaseProp12,
@@ -222,8 +222,8 @@ export class ChildTwo extends Base {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class GrandChild extends ChildOne {
 
-    public static create<TGrandChild extends GrandChild = GrandChild>(this: Class<TGrandChild>, raw: TGrandChild): TGrandChild {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TGrandChild; }
+    public static create<TGrandChild extends GrandChild | undefined | null = GrandChild>(this: Class<TGrandChild>, raw: TGrandChild): TGrandChild {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.ChildId,
             raw.Id,
@@ -290,12 +290,12 @@ export abstract class BaseCondition {
         ] as unknown as typeof BaseCondition[];
     }
 
-    public static create(raw: BaseCondition): BaseCondition {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as BaseCondition; }
+    public static create<TBaseCondition extends BaseCondition | undefined | null = BaseCondition>(raw: TBaseCondition): TBaseCondition {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
-            return raw as BaseCondition;
+            return raw;
         }
         return ctor.create(raw);
     }
@@ -326,12 +326,12 @@ export class BaseConfiguration {
         ] as unknown as typeof BaseConfiguration[];
     }
 
-    public static create(raw: BaseConfiguration): BaseConfiguration {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as BaseConfiguration; }
+    public static create<TBaseConfiguration extends BaseConfiguration | undefined | null = BaseConfiguration>(raw: TBaseConfiguration): TBaseConfiguration {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
-            return raw as BaseConfiguration;
+            return raw;
         }
         return ctor.create(raw);
     }
@@ -355,6 +355,7 @@ export interface Interface2 {
 }
 
 @odataType('#Company.Service.BarCondition', $$BaseConditionTypes.BarCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarCondition extends BaseCondition {
 
     public constructor(
@@ -369,18 +370,20 @@ export class BarCondition extends BaseCondition {
         );
     }
 
-    public static create(raw: BarCondition): BarCondition {
+    public static create<TBarCondition extends BarCondition | undefined | null = BarCondition>(raw: TBarCondition): TBarCondition {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.BC1P1,
             raw.CBC1P1,
             raw.BC1P2,
             raw.CBC1P2,
-        );
+        ) as TBarCondition;
     }
 
 }
 
 @odataType('#Company.Service.BarConfiguration', $$BaseConfigurationTypes.BarConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class BarConfiguration extends BaseConfiguration {
 
     public constructor(
@@ -395,18 +398,20 @@ export class BarConfiguration extends BaseConfiguration {
         );
     }
 
-    public static create(raw: BarConfiguration): BarConfiguration {
+    public static create<TBarConfiguration extends BarConfiguration | undefined | null = BarConfiguration>(raw: TBarConfiguration): TBarConfiguration {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.BC1P1,
             raw.CBC1P1,
             raw.BC1P2,
             raw.CBC1P2,
-        );
+        ) as TBarConfiguration;
     }
 
 }
 
 @odataType('#Company.Service.FizzCondition', $$BaseConditionTypes.FizzCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FizzCondition extends BaseCondition {
 
     public constructor(
@@ -422,19 +427,21 @@ export class FizzCondition extends BaseCondition {
         );
     }
 
-    public static create(raw: FizzCondition): FizzCondition {
+    public static create<TFizzCondition extends FizzCondition | undefined | null = FizzCondition>(raw: TFizzCondition): TFizzCondition {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,
             raw.FC1P2,
             BaseConfiguration.create(raw.FC1P3),
-        );
+        ) as TFizzCondition;
     }
 
 }
 
 @odataType('#Company.Service.FooCondition', $$BaseConditionTypes.FooCondition, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooCondition extends BaseCondition {
 
     public constructor(
@@ -449,18 +456,20 @@ export class FooCondition extends BaseCondition {
         );
     }
 
-    public static create(raw: FooCondition): FooCondition {
+    public static create<TFooCondition extends FooCondition | undefined | null = FooCondition>(raw: TFooCondition): TFooCondition {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,
             raw.FC1P2,
-        );
+        ) as TFooCondition;
     }
 
 }
 
 @odataType('#Company.Service.FooConfiguration', $$BaseConfigurationTypes.FooConfiguration, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class FooConfiguration extends BaseConfiguration {
 
     public constructor(
@@ -475,13 +484,14 @@ export class FooConfiguration extends BaseConfiguration {
         );
     }
 
-    public static create(raw: FooConfiguration): FooConfiguration {
+    public static create<TFooConfiguration extends FooConfiguration | undefined | null = FooConfiguration>(raw: TFooConfiguration): TFooConfiguration {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,
             raw.FC1P2,
-        );
+        ) as TFooConfiguration;
     }
 
 }

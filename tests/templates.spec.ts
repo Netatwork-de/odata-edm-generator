@@ -156,8 +156,8 @@ import {
 @odataEndpoint(Endpoints.foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+    public static create<TFoo extends Foo | undefined | null = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.id,
             raw.name,
@@ -176,8 +176,8 @@ export class Foo {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+    public static create<TBar extends Bar | undefined | null = Bar>(this: Class<TBar>, raw: TBar): TBar {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.id,
             raw.boolProp,
@@ -196,8 +196,8 @@ export class Bar {
 
 export class BaseOne {
 
-    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBaseOne; }
+    public static create<TBaseOne extends BaseOne | undefined | null = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.name,
         );
@@ -212,8 +212,8 @@ export class BaseOne {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends BaseOne {
 
-    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
+    public static create<TChild extends Child | undefined | null = Child>(this: Class<TChild>, raw: TChild): TChild {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         return new this(
             raw.id,
             raw.name,
@@ -250,12 +250,12 @@ export class ComplexType1 {
         ] as unknown as typeof ComplexType1[];
     }
 
-    public static create(raw: ComplexType1): ComplexType1 {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as ComplexType1; }
+    public static create<TComplexType1 extends ComplexType1 | undefined | null = ComplexType1>(raw: TComplexType1): TComplexType1 {
+        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
-            return raw as ComplexType1;
+            return raw;
         }
         return ctor.create(raw);
     }
@@ -275,6 +275,7 @@ export interface ComplexType2 {
 }
 
 @odataType('#Awesome.Possum.ChildComplexType', $$ComplexType1Types.ChildComplexType, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildComplexType extends ComplexType1 {
 
     public constructor(
@@ -290,14 +291,15 @@ export class ChildComplexType extends ComplexType1 {
         );
     }
 
-    public static create(raw: ChildComplexType): ChildComplexType {
+    public static create<TChildComplexType extends ChildComplexType | undefined | null = ChildComplexType>(raw: TChildComplexType): TChildComplexType {
+        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
         return new this(
             raw.prop11,
             raw.prop12,
             raw.prop31,
             raw.prop32,
             raw.prop33,
-        );
+        ) as TChildComplexType;
     }
 
 }
