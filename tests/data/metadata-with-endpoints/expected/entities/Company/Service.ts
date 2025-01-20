@@ -370,7 +370,7 @@ export class BarCondition extends BaseCondition {
     }
 
     public static create(raw: Partial<BarCondition>): BarCondition {
-        return new BarCondition(
+        return new this(
             raw.BC1P1,
             raw.CBC1P1,
             raw.BC1P2,
@@ -396,7 +396,7 @@ export class BarConfiguration extends BaseConfiguration {
     }
 
     public static create(raw: Partial<BarConfiguration>): BarConfiguration {
-        return new BarConfiguration(
+        return new this(
             raw.BC1P1,
             raw.CBC1P1,
             raw.BC1P2,
@@ -423,7 +423,7 @@ export class FizzCondition extends BaseCondition {
     }
 
     public static create(raw: Partial<FizzCondition>): FizzCondition {
-        return new FizzCondition(
+        return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,
@@ -450,7 +450,7 @@ export class FooCondition extends BaseCondition {
     }
 
     public static create(raw: Partial<FooCondition>): FooCondition {
-        return new FooCondition(
+        return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,
@@ -476,7 +476,7 @@ export class FooConfiguration extends BaseConfiguration {
     }
 
     public static create(raw: Partial<FooConfiguration>): FooConfiguration {
-        return new FooConfiguration(
+        return new this(
             raw.BC1P1,
             raw.FC1P1,
             raw.BC1P2,

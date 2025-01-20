@@ -291,7 +291,7 @@ export class ChildComplexType extends ComplexType1 {
     }
 
     public static create(raw: Partial<ChildComplexType>): ChildComplexType {
-        return new ChildComplexType(
+        return new this(
             raw.prop11,
             raw.prop12,
             raw.prop31,

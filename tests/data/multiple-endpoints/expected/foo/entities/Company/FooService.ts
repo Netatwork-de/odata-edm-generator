@@ -344,7 +344,7 @@ export class B1BarCondition extends BranchOneCondition {
   }
 
   public static create(raw: Partial<B1BarCondition>): B1BarCondition {
-    return new B1BarCondition(
+    return new this(
       raw.B1C1P1,
       raw.CBC1P1,
       raw.B1C1P2,
@@ -373,7 +373,7 @@ export class B1FizzCondition extends BranchOneCondition {
   }
 
   public static create(raw: Partial<B1FizzCondition>): B1FizzCondition {
-    return new B1FizzCondition(
+    return new this(
       raw.B1C1P1,
       raw.FC1P1,
       raw.B1C1P2,
@@ -402,7 +402,7 @@ export class B1FooCondition extends BranchOneCondition {
   }
 
   public static create(raw: Partial<B1FooCondition>): B1FooCondition {
-    return new B1FooCondition(
+    return new this(
       raw.B1C1P1,
       raw.FC1P1,
       raw.B1C1P2,
@@ -467,7 +467,7 @@ export class BarCondition extends StandardCondition {
   }
 
   public static create(raw: Partial<BarCondition>): BarCondition {
-    return new BarCondition(
+    return new this(
       raw.BC1P1,
       raw.CBC1P1,
       raw.BC1P2,
@@ -493,7 +493,7 @@ export class BarConfiguration extends BaseConfiguration {
   }
 
   public static create(raw: Partial<BarConfiguration>): BarConfiguration {
-    return new BarConfiguration(
+    return new this(
       raw.BC1P1,
       raw.CBC1P1,
       raw.BC1P2,
@@ -517,7 +517,7 @@ export class BranchTwoCondition extends DummyType {
   }
 
   public static create(raw: Partial<BranchTwoCondition>): BranchTwoCondition {
-    return new BranchTwoCondition(
+    return new this(
       raw.B2C1P1,
       raw.B2C1P2,
       raw.Dummy_Do_Not_Use,
@@ -543,7 +543,7 @@ export class FizzCondition extends StandardCondition {
   }
 
   public static create(raw: Partial<FizzCondition>): FizzCondition {
-    return new FizzCondition(
+    return new this(
       raw.BC1P1,
       raw.FC1P1,
       raw.BC1P2,
@@ -570,7 +570,7 @@ export class FooCondition extends StandardCondition {
   }
 
   public static create(raw: Partial<FooCondition>): FooCondition {
-    return new FooCondition(
+    return new this(
       raw.BC1P1,
       raw.FC1P1,
       raw.BC1P2,
@@ -596,7 +596,7 @@ export class FooConfiguration extends BaseConfiguration {
   }
 
   public static create(raw: Partial<FooConfiguration>): FooConfiguration {
-    return new FooConfiguration(
+    return new this(
       raw.BC1P1,
       raw.FC1P1,
       raw.BC1P2,

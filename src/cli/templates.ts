@@ -146,7 +146,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <% if(!isAbstract) { %>
 
 <%= indent %>public static create(raw: Partial<<%= name %>>): <%= name %> {
-<%= indent.repeat(2) %>return new <%= name %>(
+<%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
 <%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
 <% } -%>
