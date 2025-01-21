@@ -14,10 +14,15 @@ export function odataEndpoint(endpoint: string): ODataEndpointDecorator {
   };
 }
 
-export type Class<T> = {
-  readonly prototype: T;
+export interface Class<T> {
+  prototype: T;
   new(...args: any[]): T;
-};
+}
+
+export interface ModelClass<M> extends Class<M> {
+  create<T extends M = M>(raw: T): T;
+}
+
 export type ODataEntity<T> = Class<T> & {
   ODataEndpoint: string;
 };
@@ -59,4 +64,19 @@ export function odataType(rawOdataType: string, friendlyType?: string, typePrope
       }
     };
   };
+}
+
+/**
+ * Try converting a raw object or instance into an instance of the specified model class.
+ *
+ * @param modelClass The model class to convert into.
+ * @param rawOrInstance
+ * + `null`, `undefined` or instances of `modelClass` are returned as is.
+ * + Anything else is converted into the model class using `modelClass.create`.
+ */
+export function tryCreateModel<M, T extends M | null | undefined = M>(modelClass: ModelClass<M>, rawOrInstance: T): T {
+  if (rawOrInstance === null || rawOrInstance === undefined || rawOrInstance instanceof modelClass) {
+    return rawOrInstance;
+  }
+  return modelClass.create(rawOrInstance);
 }

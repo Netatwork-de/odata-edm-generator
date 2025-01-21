@@ -148,6 +148,7 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    tryCreateModel,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
@@ -156,8 +157,7 @@ import {
 @odataEndpoint(Endpoints.foos)
 export class Foo {
 
-    public static create<TFoo extends Foo | undefined | null = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
         return new this(
             raw.id,
             raw.name,
@@ -176,8 +176,7 @@ export class Foo {
 
 export class Bar {
 
-    public static create<TBar extends Bar | undefined | null = Bar>(this: Class<TBar>, raw: TBar): TBar {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
         return new this(
             raw.id,
             raw.boolProp,
@@ -196,8 +195,7 @@ export class Bar {
 
 export class BaseOne {
 
-    public static create<TBaseOne extends BaseOne | undefined | null = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
         return new this(
             raw.name,
         );
@@ -212,8 +210,7 @@ export class BaseOne {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends BaseOne {
 
-    public static create<TChild extends Child | undefined | null = Child>(this: Class<TChild>, raw: TChild): TChild {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
         return new this(
             raw.id,
             raw.name,
@@ -250,8 +247,7 @@ export class ComplexType1 {
         ] as unknown as typeof ComplexType1[];
     }
 
-    public static create<TComplexType1 extends ComplexType1 | undefined | null = ComplexType1>(raw: TComplexType1): TComplexType1 {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+    public static create<TComplexType1 extends ComplexType1 = ComplexType1>(raw: TComplexType1): TComplexType1 {
         const edmType = raw[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
@@ -291,8 +287,7 @@ export class ChildComplexType extends ComplexType1 {
         );
     }
 
-    public static create<TChildComplexType extends ChildComplexType | undefined | null = ChildComplexType>(raw: TChildComplexType): TChildComplexType {
-        if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
+    public static create<TChildComplexType extends ChildComplexType = ChildComplexType>(raw: TChildComplexType): TChildComplexType {
         return new this(
             raw.prop11,
             raw.prop12,

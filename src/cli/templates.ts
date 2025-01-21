@@ -49,11 +49,10 @@ const defaultClassTemplate = `<%-
 <% } -%>
 export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name %><% } %> {
 
-<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> | undefined | null = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+<%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>tryCreateModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
 <% } -%>
 <%= indent.repeat(2) %>);
 <%= indent %>}
@@ -107,8 +106,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 <%= indent.repeat(2) %>] as unknown as typeof <%= name %>[];
 <%= indent %>}
 
-<%= indent %>public static create<T<%= name %> extends <%= name %> | undefined | null = <%= name %>>(raw: T<%= name %>): T<%= name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null || raw instanceof this) { return raw; }
+<%= indent %>public static create<T<%= name %> extends <%= name %> = <%= name %>>(raw: T<%= name %>): T<%= name %> {
 <%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
 <%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
 <%= indent.repeat(2) %>if (!ctor) {
@@ -146,11 +144,10 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <%- } else { %> { } <%_ } -%>
 <% if(!isAbstract) { %>
 
-<%= indent %>public static create<T<%= name %> extends <%= name %> | undefined | null = <%= name %>>(raw: T<%= name %>): T<%= name %> {
-<%= indent.repeat(2) %>if (raw === undefined || raw === null || (raw as unknown) instanceof this) { return raw; }
+<%= indent %>public static create<T<%= name %> extends <%= name %> = <%= name %>>(raw: T<%= name %>): T<%= name %> {
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %><%= p.type.name %>.create(raw.<%= p.name %>)<% } %>,
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>tryCreateModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
 <% } -%>
 <%= indent.repeat(2) %>) as T<%= name %>;
 <%= indent %>}
