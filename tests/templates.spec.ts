@@ -148,6 +148,7 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    ODataRawType,
     tryCreateModel,
 } from '@netatwork/odata-edm-generator';
 import {
@@ -248,7 +249,7 @@ export class ComplexType1 {
     }
 
     public static create<TComplexType1 extends ComplexType1 = ComplexType1>(raw: TComplexType1): TComplexType1 {
-        const edmType = raw[odataTypeKey];
+        const edmType = (raw as ODataRawType<TComplexType1>)[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
             return raw;

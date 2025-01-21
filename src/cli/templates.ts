@@ -107,7 +107,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 <%= indent %>}
 
 <%= indent %>public static create<T<%= name %> extends <%= name %> = <%= name %>>(raw: T<%= name %>): T<%= name %> {
-<%= indent.repeat(2) %>const edmType = raw[odataTypeKey];
+<%= indent.repeat(2) %>const edmType = (raw as ODataRawType<T<%= name %>>)[odataTypeKey];
 <%= indent.repeat(2) %>const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
 <%= indent.repeat(2) %>if (!ctor) {
 <%= indent.repeat(3) %>return raw;

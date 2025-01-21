@@ -7,6 +7,7 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    ODataRawType,
     tryCreateModel,
 } from '@netatwork/odata-edm-generator';
 import {

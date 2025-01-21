@@ -7,6 +7,7 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    ODataRawType,
     tryCreateModel,
 } from '@netatwork/odata-edm-generator';
 import {
@@ -283,7 +284,7 @@ export abstract class BaseCondition {
     }
 
     public static create<TBaseCondition extends BaseCondition = BaseCondition>(raw: TBaseCondition): TBaseCondition {
-        const edmType = raw[odataTypeKey];
+        const edmType = (raw as ODataRawType<TBaseCondition>)[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
             return raw;
@@ -318,7 +319,7 @@ export class BaseConfiguration {
     }
 
     public static create<TBaseConfiguration extends BaseConfiguration = BaseConfiguration>(raw: TBaseConfiguration): TBaseConfiguration {
-        const edmType = raw[odataTypeKey];
+        const edmType = (raw as ODataRawType<TBaseConfiguration>)[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
             return raw;

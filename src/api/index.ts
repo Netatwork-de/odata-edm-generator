@@ -33,8 +33,9 @@ export type ODataEntity<T> = Class<T> & {
 };
 
 export const odataTypeKey = '@odata.type';
+export type ODataRawType<T> = T & { [odataTypeKey]: string };
 export type ODataComplexType<T> = Class<T> & {
-  readonly prototype: T & { [odataTypeKey]: string };
+  readonly prototype: ODataRawType<T>;
   canHandle(arg: string): boolean;
 };
 
