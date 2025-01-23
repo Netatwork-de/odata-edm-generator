@@ -7,6 +7,8 @@ import {
   odataEndpoint,
   odataType,
   odataTypeKey,
+  ODataRawType,
+  createModel,
 } from '@netatwork/odata-edm-generator';
 import {
   Endpoints,
@@ -14,8 +16,7 @@ import {
 
 export class Bar {
 
-  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+  public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
     return new this(
       raw.Id,
       raw.Prop12,
@@ -36,8 +37,7 @@ export class Bar {
 
 export class Base {
 
-  public static create<TBase extends Base = Base>(this: Class<TBase>, raw: Partial<TBase>): TBase {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBase; }
+  public static create<TBase extends Base = Base>(this: Class<TBase>, raw: TBase): TBase {
     return new this(
       raw.BaseProp12,
       raw.BaseProp13,
@@ -57,8 +57,7 @@ export class Base {
 @odataEndpoint(Endpoints.Fizz)
 export class Bazz {
 
-  public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: Partial<TBazz>): TBazz {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TBazz; }
+  public static create<TBazz extends Bazz = Bazz>(this: Class<TBazz>, raw: TBazz): TBazz {
     return new this(
       raw.Id,
       raw.BazzProp2,
@@ -76,8 +75,7 @@ export class Bazz {
 @odataEndpoint(Endpoints.Foos)
 export class Foo {
 
-  public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+  public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
     return new this(
       raw.Id,
       raw.ByteProp,
@@ -98,8 +96,7 @@ export class Foo {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends Base {
 
-  public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
-    if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
+  public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
     return new this(
       raw.ChildId,
       raw.BaseProp12,

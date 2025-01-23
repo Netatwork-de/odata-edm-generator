@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
-import { Configuration } from '../src/cli/configuration.js';
-import { EndpointConfiguration } from '../src/cli/shared.js';
+import { Configuration } from '../dist/cli/configuration.js';
+import { EndpointConfiguration } from '../dist/cli/shared.js';
 
 describe('configuration', function () {
   class TestData {

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { ODataComplexType, ODataEntity, odataEndpoint, odataType } from '../src/api/decorators.js';
+import { ODataComplexType, ODataEntity, odataEndpoint, odataType } from '@netatwork/odata-edm-generator';
 
 describe('decorators', function () {
   it('odataEndpoint', function () {

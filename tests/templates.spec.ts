@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Configuration } from '../src/cli/configuration.js';
-import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../src/cli/shared.js';
-import { EdmTemplate, EndpointTemplate } from '../src/cli/templates.js';
+import { Configuration } from '../dist/cli/configuration.js';
+import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../dist/cli/shared.js';
+import { EdmTemplate, EndpointTemplate } from '../dist/cli/templates.js';
 import { standardEndpoints } from './data.js';
 describe('templates', function () {
 
@@ -148,6 +148,8 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    ODataRawType,
+    createModel,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
@@ -156,8 +158,7 @@ import {
 @odataEndpoint(Endpoints.foos)
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
         return new this(
             raw.id,
             raw.name,
@@ -176,8 +177,7 @@ export class Foo {
 
 export class Bar {
 
-    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: Partial<TBar>): TBar {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBar; }
+    public static create<TBar extends Bar = Bar>(this: Class<TBar>, raw: TBar): TBar {
         return new this(
             raw.id,
             raw.boolProp,
@@ -196,8 +196,7 @@ export class Bar {
 
 export class BaseOne {
 
-    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: Partial<TBaseOne>): TBaseOne {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TBaseOne; }
+    public static create<TBaseOne extends BaseOne = BaseOne>(this: Class<TBaseOne>, raw: TBaseOne): TBaseOne {
         return new this(
             raw.name,
         );
@@ -212,8 +211,7 @@ export class BaseOne {
 // @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class Child extends BaseOne {
 
-    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: Partial<TChild>): TChild {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TChild; }
+    public static create<TChild extends Child = Child>(this: Class<TChild>, raw: TChild): TChild {
         return new this(
             raw.id,
             raw.name,
@@ -250,12 +248,11 @@ export class ComplexType1 {
         ] as unknown as typeof ComplexType1[];
     }
 
-    public static create(raw: Partial<ComplexType1>): ComplexType1 {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as ComplexType1; }
-        const edmType = raw[odataTypeKey];
+    public static create<TComplexType1 extends ComplexType1 = ComplexType1>(raw: TComplexType1): TComplexType1 {
+        const edmType = (raw as ODataRawType<TComplexType1>)[odataTypeKey];
         const ctor = this.derivedTypes.find((f) => f.canHandle(edmType));
         if (!ctor) {
-            return raw as ComplexType1;
+            return raw;
         }
         return ctor.create(raw);
     }
@@ -275,6 +272,7 @@ export interface ComplexType2 {
 }
 
 @odataType('#Awesome.Possum.ChildComplexType', $$ComplexType1Types.ChildComplexType, '$$type')
+// @ts-ignore needed to avoid this issue: https://github.com/microsoft/TypeScript/issues/4628
 export class ChildComplexType extends ComplexType1 {
 
     public constructor(
@@ -290,14 +288,14 @@ export class ChildComplexType extends ComplexType1 {
         );
     }
 
-    public static create(raw: Partial<ChildComplexType>): ChildComplexType {
-        return new ChildComplexType(
+    public static create<TChildComplexType extends ChildComplexType = ChildComplexType>(raw: TChildComplexType): TChildComplexType {
+        return new this(
             raw.prop11,
             raw.prop12,
             raw.prop31,
             raw.prop32,
             raw.prop33,
-        );
+        ) as TChildComplexType;
     }
 
 }

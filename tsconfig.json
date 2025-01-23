@@ -1,21 +1,19 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "./dist/esm",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "stripInternal": true,
     "removeComments": true,
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "skipLibCheck": true,
   },
   "include": [
-    "./src"
+    "src",
+    "tests"
   ]
 }

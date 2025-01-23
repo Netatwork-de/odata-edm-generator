@@ -7,6 +7,8 @@ import {
     odataEndpoint,
     odataType,
     odataTypeKey,
+    ODataRawType,
+    createModel,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
@@ -14,8 +16,7 @@ import {
 
 export class Foo {
 
-    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: Partial<TFoo>): TFoo {
-        if (raw === undefined || raw === null || raw instanceof this) { return raw as TFoo; }
+    public static create<TFoo extends Foo = Foo>(this: Class<TFoo>, raw: TFoo): TFoo {
         return new this(
             raw.Id,
             raw.ByteProp,
