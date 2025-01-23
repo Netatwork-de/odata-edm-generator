@@ -1,1 +1,7 @@
-.tsbuildinfo
+/.eslint*
+/.github*
+/.husky
+/.vscode*
+/tests
+/tests_out
+/tsconfig*
