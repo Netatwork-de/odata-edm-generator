@@ -339,7 +339,7 @@ import {
   odataEndpoint,
   odataType,
   odataTypeKey,
-  tryCreateModel,
+  createModel,
 } from '@netatwork/odata-edm-generator';
 import {
   Endpoints,
@@ -373,7 +373,7 @@ export class Bazz {
     return new this(
       raw.Id,
       raw.BazzProp2,
-      tryCreateModel(Bar, raw),
+      createModel(Bar, raw),
       raw.BarId,
       raw.BazzProp1,
       raw.Cp,
@@ -450,7 +450,7 @@ export class ChildOne extends Base {
       raw.BaseProp11,
       raw.BaseProp14,
       raw.ChildProp11,
-      tryCreateModel(StandardCondition, raw),
+      createModel(StandardCondition, raw),
     );
   }
 
@@ -527,7 +527,7 @@ export class GrandChild extends ChildOne {
       raw.BaseProp11,
       raw.BaseProp14,
       raw.ChildProp11,
-      tryCreateModel(StandardCondition, raw),
+      createModel(StandardCondition, raw),
       raw.GrandChildProp11,
     );
   }
@@ -790,7 +790,7 @@ export class FizzCondition extends StandardCondition {
     super.initialize(raw);
     this.FC1P1 = raw.FC1P1;
     this.FC1P2 = raw.FC1P2;
-    this.FC1P3 = tryCreateModel(BaseConfiguration, raw);
+    this.FC1P3 = createModel(BaseConfiguration, raw);
   }
 }
 
