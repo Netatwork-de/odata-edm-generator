@@ -8,7 +8,6 @@ import { gray, green, red } from 'colorette';
 import { diffLines } from 'diff';
 import { promises as fs, readdirSync } from 'fs';
 import mockFs from 'mock-fs';
-import type { DirectoryItems } from 'mock-fs/lib/filesystem';
 import { URL } from 'node:url';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
@@ -76,7 +75,7 @@ describe('generator', function () {
         const caseDir = join(dataPath, dirName);
         const inputDir = join(caseDir, 'input');
 
-        const mockFsConfig: DirectoryItems = { [baseOutputPath]: {} };
+        const mockFsConfig = { [baseOutputPath]: {} };
         const configFilePath = join(inputDir, 'config.cjs');
 
         let configuredEndpoints: EndpointConfiguration[] | undefined = undefined;
