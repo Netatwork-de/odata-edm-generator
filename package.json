@@ -8,7 +8,7 @@
     "types": "./dist/api/index.d.ts"
   },
   "bin": {
-    "gen-edm": "dist/esm/cli/index.js"
+    "naw-gen-edm": "./dist/cli/index.js"
   },
   "scripts": {
     "clean": "rimraf ./dist ./tests_out",
