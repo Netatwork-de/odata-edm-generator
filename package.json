@@ -15,6 +15,9 @@
     "build:esm": "tsc -p tsconfig-esm.json",
     "build:tests": "tsc -p tsconfig-tests.json",
     "build": "npm run build:esm && npm run build:tests",
+    "start:esm": "tsc -p tsconfig-esm.json -w --preserveWatchOutput",
+    "start:tests": "tsc -p tsconfig-tests.json -w --preserveWatchOutput",
+    "start": "concurrently npm:start:*",
     "test": "mocha --config ./tests/.mocharc.cjs",
     "lint": "eslint ./src ./tests --cache"
   },
@@ -37,6 +40,7 @@
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
     "@netatwork/mocha-utils": "^2.1.4",
+    "@netatwork/odata-edm-generator": "file:.",
     "@types/chai": "^5.0.1",
     "@types/diff": "^5.0.9",
     "@types/ejs": "^3.1.1",
@@ -48,6 +52,7 @@
     "@typescript-eslint/parser": "^7.1.1",
     "chai": "^5.1.0",
     "colorette": "^2.0.19",
+    "concurrently": "^9.1.2",
     "conventional-changelog-cli": "^5.0.0",
     "cross-env": "^7.0.3",
     "diff": "^6.0.0",
@@ -61,8 +66,7 @@
     "rimraf": "^6.0.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.4.5",
-    "uuid": "^10.0.0",
-    "@netatwork/odata-edm-generator": "file:."
+    "uuid": "^10.0.0"
   },
   "dependencies": {
     "@xmldom/xmldom": "=0.9.0",
