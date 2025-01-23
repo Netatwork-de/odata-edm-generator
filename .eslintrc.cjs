@@ -1,27 +1,27 @@
 const path = require("path");
 
 module.exports = {
-	root: true,
-	env: {
-		'node': true,
-	},
-	parser: '@typescript-eslint/parser',
-	plugins: [
-		'@typescript-eslint',
-		'import',
-		'jsdoc'
-	],
-	parserOptions: {
-		project: path.resolve("./tsconfig.json"),
-	},
-	extends: [
-		'eslint:recommended',
-		'plugin:@typescript-eslint/eslint-recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:@typescript-eslint/recommended-requiring-type-checking',
+  root: true,
+  env: {
+    'node': true,
+  },
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+    'import',
+    'jsdoc'
+  ],
+  parserOptions: {
+    project: path.resolve("./tsconfig.json"),
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:mocha/recommended',
-	],
-	rules: {
+  ],
+  rules: {
     'semi': 'off',
     'no-shadow': 'off',
     'quotes': ['warn', 'single'],
