@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import mockFs from 'mock-fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Configuration } from '../src/cli/configuration.js';
-import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../src/cli/shared.js';
-import { EdmTemplate, EndpointTemplate } from '../src/cli/templates.js';
+import { Configuration } from '../dist/cli/configuration.js';
+import { ClassInfo, EdmInfo, EnumInfo, ComplexTypeInfo, PropertyInfo, ComplexTypeInfoSet } from '../dist/cli/shared.js';
+import { EdmTemplate, EndpointTemplate } from '../dist/cli/templates.js';
 import { standardEndpoints } from './data.js';
 describe('templates', function () {
 

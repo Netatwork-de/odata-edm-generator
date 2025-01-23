@@ -1,4 +1,4 @@
-import { Endpoint } from '../src/cli/shared.js';
+import { Endpoint } from '../dist/cli/shared.js';
 
 export const standardEndpoints: Endpoint[] = [
   { name: 'People', kind: 'EntitySet', url: 'People' },

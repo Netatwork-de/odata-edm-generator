@@ -19,6 +19,7 @@ module.exports = {
 		'plugin:@typescript-eslint/eslint-recommended',
 		'plugin:@typescript-eslint/recommended',
 		'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:mocha/recommended',
 	],
 	rules: {
     'semi': 'off',
@@ -61,6 +62,8 @@ module.exports = {
       }
     ],
     '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true }],
-    '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true, allowBoolean: true }]
+    '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true, allowBoolean: true }],
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'mocha/no-setup-in-describe': 'off',
   }
 };

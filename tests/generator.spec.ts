@@ -12,10 +12,10 @@ import type { DirectoryItems } from 'mock-fs/lib/filesystem';
 import { URL } from 'node:url';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Configuration } from '../src/cli/configuration.js';
-import { exists } from '../src/cli/file-system-helper.js';
-import { $Generator } from '../src/cli/generator.js';
-import { Endpoint, EndpointConfiguration } from '../src/cli/shared.js';
+import { Configuration } from '../dist/cli/configuration.js';
+import { exists } from '../dist/cli/file-system-helper.js';
+import { $Generator } from '../dist/cli/generator.js';
+import { Endpoint, EndpointConfiguration } from '../dist/cli/shared.js';
 
 const __dirname = process.cwd();
 
