@@ -139,7 +139,7 @@ export class EdmInfo {
     //   .sort(([p1,], [p2,]) => p1 < p2 ? -1 : 1)
     //   .map(([nsPath, imports]) => new ImportDirectiveInfo(nsPath, imports));
     this.importDirectives = [
-      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint', 'odataType', 'odataTypeKey', 'ODataRawType', 'tryCreateModel']),
+      new ImportDirectiveInfo('@netatwork/odata-edm-generator', ['Class', 'odataEndpoint', 'odataType', 'odataTypeKey', 'ODataRawType', 'createModel']),
       new ImportDirectiveInfo(
         relative(dirname(filePath), getEndpointsPath(configuration))
           .replace(/\\/g, '/')

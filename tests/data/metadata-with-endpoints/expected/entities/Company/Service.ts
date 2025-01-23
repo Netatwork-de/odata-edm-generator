@@ -8,7 +8,7 @@ import {
     odataType,
     odataTypeKey,
     ODataRawType,
-    tryCreateModel,
+    createModel,
 } from '@netatwork/odata-edm-generator';
 import {
     Endpoints,
@@ -61,7 +61,7 @@ export class Bazz {
         return new this(
             raw.Id,
             raw.BazzProp2,
-            tryCreateModel(Bar, raw.Bar),
+            createModel(Bar, raw.Bar),
             raw.BarId,
             raw.BazzProp1,
             raw.Cp,
@@ -106,7 +106,7 @@ export class DomainSetting {
             raw.DomainId,
             raw.CertificateCount,
             raw.UserCount,
-            tryCreateModel(Domain, raw.Domain),
+            createModel(Domain, raw.Domain),
             raw.DomainName,
         );
     }
@@ -154,7 +154,7 @@ export class ChildOne extends Base {
             raw.BaseProp11,
             raw.BaseProp14,
             raw.ChildProp11,
-            tryCreateModel(BaseCondition, raw.Condition),
+            createModel(BaseCondition, raw.Condition),
         );
     }
 
@@ -229,7 +229,7 @@ export class GrandChild extends ChildOne {
             raw.BaseProp11,
             raw.BaseProp14,
             raw.ChildProp11,
-            tryCreateModel(BaseCondition, raw.Condition),
+            createModel(BaseCondition, raw.Condition),
             raw.GrandChildProp11,
         );
     }
@@ -422,7 +422,7 @@ export class FizzCondition extends BaseCondition {
             raw.FC1P1,
             raw.BC1P2,
             raw.FC1P2,
-            tryCreateModel(BaseConfiguration, raw.FC1P3),
+            createModel(BaseConfiguration, raw.FC1P3),
         ) as TFizzCondition;
     }
 

@@ -80,7 +80,7 @@ export function odataType(rawOdataType: string, friendlyType?: string, typePrope
  * + `null`, `undefined` or instances of `modelClass` are returned as is.
  * + Anything else is converted into the model class using `modelClass.create`.
  */
-export function tryCreateModel<M, T extends ModelInstance<M> | null | undefined>(modelClass: M, rawOrInstance: T): T {
+export function createModel<M, T extends ModelInstance<M> | null | undefined>(modelClass: M, rawOrInstance: T): T {
   if (rawOrInstance === null || rawOrInstance === undefined || rawOrInstance instanceof (modelClass as unknown as Class<M>)) {
     return rawOrInstance;
   }

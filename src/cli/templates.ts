@@ -52,7 +52,7 @@ export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name
 <%= indent %>public static create<T<%= it.name %> extends <%= it.name %> = <%= it.name %>>(this: Class<T<%= it.name %>>, raw: T<%= it.name %>): T<%= it.name %> {
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>tryCreateModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>createModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
 <% } -%>
 <%= indent.repeat(2) %>);
 <%= indent %>}
@@ -147,7 +147,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <%= indent %>public static create<T<%= name %> extends <%= name %> = <%= name %>>(raw: T<%= name %>): T<%= name %> {
 <%= indent.repeat(2) %>return new this(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>tryCreateModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
+<%= indent.repeat(3) %><% if (typeof p.type === 'string') { %>raw.<%= p.name %><% } else { %>createModel(<%= p.type.name %>, raw.<%= p.name %>)<% } %>,
 <% } -%>
 <%= indent.repeat(2) %>) as T<%= name %>;
 <%= indent %>}
