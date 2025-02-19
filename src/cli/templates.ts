@@ -91,7 +91,7 @@ export enum $$<%= name %>Types {
 }
 
 export interface <%= name %> {
-<%= indent %>readonly $$type: $$<%= name %>Types;
+<%= indent %>readonly $$type?: $$<%= name %>Types;
 }
 
 export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {

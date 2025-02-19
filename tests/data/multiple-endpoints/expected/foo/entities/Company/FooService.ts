@@ -229,7 +229,7 @@ export enum $$BaseConfigurationTypes {
 }
 
 export interface BaseConfiguration {
-  readonly $$type: $$BaseConfigurationTypes;
+  readonly $$type?: $$BaseConfigurationTypes;
 }
 
 export class BaseConfiguration {
@@ -266,7 +266,7 @@ export enum $$DummyTypeTypes {
 }
 
 export interface DummyType {
-  readonly $$type: $$DummyTypeTypes;
+  readonly $$type?: $$DummyTypeTypes;
 }
 
 export abstract class DummyType {
@@ -416,7 +416,7 @@ export enum $$StandardConditionTypes {
 }
 
 export interface StandardCondition {
-  readonly $$type: $$StandardConditionTypes;
+  readonly $$type?: $$StandardConditionTypes;
 }
 
 export abstract class StandardCondition {
