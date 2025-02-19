@@ -591,7 +591,6 @@ export class BaseConfiguration {
 
   public BC1P1: number;
   public BC1P2?: string;
-  public readonly $$type: $$BaseConfigurationTypes;
 
   protected initialize(raw: Partial<BaseConfiguration>) {
     this.BC1P1 = raw.BC1P1;
@@ -632,7 +631,6 @@ export class DummyType {
   protected static canHandle(_odataType: string): boolean { return false; }
 
   public Dummy_Do_Not_Use?: string;
-  public readonly $$type: $$DummyTypeTypes;
 
   protected initialize(raw: Partial<DummyType>) {
     this.Dummy_Do_Not_Use = raw.Dummy_Do_Not_Use;
@@ -732,7 +730,6 @@ export class StandardCondition {
 
   public BC1P1: number;
   public BC1P2?: string;
-  public readonly $$type: $$StandardConditionTypes;
 
   protected initialize(raw: Partial<StandardCondition>) {
     this.BC1P1 = raw.BC1P1;
@@ -870,7 +867,6 @@ export class StandardCondition {
 
 @odataType('#Company.FooService.BarCondition', $$StandardConditionTypes.BarCondition, '$$type')
 export class BarCondition extends StandardCondition {
-  public readonly $$type: $$StandardConditionTypes;
   // omitted for brevity; refer example above.
 }
 

@@ -237,7 +237,7 @@ export enum $$ComplexType1Types {
 }
 
 export interface ComplexType1 {
-    readonly $$type: $$ComplexType1Types;
+    readonly $$type?: $$ComplexType1Types;
 }
 
 export class ComplexType1 {
