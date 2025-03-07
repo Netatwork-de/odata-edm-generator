@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/Netatwork-de/odata-edm-generator/compare/v2.0.1...v3.0.2) (2025-03-07)
+
+
+### Bug Fixes
+
+* cli link ([#153](https://github.com/Netatwork-de/odata-edm-generator/issues/153)) ([9b7da2a](https://github.com/Netatwork-de/odata-edm-generator/commit/9b7da2a4a3f3c54742bc1c5c77965a73be19fb61))
+
 ### [3.0.1](https://github.com/Netatwork-de/odata-edm-generator/compare/v2.0.1...v3.0.1) (2025-02-19)
 
 ## [3.0.0](https://github.com/Netatwork-de/odata-edm-generator/compare/v2.0.1...v3.0.0) (2025-01-23)
