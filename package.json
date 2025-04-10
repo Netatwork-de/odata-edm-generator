@@ -1,6 +1,6 @@
 {
   "name": "@netatwork/odata-edm-generator",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "OData EDM generator",
   "type": "module",
   "exports": {

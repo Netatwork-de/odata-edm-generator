@@ -171,7 +171,7 @@ export class Foo {
         public id: number,
         public name: string,
         public isActive: boolean,
-        public optional?: string,
+        public optional?: string | null,
     ) { }
 }
 
@@ -190,7 +190,7 @@ export class Bar {
         public id: number,
         public boolProp: boolean,
         public strProp: string,
-        public optionalProp?: number,
+        public optionalProp?: number | null,
     ) { }
 }
 
@@ -224,7 +224,7 @@ export class Child extends BaseOne {
         public id: number,
         public name: string,
         public strProp: string,
-        public optionalProp?: number,
+        public optionalProp?: number | null,
     ) {
         super(
             name,

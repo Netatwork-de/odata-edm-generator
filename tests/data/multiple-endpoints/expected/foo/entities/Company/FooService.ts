@@ -28,8 +28,8 @@ export class Base {
   public constructor(
     public BaseProp12: number,
     public BaseProp13: string,
-    public BaseProp11?: string,
-    public BaseProp14?: number,
+    public BaseProp11?: string | null,
+    public BaseProp14?: number | null,
   ) { }
 }
 
@@ -51,11 +51,11 @@ export class Bazz {
   public constructor(
     public Id: number,
     public BazzProp2: number,
-    public Bar?: Bar,
-    public BarId?: number,
-    public BazzProp1?: string,
-    public Cp?: Interface2,
-    public Foos?: Foo[],
+    public Bar?: Bar | null,
+    public BarId?: number | null,
+    public BazzProp1?: string | null,
+    public Cp?: Interface2 | null,
+    public Foos?: Foo[] | null,
   ) { }
 }
 
@@ -75,7 +75,7 @@ export class Foo {
     public Id: number,
     public ByteProp: number,
     public DateStrProp: string,
-    public StrProp?: string,
+    public StrProp?: string | null,
   ) { }
 }
 
@@ -95,8 +95,8 @@ export class Bar {
     public Id: number,
     public Prop12: string,
     public Prop13: number,
-    public Prop11?: string,
-    public Prop14?: number,
+    public Prop11?: string | null,
+    public Prop14?: number | null,
   ) { }
 }
 
@@ -124,10 +124,10 @@ export class ChildOne extends Base {
     public BaseProp13: string,
     public ChildProp12: number,
     public ChildProp13: string,
-    public BaseProp11?: string,
-    public BaseProp14?: number,
-    public ChildProp11?: number,
-    public Condition?: StandardCondition,
+    public BaseProp11?: string | null,
+    public BaseProp14?: number | null,
+    public ChildProp11?: number | null,
+    public Condition?: StandardCondition | null,
   ) {
     super(
       BaseProp12,
@@ -160,9 +160,9 @@ export class ChildTwo extends Base {
     public BaseProp13: string,
     public ChildProp12: number,
     public ChildProp13: string,
-    public BaseProp11?: string,
-    public BaseProp14?: number,
-    public ChildProp11?: number,
+    public BaseProp11?: string | null,
+    public BaseProp14?: number | null,
+    public ChildProp11?: number | null,
   ) {
     super(
       BaseProp12,
@@ -203,11 +203,11 @@ export class GrandChild extends ChildOne {
     public ChildProp13: string,
     public GrandChildProp12: number,
     public GrandChildProp13: string,
-    public BaseProp11?: string,
-    public BaseProp14?: number,
-    public ChildProp11?: number,
-    public Condition?: StandardCondition,
-    public GrandChildProp11?: number,
+    public BaseProp11?: string | null,
+    public BaseProp14?: number | null,
+    public ChildProp11?: number | null,
+    public Condition?: StandardCondition | null,
+    public GrandChildProp11?: number | null,
   ) {
     super(
       ChildId,
@@ -254,7 +254,7 @@ export class BaseConfiguration {
 
   public constructor(
     public BC1P1: number,
-    public BC1P2?: string,
+    public BC1P2?: string | null,
   ) { }
 }
 
@@ -292,26 +292,26 @@ export abstract class DummyType {
   protected static canHandle(_odataType: string): boolean { return false; }
 
   protected constructor(
-    public Dummy_Do_Not_Use?: string,
+    public Dummy_Do_Not_Use?: string | null,
   ) { }
 }
 
 export interface Interface1 {
   I1P1: string;
-  I1P2?: number;
+  I1P2?: number | null;
 }
 
 export interface Interface2 {
   I2P1: number;
-  I2P2?: string;
+  I2P2?: string | null;
 }
 
 export abstract class BranchOneCondition extends DummyType {
 
   protected constructor(
     public B1C1P1: number,
-    public B1C1P2?: string,
-    public Dummy_Do_Not_Use?: string,
+    public B1C1P2?: string | null,
+    public Dummy_Do_Not_Use?: string | null,
   ) {
     super(
       Dummy_Do_Not_Use,
@@ -326,9 +326,9 @@ export class B1BarCondition extends BranchOneCondition {
   public constructor(
     public B1C1P1: number,
     public CBC1P1: number,
-    public B1C1P2?: string,
-    public CBC1P2?: Interface1,
-    public Dummy_Do_Not_Use?: string,
+    public B1C1P2?: string | null,
+    public CBC1P2?: Interface1 | null,
+    public Dummy_Do_Not_Use?: string | null,
   ) {
     super(
       B1C1P1,
@@ -356,9 +356,9 @@ export class B1FizzCondition extends BranchOneCondition {
   public constructor(
     public B1C1P1: number,
     public FC1P1: number,
-    public B1C1P2?: string,
-    public Dummy_Do_Not_Use?: string,
-    public FC1P2?: Interface1,
+    public B1C1P2?: string | null,
+    public Dummy_Do_Not_Use?: string | null,
+    public FC1P2?: Interface1 | null,
   ) {
     super(
       B1C1P1,
@@ -386,9 +386,9 @@ export class B1FooCondition extends BranchOneCondition {
   public constructor(
     public B1C1P1: number,
     public FC1P1: number,
-    public B1C1P2?: string,
-    public Dummy_Do_Not_Use?: string,
-    public FC1P2?: Enum1,
+    public B1C1P2?: string | null,
+    public Dummy_Do_Not_Use?: string | null,
+    public FC1P2?: Enum1 | null,
   ) {
     super(
       B1C1P1,
@@ -442,7 +442,7 @@ export abstract class StandardCondition {
 
   protected constructor(
     public BC1P1: number,
-    public BC1P2?: string,
+    public BC1P2?: string | null,
   ) { }
 }
 
@@ -453,8 +453,8 @@ export class BarCondition extends StandardCondition {
   public constructor(
     public BC1P1: number,
     public CBC1P1: number,
-    public BC1P2?: string,
-    public CBC1P2?: Interface1,
+    public BC1P2?: string | null,
+    public CBC1P2?: Interface1 | null,
   ) {
     super(
       BC1P1,
@@ -480,8 +480,8 @@ export class BarConfiguration extends BaseConfiguration {
   public constructor(
     public BC1P1: number,
     public CBC1P1: number,
-    public BC1P2?: string,
-    public CBC1P2?: Interface1,
+    public BC1P2?: string | null,
+    public CBC1P2?: Interface1 | null,
   ) {
     super(
       BC1P1,
@@ -506,8 +506,8 @@ export class BranchTwoCondition extends DummyType {
 
   public constructor(
     public B2C1P1: number,
-    public B2C1P2?: string,
-    public Dummy_Do_Not_Use?: string,
+    public B2C1P2?: string | null,
+    public Dummy_Do_Not_Use?: string | null,
   ) {
     super(
       Dummy_Do_Not_Use,
@@ -531,9 +531,9 @@ export class FizzCondition extends StandardCondition {
   public constructor(
     public BC1P1: number,
     public FC1P1: number,
-    public BC1P2?: string,
-    public FC1P2?: Interface1,
-    public FC1P3?: BaseConfiguration,
+    public BC1P2?: string | null,
+    public FC1P2?: Interface1 | null,
+    public FC1P3?: BaseConfiguration | null,
   ) {
     super(
       BC1P1,
@@ -560,8 +560,8 @@ export class FooCondition extends StandardCondition {
   public constructor(
     public BC1P1: number,
     public FC1P1: number,
-    public BC1P2?: string,
-    public FC1P2?: Enum1,
+    public BC1P2?: string | null,
+    public FC1P2?: Enum1 | null,
   ) {
     super(
       BC1P1,
@@ -587,8 +587,8 @@ export class FooConfiguration extends BaseConfiguration {
   public constructor(
     public BC1P1: number,
     public FC1P1: number,
-    public BC1P2?: string,
-    public FC1P2?: Enum1,
+    public BC1P2?: string | null,
+    public FC1P2?: Enum1 | null,
   ) {
     super(
       BC1P1,
