@@ -59,7 +59,7 @@ export class <%= it.name %><% if (it.baseType) { %> extends <%= it.baseType.name
 
 <%= indent %>public constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %><% if(p.isNullable){%> | null<% } %>,
 <% } -%>
 <%= indent %>) <%_ if (it.baseType) { %> {
 <%= indent.repeat(2) %>super(
@@ -119,7 +119,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> {
 
 <%= indent %><% if(isAbstract) { %>protected<% } else { %>public<% } %> constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %><% if(p.isNullable){%> | null<% } %>,
 <% } -%>
 <%= indent %>) { }
 }
@@ -132,7 +132,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 
 <%= indent %><% if(isAbstract) { %>protected<% } else { %>public<% } %> constructor(
 <% for(const p of it.propertyInfos) { -%>
-<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %>,
+<%= indent.repeat(2) %>public <%= p.name %><% if(p.isNullable){%>?<% } %>: <% if (typeof p.type === 'string') { %><%= p.type %><% } else { %><%= p.type.name %><% } %><% if(p.isNullable){%> | null<% } %>,
 <% } -%>
 <%= indent %>) <%_ if (it.baseType) { %> {
 <%= indent.repeat(2) %>super(
@@ -156,7 +156,7 @@ export<% if(isAbstract) { %> abstract<% } %> class <%= name %> extends <%= baseT
 <%- } else { -%>
 export interface <%= name %> {
 <% for(const p of it.propertyInfos) { -%>
-<%= indent %><%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %>;
+<%= indent %><%= p.name %><% if(p.isNullable){%>?<% } %>: <%= p.type %><% if(p.isNullable){%> | null<% } %>;
 <% } -%>
 }
 <%- } -%>`;

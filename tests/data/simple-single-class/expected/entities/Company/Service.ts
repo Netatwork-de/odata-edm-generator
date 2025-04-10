@@ -29,6 +29,6 @@ export class Foo {
         public Id: number,
         public ByteProp: number,
         public DateStrProp: string,
-        public StrProp?: string,
+        public StrProp?: string | null,
     ) { }
 }

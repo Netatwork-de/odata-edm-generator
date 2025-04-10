@@ -30,8 +30,8 @@ export class Bar {
         public Id: number,
         public Prop12: string,
         public Prop13: number,
-        public Prop11?: string,
-        public Prop14?: number,
+        public Prop11?: string | null,
+        public Prop14?: number | null,
     ) { }
 }
 
@@ -49,8 +49,8 @@ export class Base {
     public constructor(
         public BaseProp12: number,
         public BaseProp13: string,
-        public BaseProp11?: string,
-        public BaseProp14?: number,
+        public BaseProp11?: string | null,
+        public BaseProp14?: number | null,
     ) { }
 }
 
@@ -68,7 +68,7 @@ export class Bazz {
     public constructor(
         public Id: number,
         public BazzProp2: number,
-        public BazzProp1?: string,
+        public BazzProp1?: string | null,
     ) { }
 }
 
@@ -88,7 +88,7 @@ export class Foo {
         public Id: number,
         public ByteProp: number,
         public DateStrProp: string,
-        public StrProp?: string,
+        public StrProp?: string | null,
     ) { }
 }
 
@@ -115,9 +115,9 @@ export class Child extends Base {
         public BaseProp13: string,
         public ChildProp12: number,
         public ChildProp13: string,
-        public BaseProp11?: string,
-        public BaseProp14?: number,
-        public ChildProp11?: number,
+        public BaseProp11?: string | null,
+        public BaseProp14?: number | null,
+        public ChildProp11?: number | null,
     ) {
         super(
             BaseProp12,
