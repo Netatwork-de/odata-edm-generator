@@ -69,7 +69,7 @@
     "uuid": "^11.1.0"
   },
   "dependencies": {
-    "@xmldom/xmldom": "=0.9.0",
+    "@xmldom/xmldom": "=0.9.8",
     "eta": "^3.2.0"
   },
   "commitlint": {
